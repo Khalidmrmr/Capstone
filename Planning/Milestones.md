@@ -1,0 +1,22 @@
+# Milestones List — Smart Closet Mirror
+
+This list tracks all major completed course deliverables from CS 5001 (Design Phase) and planned implementation milestones through CS 5002 (Implementation Phase), spaced every one to three weeks.
+
+| Milestone ID | Target Date | Milestone Name & Detailed Outcome | How Verified | Verifier |
+|---|---|---|---|---|
+| **M01** *(Done)* | Sept 02, 2026 | **Professional Biographies (Assignment #1):** Individual team member backgrounds, skills, and roles documented. | Canvas submission & repository commit. | Course Instructor |
+| **M02** *(Done)* | Sept 09, 2026 | **Team Formation & Project Description (Assignment #2):** Core project scope, problem framing, and team contract accepted. | Faculty advisor signature & Canvas submission. | H. Bhide (Advisor) |
+| **M03** *(Done)* | Sept 16, 2026 | **Constraints Essay (Assignment #3):** Technical, economic, ethical, and privacy constraints analyzed (camera privacy, hardware limitations). | Graded rubric evaluation. | Course Instructor |
+| **M04** *(Done)* | Sept 23, 2026 | **User Stories & Use Cases (Assignment #4):** US-01 through US-04 stakeholder requirements and use-case error flows baselined. | Repository markdown & traceability matrix. | Course Instructor |
+| **M05** *(Done)* | Oct 07, 2026 | **High-Level Design D0:** Architecture block diagram, component responsibilities (L1–L8), and interface specifications (I1–I17). | In-class peer review & instructor grade. | Peer Reviewers / Instructor |
+| **M06** *(Done)* | Oct 14, 2026 | **Detailed Design D1:** Relational data model, schema indexing, and core algorithms (A1 fit evaluation, A2 live garment warp). | Formal diagram submission & peer review. | Course Instructor |
+| **M07** *(Done)* | Oct 21, 2026 | **Detailed Design D2:** Sequence diagrams, camera consent state machine, error handling catalogue, and peer review action items. | Peer review action log & D2 report. | Course Instructor |
+| **M08** *(Done)* | Oct 28, 2026 | **Project Plan & Baseline (Assignment #8):** Task list, WBS, milestones, Gantt timeline, effort matrix, and risk register baselined. | Consolidated PDF submission & Tasklist.md in root. | Course Instructor |
+| **M09** | Dec 11, 2026 | **Fall Design Freeze & Dev Environment Verification:** Development toolchains, Ubuntu brain PC OS, Kinect SDK, and Android mirror shell ready. | Successful build and smoke test of test harness. | Rehman Khalid |
+| **M10** | Jan 22, 2027 | **Sensor Ingest & Data Plane Skeleton:** L1 publishes synchronized 30 fps FrameBundles to shared memory; L4 accepts garment images via REST. | Unit tests pass; `capture.health` confirms 30 fps streaming without packet loss. | Rehman Khalid & Jace Schubert |
+| **M11** | Feb 05, 2027 | **Perception & Context Normalization MVP:** L2 extracts calibrated body dimensions from T-pose (I8); L7 normalizes calendar/weather into standard models. | Test scripts demonstrate cm-accurate joint extraction and valid weather/calendar context bundles. | Arya Garg & Jace Schubert |
+| **M12** | Feb 19, 2027 | **Body Avatar & Recommendation Core:** L3 generates valid rigged avatar mesh (I9); L6 recommendation scoring outputs outfits based on weather context. | Benchmark tests verify outfit selection matches weather/formality constraints; avatar glTF renders cleanly. | Clare Hooper & Arya Garg |
+| **M13** | Mar 05, 2027 | **Try-on Stream & Glass Presentation Alpha:** L5 streams H.264 video of warped garment to Media3; L8 WebView displays decision cards and consent prompt. | Live visual verification on mirror glass; frame decode verified on Android 6 Media3 player. | Clare Hooper & Rehman Khalid |
+| **M14** | Mar 26, 2027 | **Subsystem Integration & Latency Gate:** Full sensor-to-glass pipeline runs within the 250 ms motion-to-glass budget; offline fallback verified. | Telemetry benchmarks confirm end-to-end latency <= 250 ms across 100 continuous frames. | Entire Team |
+| **M15** | Apr 01, 2027 | **Final Project Completion & Acceptance Freeze:** End-to-end user journey (pairing, consent, T-pose sizing, outfit choice, buy/skip) verified against requirements. | Formal acceptance checklist signed off; code frozen in repository. | H. Bhide (Advisor) & Instructor |
+| **M16** | Apr 15, 2027 | **Senior Design II Expo Demonstration:** System demonstrates continuous, error-free operation during open live public evaluation at Senior Design Expo. | Live public demonstration & evaluation rubric. | Expo Evaluators |

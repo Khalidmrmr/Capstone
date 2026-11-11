@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Assignment 8 - Task List, Milestones, Timeline, and Effort Matrix</title>
+<style>
+  @page {
+    size: letter portrait;
+    margin: 0.5in 0.5in 0.5in 0.5in;
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 8pt;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #666;
+    }
+    @bottom-left {
+      content: "CS 5001 / CS 5002 Senior Design | Bull riders — Smart Closet Mirror";
+      font-size: 8pt;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #666;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.35;
+    color: #1a1a1a;
+  }
+  h1 {
+    font-size: 16pt;
+    margin: 0 0 4px 0;
+    color: #0f2d59;
+    border-bottom: 2px solid #0f2d59;
+    padding-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 10.5pt;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  .meta-grid {
+    display: table;
+    width: 100%;
+    margin-bottom: 12px;
+    background: #f4f7fb;
+    border: 1px solid #d0dbe8;
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 8.5pt;
+  }
+  .meta-row { display: table-row; }
+  .meta-cell { display: table-cell; padding: 2px 8px; }
+  .meta-label { font-weight: bold; color: #0f2d59; }
+
+  h2 {
+    font-size: 12pt;
+    color: #0f2d59;
+    margin: 14px 0 6px 0;
+    border-bottom: 1px solid #ccd8e6;
+    padding-bottom: 2px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 10pt;
+    color: #1f4e79;
+    margin: 8px 0 4px 0;
+    page-break-after: avoid;
+  }
+  p, ul, ol {
+    margin: 4px 0 6px 0;
+  }
+  ul, ol {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 2px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 10px 0;
+    font-size: 7.8pt;
+    page-break-inside: auto;
+  }
+  tr { page-break-inside: avoid; page-break-after: auto; }
+  th, td {
+    border: 1px solid #cfd8dc;
+    padding: 3px 5px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #0f2d59;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  .center { text-align: center; }
+  .bold { font-weight: bold; }
+  .highlight-row { background-color: #e8f0fe !important; font-weight: bold; }
+  .milestone-row td { background-color: #eaf3e8 !important; font-weight: 600; color: #1b5e20; }
+  .recess-row td { background-color: #fff8e1 !important; font-style: italic; color: #b78103; }
+  .page-break { page-break-before: always; }
+  code, pre {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 7.8pt;
+  }
+  pre {
+    background: #f4f6f8;
+    border: 1px solid #dcdfe3;
+    padding: 6px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+
+<h1>Assignment 8 — Task List, Milestones, Timeline, and Effort Matrix</h1>
+<div class="subtitle">CS 5001 / CS 5002 Senior Design Project — Fall 2026 / Spring 2027</div>
+
+<div class="meta-grid">
+  <div class="meta-row">
+    <div class="meta-cell"><span class="meta-label">Project:</span> Smart Closet Mirror (Personal Stylist)</div>
+    <div class="meta-cell"><span class="meta-label">Team:</span> Bull riders</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-cell"><span class="meta-label">Team Members:</span> Rehman Khalid, Arya Garg, Jace Schubert, Clare Hooper</div>
+    <div class="meta-cell"><span class="meta-label">Faculty Advisor:</span> Hrishikesh Bhide</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-cell"><span class="meta-label">Due Date:</span> October 28, 2026</div>
+    <div class="meta-cell"><span class="meta-label">Implementation Horizon:</span> January 11, 2027 – April 01, 2027 (Expo: April 2027)</div>
+  </div>
+</div>
+
+<h2>1. Component 1: Task List (Assignment #5)</h2>
+<p><em>Twenty project-specific numbered tasks, exactly five per team member, each sized to 1–2 weeks and beginning with an approved verb naming the exact Design Diagram subsystem/module. Saved as <code>Tasklist.md</code> in the repository root.</em></p>
+
+<h3>Rehman Khalid (L1 Capture, Planes, Infrastructure)</h3>
+<ol>
+  <li><strong>T01.</strong> <code>Develop</code> the <strong>L1 Capture</strong> Kinect frame acquisition daemon with USB error recovery and shared-memory ring buffer (I1, I7). Owner: Rehman Khalid.</li>
+  <li><strong>T02.</strong> <code>Develop</code> the <strong>Planes Message Bus and Data Store</strong> Redis broker and SQLite schema migrations for state and telemetry. Owner: Rehman Khalid.</li>
+  <li><strong>T03.</strong> <code>Develop</code> the <strong>L1 Capture</strong> privacy consent hardware gate and camera status beacon integration (I27). Owner: Rehman Khalid.</li>
+  <li><strong>T04.</strong> <code>Develop</code> the <strong>Planes Logging and Health</strong> watchdog service for layer heartbeats, crash restarts, and drop-rate telemetry. Owner: Rehman Khalid.</li>
+  <li><strong>T05.</strong> <code>Validate</code> the <strong>L1 Capture and Planes</strong> pipeline for sustained 30 fps throughput under 50 ms capture-to-shm latency. Owner: Rehman Khalid.</li>
+</ol>
+
+<h3>Arya Garg (L2 Perception, L3 Body, L5 Try-on)</h3>
+<ol start="6">
+  <li><strong>T06.</strong> <code>Develop</code> the <strong>L2 Perception</strong> body joint detection and T-pose extraction pipeline using depth and RGB streams (I7, I8). Owner: Arya Garg.</li>
+  <li><strong>T07.</strong> <code>Develop</code> the <strong>L3 Body</strong> avatar generator translating measurement vectors into rigged 3D avatar meshes (I8, I9). Owner: Arya Garg.</li>
+  <li><strong>T08.</strong> <code>Develop</code> the <strong>L5 Try-on</strong> fit evaluation engine calculating garment tension and size compatibility (I11, I12). Owner: Arya Garg.</li>
+  <li><strong>T09.</strong> <code>Develop</code> the <strong>L5 Try-on</strong> live garment overlay and 2D pose-driven warp video pipeline (A2, I10). Owner: Arya Garg.</li>
+  <li><strong>T10.</strong> <code>Validate</code> the <strong>L2 Perception and L5 Try-on</strong> H.264 video stream encoder against the 250 ms motion-to-glass latency budget (I4). Owner: Arya Garg.</li>
+</ol>
+
+<h3>Jace Schubert (L4 Wardrobe, L7 Connectors, Glue Auth)</h3>
+<ol start="11">
+  <li><strong>T11.</strong> <code>Develop</code> the <strong>L4 Wardrobe</strong> REST ingestion service and image storage for phone-submitted garment assets (I2). Owner: Jace Schubert.</li>
+  <li><strong>T12.</strong> <code>Develop</code> the <strong>L7 Connectors</strong> calendar and weather normalization adapter with token refresh and stale-cache fallback (I3, I14). Owner: Jace Schubert.</li>
+  <li><strong>T13.</strong> <code>Develop</code> the <strong>L7 Connectors</strong> product catalog search and external image fetcher with rate limiting (I3, I14). Owner: Jace Schubert.</li>
+  <li><strong>T14.</strong> <code>Develop</code> the <strong>Glue: Authentication</strong> 6-digit phone-pairing handshake and session authorization handler. Owner: Jace Schubert.</li>
+  <li><strong>T15.</strong> <code>Test</code> the <strong>L4 Wardrobe and L7 Connectors</strong> offline resilience and data plane consistency under simulated network failures. Owner: Jace Schubert.</li>
+</ol>
+
+<h3>Clare Hooper (L6 Decision, L8 Presentation Lead, Glue Notifications)</h3>
+<ol start="16">
+  <li><strong>T16.</strong> <code>Develop</code> the <strong>L6 Decision</strong> outfit recommendation scoring engine matching closet items to weather and calendar context (I13, I14). Owner: Clare Hooper.</li>
+  <li><strong>T17.</strong> <code>Develop</code> the <strong>L6 Decision</strong> buy or skip scoring algorithm and wardrobe gap analyzer (I12, I14). Owner: Clare Hooper.</li>
+  <li><strong>T18.</strong> <code>Develop</code> the <strong>L8 Presentation</strong> WebView UI deck and decision card rendering engine compatible with WebView 44 (I6, I17). Owner: Clare Hooper.</li>
+  <li><strong>T19.</strong> <code>Develop</code> the <strong>Glue: Notifications</strong> toast broadcast service and Mirror presence/wake controller (I5, I6). Owner: Clare Hooper.</li>
+  <li><strong>T20.</strong> <code>Validate</code> the <strong>L6 Decision and L8 Presentation</strong> end-to-end user recommendation flow against gesture and voice action timeouts. Owner: Clare Hooper.</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2>2. Component 2: Milestones List (Assignment #6)</h2>
+<p><em>Every major planned milestone and completed deliverable with detailed explanation: what it demonstrates, date, verification method, and verifier. Completed items are marked. Implementation milestones are spaced every 1–3 weeks.</em></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:11%;">Milestone</th>
+      <th style="width:12%;">Target Date</th>
+      <th style="width:38%;">Detailed Outcome & Demonstration</th>
+      <th style="width:24%;">Verification Method</th>
+      <th style="width:15%;">Verifier</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>M01</strong> (Done)</td>
+      <td>Sept 02, 2026</td>
+      <td><strong>Professional Biographies:</strong> Team member backgrounds, technical competencies, and role allocations established.</td>
+      <td>Canvas submission & repo commit.</td>
+      <td>Course Instructor</td>
+    </tr>
+    <tr>
+      <td><strong>M02</strong> (Done)</td>
+      <td>Sept 09, 2026</td>
+      <td><strong>Team Formation & Project Description:</strong> Core project scope, problem statement, and team contract approved.</td>
+      <td>Advisor acceptance & contract.</td>
+      <td>H. Bhide (Advisor)</td>
+    </tr>
+    <tr>
+      <td><strong>M03</strong> (Done)</td>
+      <td>Sept 16, 2026</td>
+      <td><strong>Constraints Essay:</strong> Technical, economic, ethical, and privacy constraints analyzed (camera consent, weak Android hardware).</td>
+      <td>Graded essay evaluation.</td>
+      <td>Course Instructor</td>
+    </tr>
+    <tr>
+      <td><strong>M04</strong> (Done)</td>
+      <td>Sept 23, 2026</td>
+      <td><strong>User Stories & Use Cases:</strong> Stakeholder map, user stories (US-01–US-04), and error handling flows baselined.</td>
+      <td>User_Stories.md review.</td>
+      <td>Course Instructor</td>
+    </tr>
+    <tr>
+      <td><strong>M05</strong> (Done)</td>
+      <td>Oct 07, 2026</td>
+      <td><strong>High-Level Design (D0):</strong> L1–L8 layer boundaries, component responsibility matrix, and interface catalog (I1–I17).</td>
+      <td>Peer review & rubrics.</td>
+      <td>Peer Reviewers</td>
+    </tr>
+    <tr>
+      <td><strong>M06</strong> (Done)</td>
+      <td>Oct 14, 2026</td>
+      <td><strong>Detailed Design (D1):</strong> Relational schema, indexes, and core algorithms (A1 fit calculation, A2 live pose warp).</td>
+      <td>D1 report & data model diagram.</td>
+      <td>Course Instructor</td>
+    </tr>
+    <tr>
+      <td><strong>M07</strong> (Done)</td>
+      <td>Oct 21, 2026</td>
+      <td><strong>Detailed Design (D2):</strong> Sequence diagrams, consent state machine (I27), and peer review action items.</td>
+      <td>Peer review action log.</td>
+      <td>Course Instructor</td>
+    </tr>
+    <tr>
+      <td><strong>M08</strong> (Done)</td>
+      <td>Oct 28, 2026</td>
+      <td><strong>Project Plan & Baseline (A8):</strong> Task list, milestones, Gantt timeline, effort matrix, and risk register baselined.</td>
+      <td>Consolidated PDF & Tasklist.md.</td>
+      <td>Course Instructor</td>
+    </tr>
+    <tr>
+      <td><strong>M09</strong></td>
+      <td>Dec 11, 2026</td>
+      <td><strong>Design Freeze & Dev Environment Verification:</strong> Toolchains, Ubuntu PC OS, Kinect SDK, and Mirror shell harness ready.</td>
+      <td>Local smoke test & driver check.</td>
+      <td>Rehman Khalid</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M10</strong></td>
+      <td>Jan 22, 2027</td>
+      <td><strong>Sensor Ingest & Data Plane Skeleton:</strong> L1 publishes 30 fps FrameBundles to shm; L4 accepts garment images via REST.</td>
+      <td>Unit tests; capture.health confirms 30 fps stream without drops.</td>
+      <td>Rehman Khalid & Jace Schubert</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M11</strong></td>
+      <td>Feb 05, 2027</td>
+      <td><strong>Perception & Context Normalization MVP:</strong> L2 extracts body dimensions from T-pose (I8); L7 normalizes calendar/weather data.</td>
+      <td>Test scripts verify cm-accurate joints and valid context payloads.</td>
+      <td>Arya Garg & Jace Schubert</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M12</strong></td>
+      <td>Feb 19, 2027</td>
+      <td><strong>Body Avatar & Recommendation Core:</strong> L3 outputs rigged glTF mesh (I9); L6 outputs weather-matched outfit rankings.</td>
+      <td>Benchmark tests verify outfit rankings; avatar renders in glTF viewer.</td>
+      <td>Clare Hooper & Arya Garg</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M13</strong></td>
+      <td>Mar 05, 2027</td>
+      <td><strong>Try-on Stream & Glass Presentation Alpha:</strong> L5 streams H.264 video to Media3; L8 WebView displays live decision cards.</td>
+      <td>Visual check on mirror glass; hardware decode confirmed on Android 6.</td>
+      <td>Clare Hooper & Rehman Khalid</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M14</strong></td>
+      <td>Mar 26, 2027</td>
+      <td><strong>Subsystem Integration & Latency Gate:</strong> Complete sensor-to-glass pipeline runs within 250 ms motion budget; offline fallback verified.</td>
+      <td>Telemetry logs confirm latency &le; 250 ms across 100 continuous frames.</td>
+      <td>Entire Team</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M15</strong></td>
+      <td>Apr 01, 2027</td>
+      <td><strong>Final Project Completion & Acceptance Freeze:</strong> End-to-end journey (pairing, sizing, outfit choice, buy/skip) verified against requirements.</td>
+      <td>Formal acceptance sign-off; code freeze committed to repository.</td>
+      <td>H. Bhide (Advisor) & Instructor</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M16</strong></td>
+      <td>Apr 15, 2027</td>
+      <td><strong>Senior Design II Expo Demonstration:</strong> Continuous, error-free demonstration during public Senior Design Expo evaluation.</td>
+      <td>Live public demonstration & judging rubric score.</td>
+      <td>Expo Evaluators</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>3. Component 3: Table 1 — Timeline (Assignment #6)</h2>
+<p><em>Every Task List item and milestone completion date with dependencies, explicit 15–20% buffer per task, protected pre-milestone blocks, and schedule risk visibility. Implementation horizon: Jan 11 – Apr 01, 2027.</em></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:7%;">ID</th>
+      <th style="width:34%;">Task / Milestone Statement</th>
+      <th style="width:11%;">Owner</th>
+      <th style="width:10%;">Start</th>
+      <th style="width:10%;">End</th>
+      <th style="width:11%;">Dependencies</th>
+      <th style="width:17%;">Buffer & Risk Visibility</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>T01</strong></td>
+      <td>Develop L1 Kinect acquisition daemon & shm ring buffer</td>
+      <td>Rehman</td>
+      <td>2027-01-11</td>
+      <td>2027-01-22</td>
+      <td>None</td>
+      <td>2 days (20%). Mitigates R05.</td>
+    </tr>
+    <tr>
+      <td><strong>T02</strong></td>
+      <td>Develop Planes Message Bus & Data Store (Redis/SQLite)</td>
+      <td>Rehman</td>
+      <td>2027-01-11</td>
+      <td>2027-01-22</td>
+      <td>None</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T11</strong></td>
+      <td>Develop L4 Wardrobe REST ingestion & image storage</td>
+      <td>Jace</td>
+      <td>2027-01-11</td>
+      <td>2027-01-22</td>
+      <td>None</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T14</strong></td>
+      <td>Develop Glue: Auth 6-digit phone-pairing handshake</td>
+      <td>Jace</td>
+      <td>2027-01-11</td>
+      <td>2027-01-22</td>
+      <td>None</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M10</strong></td>
+      <td>MILESTONE: Sensor Ingest & Data Plane Skeleton</td>
+      <td>Rehman, Jace</td>
+      <td>2027-01-22</td>
+      <td>2027-01-22</td>
+      <td>T01, T02, T11, T14</td>
+      <td>Protected review checkpoint.</td>
+    </tr>
+    <tr>
+      <td><strong>T03</strong></td>
+      <td>Develop L1 Capture privacy consent hardware gate (I27)</td>
+      <td>Rehman</td>
+      <td>2027-01-25</td>
+      <td>2027-02-05</td>
+      <td>T01, T02</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T06</strong></td>
+      <td>Develop L2 Perception body joint detection & T-pose</td>
+      <td>Arya</td>
+      <td>2027-01-25</td>
+      <td>2027-02-05</td>
+      <td>T01</td>
+      <td>2 days (20%). Mitigates R06.</td>
+    </tr>
+    <tr>
+      <td><strong>T12</strong></td>
+      <td>Develop L7 Calendar/weather normalization adapter</td>
+      <td>Jace</td>
+      <td>2027-01-25</td>
+      <td>2027-02-05</td>
+      <td>T02</td>
+      <td>2 days (20%). Mitigates R03.</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M11</strong></td>
+      <td>MILESTONE: Perception & Context Normalization MVP</td>
+      <td>Arya, Jace</td>
+      <td>2027-02-05</td>
+      <td>2027-02-05</td>
+      <td>T03, T06, T12</td>
+      <td>Protected review checkpoint.</td>
+    </tr>
+    <tr>
+      <td><strong>T07</strong></td>
+      <td>Develop L3 Body avatar rigged mesh generator (glTF)</td>
+      <td>Arya</td>
+      <td>2027-02-08</td>
+      <td>2027-02-19</td>
+      <td>T06</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T13</strong></td>
+      <td>Develop L7 Product catalog search & image fetcher</td>
+      <td>Jace</td>
+      <td>2027-02-08</td>
+      <td>2027-02-19</td>
+      <td>T12</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T16</strong></td>
+      <td>Develop L6 Recommendation scoring engine</td>
+      <td>Clare</td>
+      <td>2027-02-08</td>
+      <td>2027-02-19</td>
+      <td>T02, T12</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M12</strong></td>
+      <td>MILESTONE: Body Avatar & Recommendation Core</td>
+      <td>Clare, Arya</td>
+      <td>2027-02-19</td>
+      <td>2027-02-19</td>
+      <td>T07, T13, T16</td>
+      <td>Protected review checkpoint.</td>
+    </tr>
+    <tr>
+      <td><strong>T08</strong></td>
+      <td>Develop L5 Try-on fit evaluation & tension mapping</td>
+      <td>Arya</td>
+      <td>2027-02-22</td>
+      <td>2027-03-05</td>
+      <td>T07</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T09</strong></td>
+      <td>Develop L5 Live garment overlay & 2D warp pipeline</td>
+      <td>Arya</td>
+      <td>2027-02-22</td>
+      <td>2027-03-05</td>
+      <td>T08</td>
+      <td>2 days (20%). Mitigates R02.</td>
+    </tr>
+    <tr>
+      <td><strong>T17</strong></td>
+      <td>Develop L6 Buy/skip decision algorithm & gap analyzer</td>
+      <td>Clare</td>
+      <td>2027-02-22</td>
+      <td>2027-03-05</td>
+      <td>T16</td>
+      <td>2 days (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T18</strong></td>
+      <td>Develop L8 Presentation WebView UI deck (WebView 44)</td>
+      <td>Clare</td>
+      <td>2027-02-22</td>
+      <td>2027-03-05</td>
+      <td>T16</td>
+      <td>2 days (20%). Mitigates R01.</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M13</strong></td>
+      <td>MILESTONE: Try-on Stream & Presentation Alpha</td>
+      <td>Clare, Rehman</td>
+      <td>2027-03-05</td>
+      <td>2027-03-05</td>
+      <td>T08, T09, T17, T18</td>
+      <td>Protected review checkpoint.</td>
+    </tr>
+    <tr>
+      <td><strong>T04</strong></td>
+      <td>Develop Planes Watchdog heartbeat & crash restart</td>
+      <td>Rehman</td>
+      <td>2027-03-08</td>
+      <td>2027-03-12</td>
+      <td>T02</td>
+      <td>1 day (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T19</strong></td>
+      <td>Develop Glue: Notifications toast broadcast & presence</td>
+      <td>Clare</td>
+      <td>2027-03-08</td>
+      <td>2027-03-12</td>
+      <td>T02, T18</td>
+      <td>1 day (20%).</td>
+    </tr>
+    <tr class="recess-row">
+      <td><strong>RECESS</strong></td>
+      <td>SPRING BREAK (University Holiday — Scheduled Recess)</td>
+      <td>Team</td>
+      <td>2027-03-15</td>
+      <td>2027-03-21</td>
+      <td>None</td>
+      <td>Mitigates Risk R04 (Fatigue).</td>
+    </tr>
+    <tr>
+      <td><strong>T05</strong></td>
+      <td>Validate L1/Planes sustained 30 fps throughput</td>
+      <td>Rehman</td>
+      <td>2027-03-22</td>
+      <td>2027-03-26</td>
+      <td>T01, T03, T04</td>
+      <td>1 day (20%).</td>
+    </tr>
+    <tr>
+      <td><strong>T10</strong></td>
+      <td>Validate L2/L5 250 ms motion-to-glass video latency</td>
+      <td>Arya</td>
+      <td>2027-03-22</td>
+      <td>2027-03-26</td>
+      <td>T09</td>
+      <td>1 day (20%). Mitigates R02.</td>
+    </tr>
+    <tr>
+      <td><strong>T15</strong></td>
+      <td>Test L4/L7 offline resilience & consistency fallback</td>
+      <td>Jace</td>
+      <td>2027-03-22</td>
+      <td>2027-03-26</td>
+      <td>T11, T13</td>
+      <td>1 day (20%). Mitigates R03.</td>
+    </tr>
+    <tr>
+      <td><strong>T20</strong></td>
+      <td>Validate L6/L8 end-to-end decision flow & timeouts</td>
+      <td>Clare</td>
+      <td>2027-03-22</td>
+      <td>2027-03-26</td>
+      <td>T17, T18</td>
+      <td>1 day (20%).</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M14</strong></td>
+      <td>MILESTONE: Subsystem Integration & Latency Gate</td>
+      <td>Entire Team</td>
+      <td>2027-03-26</td>
+      <td>2027-03-26</td>
+      <td>T05, T10, T15, T20</td>
+      <td>Protected gate before freeze.</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M15</strong></td>
+      <td>MILESTONE: Final Project Completion & Acceptance Freeze</td>
+      <td>Advisor & Team</td>
+      <td>2027-04-01</td>
+      <td>2027-04-01</td>
+      <td>M14</td>
+      <td>Complete project sign-off.</td>
+    </tr>
+    <tr class="milestone-row">
+      <td><strong>M16</strong></td>
+      <td>MILESTONE: Senior Design II Expo Demonstration</td>
+      <td>Expo Evaluators</td>
+      <td>2027-04-15</td>
+      <td>2027-04-15</td>
+      <td>M15</td>
+      <td>Live Public Expo Judging.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>4. Component 4: Table 2 — Effort Matrix (Assignment #6)</h2>
+<p><em>Division of labor in estimated hours per task and team member. The primary owner carries the largest share (&ge;65%) of each task. Estimates derived via PERT formula (O + 4M + P) / 6. Row and column totals are included with a rebalancing plan.</em></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:7%;">ID</th>
+      <th style="width:37%;">Task Statement</th>
+      <th style="width:9%;" class="center">Rehman</th>
+      <th style="width:9%;" class="center">Arya</th>
+      <th style="width:9%;" class="center">Jace</th>
+      <th style="width:9%;" class="center">Clare</th>
+      <th style="width:9%;" class="center">Total</th>
+      <th style="width:11%;">Primary Owner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>T01</strong></td>
+      <td>Develop L1 Capture frame acquisition daemon</td>
+      <td class="center bold">26</td>
+      <td class="center">4</td>
+      <td class="center">2</td>
+      <td class="center">0</td>
+      <td class="center">32</td>
+      <td>Rehman Khalid</td>
+    </tr>
+    <tr>
+      <td><strong>T02</strong></td>
+      <td>Develop Planes Message Bus & Data Store</td>
+      <td class="center bold">24</td>
+      <td class="center">2</td>
+      <td class="center">4</td>
+      <td class="center">2</td>
+      <td class="center">32</td>
+      <td>Rehman Khalid</td>
+    </tr>
+    <tr>
+      <td><strong>T03</strong></td>
+      <td>Develop L1 Capture privacy consent hardware gate</td>
+      <td class="center bold">20</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center">4</td>
+      <td class="center">26</td>
+      <td>Rehman Khalid</td>
+    </tr>
+    <tr>
+      <td><strong>T04</strong></td>
+      <td>Develop Planes Logging & Health watchdog service</td>
+      <td class="center bold">22</td>
+      <td class="center">2</td>
+      <td class="center">2</td>
+      <td class="center">2</td>
+      <td class="center">28</td>
+      <td>Rehman Khalid</td>
+    </tr>
+    <tr>
+      <td><strong>T05</strong></td>
+      <td>Validate L1 Capture & Planes 30 fps throughput</td>
+      <td class="center bold">22</td>
+      <td class="center">4</td>
+      <td class="center">2</td>
+      <td class="center">0</td>
+      <td class="center">28</td>
+      <td>Rehman Khalid</td>
+    </tr>
+    <tr>
+      <td><strong>T06</strong></td>
+      <td>Develop L2 Perception joint detection & T-pose</td>
+      <td class="center">4</td>
+      <td class="center bold">26</td>
+      <td class="center">0</td>
+      <td class="center">0</td>
+      <td class="center">30</td>
+      <td>Arya Garg</td>
+    </tr>
+    <tr>
+      <td><strong>T07</strong></td>
+      <td>Develop L3 Body avatar rigged mesh generator</td>
+      <td class="center">0</td>
+      <td class="center bold">26</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center">28</td>
+      <td>Arya Garg</td>
+    </tr>
+    <tr>
+      <td><strong>T08</strong></td>
+      <td>Develop L5 Try-on fit evaluation engine</td>
+      <td class="center">0</td>
+      <td class="center bold">24</td>
+      <td class="center">2</td>
+      <td class="center">4</td>
+      <td class="center">30</td>
+      <td>Arya Garg</td>
+    </tr>
+    <tr>
+      <td><strong>T09</strong></td>
+      <td>Develop L5 Try-on live garment overlay & warp</td>
+      <td class="center">2</td>
+      <td class="center bold">28</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center">32</td>
+      <td>Arya Garg</td>
+    </tr>
+    <tr>
+      <td><strong>T10</strong></td>
+      <td>Validate L2/L5 H.264 video stream 250ms latency</td>
+      <td class="center">4</td>
+      <td class="center bold">22</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center">28</td>
+      <td>Arya Garg</td>
+    </tr>
+    <tr>
+      <td><strong>T11</strong></td>
+      <td>Develop L4 Wardrobe REST ingestion & image store</td>
+      <td class="center">2</td>
+      <td class="center">0</td>
+      <td class="center bold">26</td>
+      <td class="center">2</td>
+      <td class="center">30</td>
+      <td>Jace Schubert</td>
+    </tr>
+    <tr>
+      <td><strong>T12</strong></td>
+      <td>Develop L7 Connectors calendar/weather adapter</td>
+      <td class="center">0</td>
+      <td class="center">0</td>
+      <td class="center bold">24</td>
+      <td class="center">4</td>
+      <td class="center">28</td>
+      <td>Jace Schubert</td>
+    </tr>
+    <tr>
+      <td><strong>T13</strong></td>
+      <td>Develop L7 Connectors catalog search & fetcher</td>
+      <td class="center">0</td>
+      <td class="center">0</td>
+      <td class="center bold">24</td>
+      <td class="center">4</td>
+      <td class="center">28</td>
+      <td>Jace Schubert</td>
+    </tr>
+    <tr>
+      <td><strong>T14</strong></td>
+      <td>Develop Glue: Auth phone-pairing handshake</td>
+      <td class="center">2</td>
+      <td class="center">0</td>
+      <td class="center bold">22</td>
+      <td class="center">2</td>
+      <td class="center">26</td>
+      <td>Jace Schubert</td>
+    </tr>
+    <tr>
+      <td><strong>T15</strong></td>
+      <td>Test L4/L7 offline resilience & consistency fallback</td>
+      <td class="center">2</td>
+      <td class="center">0</td>
+      <td class="center bold">22</td>
+      <td class="center">2</td>
+      <td class="center">26</td>
+      <td>Jace Schubert</td>
+    </tr>
+    <tr>
+      <td><strong>T16</strong></td>
+      <td>Develop L6 Decision outfit recommendation scoring</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center">4</td>
+      <td class="center bold">26</td>
+      <td class="center">32</td>
+      <td>Clare Hooper</td>
+    </tr>
+    <tr>
+      <td><strong>T17</strong></td>
+      <td>Develop L6 Decision buy/skip algorithm & gap analyzer</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center">2</td>
+      <td class="center bold">24</td>
+      <td class="center">28</td>
+      <td>Clare Hooper</td>
+    </tr>
+    <tr>
+      <td><strong>T18</strong></td>
+      <td>Develop L8 Presentation WebView UI deck & cards</td>
+      <td class="center">0</td>
+      <td class="center">0</td>
+      <td class="center">4</td>
+      <td class="center bold">28</td>
+      <td class="center">32</td>
+      <td>Clare Hooper</td>
+    </tr>
+    <tr>
+      <td><strong>T19</strong></td>
+      <td>Develop Glue: Notifications toast & presence</td>
+      <td class="center">2</td>
+      <td class="center">0</td>
+      <td class="center">2</td>
+      <td class="center bold">22</td>
+      <td class="center">26</td>
+      <td>Clare Hooper</td>
+    </tr>
+    <tr>
+      <td><strong>T20</strong></td>
+      <td>Validate L6/L8 end-to-end decision flow & timeouts</td>
+      <td class="center">2</td>
+      <td class="center">2</td>
+      <td class="center">2</td>
+      <td class="center bold">22</td>
+      <td class="center">28</td>
+      <td>Clare Hooper</td>
+    </tr>
+    <tr class="highlight-row">
+      <td colspan="2"><strong>COLUMN TOTALS (Hours)</strong></td>
+      <td class="center"><strong>132</strong></td>
+      <td class="center"><strong>140</strong></td>
+      <td class="center"><strong>140</strong></td>
+      <td class="center"><strong>150</strong></td>
+      <td class="center"><strong>562</strong></td>
+      <td><strong>Balanced</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Workload Analysis & Rebalancing Plan:</strong><br>
+The expected division of labor totals 562 person-hours across the 11.5-week implementation semester (averaging ~12 hours per week per student). The variance between member columns is tightly bounded within a 12% margin (132 to 150 hours). Clare's slightly higher load reflects the presentation layer integration on the physical mirror glass. In the event that WebView 44 styling or polyfill overhead creates a bottleneck, Jace Schubert will assume 10 hours of presentation card template binding (T18), bringing Clare to 140 hours and Jace to 150 hours, thereby preserving equitable team distribution.</p>
+
+<div class="page-break"></div>
+
+<h2>5. Supporting Artifact: Work Breakdown Structure (WBS)</h2>
+<p><em>Two-level hierarchical breakdown by project phase and task, mapping every Task List item into its system architecture stage.</em></p>
+
+<pre>
+1.0 Project Infrastructure & Sensor Ingestion (Sprint 1: Jan 11 – Jan 22, 2027)
+   1.1 T01: Develop L1 Capture Kinect acquisition daemon & shm ring buffer [Rehman Khalid]
+   1.2 T02: Develop Planes Message Bus & Data Store (Redis/SQLite) [Rehman Khalid]
+   1.3 T03: Develop L1 Capture privacy consent hardware gate & camera beacon [Rehman Khalid]
+   1.4 T11: Develop L4 Wardrobe REST ingestion service & image store [Jace Schubert]
+   1.5 T14: Develop Glue Authentication 6-digit phone-pairing handshake [Jace Schubert]
+
+2.0 Perception & Normalization Pipeline (Sprint 2: Jan 25 – Feb 05, 2027)
+   2.1 T06: Develop L2 Perception body joint detection & T-pose extraction [Arya Garg]
+   2.2 T07: Develop L3 Body avatar generation & rigged glTF mesh pipeline [Arya Garg]
+   2.3 T12: Develop L7 Connectors calendar & weather normalization adapter [Jace Schubert]
+   2.4 T13: Develop L7 Connectors product catalog search & image fetcher [Jace Schubert]
+
+3.0 Decision & Virtual Try-On Engine (Sprint 3 & 4: Feb 08 – Mar 05, 2027)
+   3.1 T08: Develop L5 Try-on fit evaluation engine (tension mapping) [Arya Garg]
+   3.2 T09: Develop L5 Try-on live garment overlay & 2D pose-driven warp video [Arya Garg]
+   3.3 T16: Develop L6 Decision outfit recommendation scoring engine [Clare Hooper]
+   3.4 T17: Develop L6 Decision buy/skip scoring algorithm & wardrobe gap analyzer [Clare Hooper]
+   3.5 T19: Develop Glue Notifications toast broadcast & presence wakeup [Clare Hooper]
+
+4.0 Presentation & Thin-Client Integration (Sprint 4 & 5: Feb 22 – Mar 12, 2027)
+   4.1 T18: Develop L8 Presentation WebView UI deck & decision cards [Clare Hooper]
+   4.2 T04: Develop Planes Logging & Health watchdog heartbeat service [Rehman Khalid]
+
+5.0 Verification, Hardening & Acceptance (Sprint 6 & 7: Mar 22 – Apr 01, 2027)
+   5.1 T05: Validate L1 Capture & Planes sustained 30 fps throughput [Rehman Khalid]
+   5.2 T10: Validate L2 Perception & L5 Try-on 250 ms motion-to-glass latency [Arya Garg]
+   5.3 T15: Test L4 Wardrobe & L7 Connectors offline resilience & fallback [Jace Schubert]
+   5.4 T20: Validate L6 Decision & L8 Presentation end-to-end decision flow [Clare Hooper]
+</pre>
+
+<h2>6. Supporting Artifact: Risk Register</h2>
+<p><em>Risks across technical, team, and external categories, with explicit likelihood, impact, strategy, mitigation, owner, and trigger. High-impact schedule risks are cross-referenced in Table 1.</em></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:6%;">ID</th>
+      <th style="width:9%;">Category</th>
+      <th style="width:25%;">Risk Description</th>
+      <th style="width:6%;">Likelihood</th>
+      <th style="width:6%;">Impact</th>
+      <th style="width:8%;">Strategy</th>
+      <th style="width:22%;">Mitigation Plan</th>
+      <th style="width:8%;">Owner</th>
+      <th style="width:10%;">Trigger</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>R01</strong></td>
+      <td>Technical</td>
+      <td><strong>WebView 44 Incompatibility:</strong> Obsolete Android 6 browser engine rejects ES6/modern CSS, crashing mirror shell UI.</td>
+      <td>High</td>
+      <td>High</td>
+      <td>Reduce</td>
+      <td>Enforce strict Babel ES5 transpile; avoid CSS grid; test all cards in Chromium 44 emulator before mirror deployment (buffered in T18).</td>
+      <td>Clare</td>
+      <td>Logcat syntax error or blank card on device.</td>
+    </tr>
+    <tr>
+      <td><strong>R02</strong></td>
+      <td>Technical</td>
+      <td><strong>Motion-to-Glass Latency &gt; 250 ms:</strong> Pose estimation, mesh warping, and H.264 encode create visible mirror lag.</td>
+      <td>Medium</td>
+      <td>High</td>
+      <td>Reduce</td>
+      <td>Use zero-copy shared memory (I7); downscale stream to 480p or fall back to 2D affine warp mode if frame processing &gt; 20 ms (buffered in T09, T10).</td>
+      <td>Arya</td>
+      <td>Watchdog reports pipeline latency &gt; 220 ms.</td>
+    </tr>
+    <tr>
+      <td><strong>R03</strong></td>
+      <td>External</td>
+      <td><strong>Third-Party API Outages / Throttling:</strong> Google Calendar or weather APIs throttle requests or suffer outages.</td>
+      <td>Medium</td>
+      <td>Medium</td>
+      <td>Avoid</td>
+      <td>Implement L7 stale-while-revalidate local caching (24h TTL); fall back to default seasonal context bundles (buffered in T12, T15).</td>
+      <td>Jace</td>
+      <td>L7 logs 3 consecutive HTTP 429/5xx responses.</td>
+    </tr>
+    <tr>
+      <td><strong>R04</strong></td>
+      <td>Team</td>
+      <td><strong>Academic Workload Spikes:</strong> Midterm exam periods or project deliverables cause sprint handoff bottlenecks.</td>
+      <td>High</td>
+      <td>Medium</td>
+      <td>Reduce</td>
+      <td>Incorporate explicit 15–20% buffer on all tasks; lock Spring Break as zero-task recess; cross-train subsystem pairings.</td>
+      <td>Team</td>
+      <td>Any task slips &gt; 4 calendar days past start date.</td>
+    </tr>
+    <tr>
+      <td><strong>R05</strong></td>
+      <td>Technical</td>
+      <td><strong>Kinect USB Isochronous Packet Drops:</strong> Linux USB 2.0 driver drops packets under CPU spikes, stalling pipeline.</td>
+      <td>Low</td>
+      <td>High</td>
+      <td>Reduce</td>
+      <td>Assign real-time SCHED_FIFO priority to L1 daemon; automated 2-second USB re-enumeration fallback (buffered in T01).</td>
+      <td>Rehman</td>
+      <td>L1 emits capture.health = DOWN for &gt; 2 s.</td>
+    </tr>
+    <tr>
+      <td><strong>R06</strong></td>
+      <td>External</td>
+      <td><strong>Kinect Bracket Mechanical Drift:</strong> 3D-printed clip bracket flexes or slips, distorting cm ground-truth sizing.</td>
+      <td>Low</td>
+      <td>Medium</td>
+      <td>Avoid</td>
+      <td>Print bracket with stiffening gusset in PETG; run 10-second reference plane calibration check during boot (buffered in T06).</td>
+      <td>Rehman</td>
+      <td>Extracted user height deviates &gt; 10% across runs.</td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
