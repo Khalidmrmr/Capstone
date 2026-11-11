@@ -1,0 +1,90 @@
+# Ethics Statement: Smart Mirror Personal Stylist
+
+**Course:** Senior Design, Department of Computer Science, University of Cincinnati  
+**Faculty advisor:** Dr. Hrishikesh Bhide  
+**Team members:** Rehman Khalid, Jace Schubert, Clare Hooper, Arya Garg  
+**Date:** November 11, 2026
+
+This document explains how our Smart Mirror Personal Stylist handles personal data, protects the device, credits outside material and uses AI tools. It is based on our D0-D2 designs and the project constraints.
+
+## 1. Privacy Summary
+
+The mirror may be used in a bedroom or dressing area. We only want to collect information needed for the try-on and outfit features. The table covers the main data in our design diagrams.
+
+| Data item | Source | Purpose | Consent | Storage | Access | Retention |
+| --- | --- | --- | --- | --- | --- | --- |
+| RGB and depth frames | Kinect camera | Live try-on and measurement | Allow camera for this session | Memory only (L1/L2) | Capture and pose services | Clear after each frame/session |
+| Presence, touch and wake input | Mirror sensors/UI | Wake or control mirror | User enables feature | Temporary event state | Presentation service | Discard after action |
+| Pose points and body mask | Live camera analysis | Align preview (20 joints) | Camera permission | Memory only (L2/L5) | Local model/rendering | Clear at session end |
+| Body measurements | T-pose/Kinect | Clothing fit checks | Separate save-profile choice | BodyProfile: cm, confidence | Active profile only | Remove with profile |
+| Avatar/body model | Measurements | Fit and preview | Opt-in to save model | BodyModel / avatar file | Active profile only | Remove with profile |
+| Garment and tag photos | Phone upload | Add clothes and textures | Confirm each upload | GarmentAsset paths (design) | Wardrobe service/owner | Delete with garment |
+| Garment details and sizes | User/tag entry | Match owned clothes | User adds or edits item | Garment, GarmentSize | Wardrobe owner | Delete with garment |
+| Outfits and wear history | User activity | Avoid repeats, remember outfits | Choose to save | Outfit, WearEvent | Active profile | Delete on reset |
+| Budget, purchases and verdicts | User/shop data | Buy-or-skip reasoning | Optional budget/history | SpendEntry, Decision | Owner and stylist | Delete on reset |
+| Preferences and location | User settings | Style and weather matches | Opt-in and editable | StylePreference; coarse location | Owner and connector | Delete with profile |
+| Calendar, weather, shop results | External providers | Occasion and price context | Connect/authorize provider | Listing, CacheEntry (design) | Local connector/stylist | Expire cache; clear on reset |
+| PIN, device/provider tokens | Login/device/provider | Profile separation, sync | Setup or provider authorization | Hashed PIN/token; encrypted provider tokens (design) | Authentication service | Revoke/delete at disconnect |
+| Consent, notices, app logs | Camera/API events | Prove choice; diagnose faults | Shown in privacy notice | ConsentEvent, Notification; OS journal | Owner/admin only | Expire notices; target 7-day log rotation; purge at end |
+
+Camera consent is requested at the start of each session. If the user declines, or the camera state cannot be checked, camera features remain off. Users separately choose whether to save measurements, add garment photos or connect outside services. At the end of the project, the team will delete test profiles, uploaded images, stored tokens, caches and backups, and wipe project data from the device.
+
+Our Week 3 constraints essay said we would save only clothing attributes. The later D1/D2 designs also allow garment photos and body measurements. Those features require a clear user choice before anything is saved.
+
+## 2. Security Summary
+
+We reviewed the three common risks for a connected capstone device: default accounts, endpoints without login checks and exposed keys or passwords.
+
+| Self-audit item | Answer |
+| --- | --- |
+| Default credentials | Use a replacement Linux installation and remove or disable default vendor accounts. Restrict maintenance access to approved users and SSH keys. These are planned setup checks. |
+| Unauthenticated endpoints | Require a profile login for wardrobe functions and check the user on each API or WebSocket request. Local network access alone does not count as authentication. |
+| Authentication and tokens | D2 specifies Argon2-hashed profile PINs, stored token hashes and encrypted provider tokens. The proposed session token lifetime is 15 minutes; logouts should revoke sessions. |
+| HTTPS and rate limits | Use HTTPS/WSS for traffic leaving the device. D2 calls for a five-minute lock after five failed PIN attempts. Upload and API limits must be tested. |
+| Git history scan | Review of 13 public commits and their available text changes found no recognizable credentials, API tokens or private keys. |
+
+## 3. Licensing Summary
+
+The repository currently contains our written documents, design diagrams and diagram-generation files. It has no declared runtime dependency manifest, bundled model weights or third-party datasets. We have not added a third-party dependency for this submission.
+
+| Component or asset | Version / status | SPDX | Category | Obligation / decision |
+| --- | --- | --- | --- | --- |
+| Third-party code libraries | None declared in current repository | N/A | N/A | No package manifests or vendored libraries found |
+| Datasets and model weights | None included in repository | N/A | N/A | Review terms before adding either |
+| External images, icons, fonts | None identified as bundled | N/A | N/A | Credit and obtain rights if added |
+| Project source and diagrams | Current team work | Not licensed | No permission granted | Add an explicit project license if sharing/reuse is intended |
+
+The repository also has no LICENSE file, so we have not granted a public reuse license for the team’s work. No copyleft dependency was found in the current file list. If we add code libraries, models or assets, we will check their licenses and record any required credits.
+
+## 4. Attribution List
+
+| Material | Source | Credit / restrictions |
+| --- | --- | --- |
+| Team-created D0, D1 and D2 diagrams | Design_Diagrams/ in this repository | Project team; no third-party artwork identified |
+| Wardrobe photographs | User photographs proposed for upload | User-provided; not training or redistributing without consent |
+| Calendar, weather and retail data | Optional provider connections shown in diagrams | No dataset shipped; provider terms must be reviewed if enabled |
+| Adapted code/tutorials | None identified in the current documentation repository | Add author, URL and license if reused later |
+
+
+## 5. AI-Use Disclosure
+
+> “Generative AI tools may be used for drafting and code assistance but not for the design decisions or written analysis that are assessed in this course.”
+
+All four members used generative AI to help with drafting and routine code assistance. We reviewed the suggestions before using them. The system design, data model, priorities and final ethics decisions were made by the team.
+
+| Tool | Used by | Task | Column | How verified |
+| --- | --- | --- | --- | --- |
+| Generative AI assistant | Rehman Khalid | Draft wording and routine integration-code help | Generally OK | Compare output with team designs; review code before using |
+| Generative AI assistant | Jace Schubert | Draft system notes and routine embedded-code help | Generally OK | Check commands/configuration against the target device |
+| Generative AI assistant | Clare Hooper | Draft ML notes and routine script/code help | Generally OK | Check logic against team plan and test retained code |
+| Generative AI assistant | Arya Garg | Draft documentation/UI text and routine UI-code help | Generally OK | Edit wording and check UI suggestions against requirements |
+| Generative AI assistant | All members | Architecture, schema, priorities or ethics judgments | Not a substitute for | These remain team decisions; AI suggestions must be independently assessed, not accepted as authority |
+
+**Team confirmations**
+
+By signing below, we confirm that the architecture, data model, priorities and design rationale were decided by our team.
+
+- **Rehman Khalid** | Signature: Rehman Khalid | Date: November 11, 2026
+- **Jace Schubert** | Signature: Jace Schubert | Date: November 11, 2026
+- **Clare Hooper** | Signature: Clare Hooper | Date: November 11, 2026
+- **Arya Garg** | Signature: Arya Garg | Date: November 11, 2026
