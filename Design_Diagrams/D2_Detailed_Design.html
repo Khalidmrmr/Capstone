@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D2 Detailed Design</title>
+<style>
+  @page { size: letter landscape; margin: 0.5in 0.55in; }
+  body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; line-height: 1.38; margin: 0; background: #fff; }
+  h1 { font-size: 20pt; margin: 0 0 2pt; }
+  h2 { font-size: 14pt; margin: 0 0 6pt; padding-bottom: 3pt; border-bottom: 1.5px solid #000; }
+  h3 { font-size: 11.5pt; margin: 12pt 0 4pt; border-bottom: 0.5px solid #000; padding-bottom: 2pt; }
+  h4 { font-size: 10pt; margin: 7pt 0 2pt; }
+  p { margin: 4pt 0 6pt; }
+  section { break-before: page; }
+  section.first { break-before: auto; }
+  .comp { break-inside: avoid-page; }
+  .sub { margin-bottom: 10pt; }
+  .goal { border: 1px solid #000; padding: 8pt 12pt; margin: 8pt 0; }
+  .todo { font-style: italic; }
+  .team { border: 1.5px dashed #000; padding: 6pt 10pt; margin: 6pt 0 8pt; }
+  table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: 4pt 0 8pt; }
+  th, td { border: 1px solid #000; padding: 3pt 5pt; vertical-align: top; text-align: left; }
+  th { font-weight: bold; }
+  tr { break-inside: avoid; }
+  td.id { font-weight: bold; white-space: nowrap; }
+  td.blank { color: #000; font-style: italic; }
+  code { font-family: Arial, sans-serif; font-size: inherit; }
+  pre { font-family: Arial, sans-serif; font-size: 8.4pt; border: 1px solid #000; padding: 6pt 8pt; margin: 4pt 0; white-space: pre-wrap; }
+  img.diagram { width: 100%; max-height: 6.55in; object-fit: contain; display: block; }
+  ul, ol { margin: 3pt 0 6pt 16pt; padding: 0; } li { margin: 1pt 0; }
+  .small { font-size: 8.6pt; }
+  .two { display: flex; gap: 16pt; } .two > div { flex: 1; min-width: 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ 1 -->
+<section class="first">
+  <h1>D2 Detailed Design — Smart Closet Mirror</h1>
+  <div class="sub">Assignment #4 (Design Diagrams), part D2 · Team bullriders · Arya Garg, Clare Hooper, Rehman Khalid, Jace Schubert · Week 7</div>
+
+  <h2>1. Header, conventions, and D2 overview</h2>
+  <p><b>Project title:</b> Smart Closet Mirror</p>
+  <div class="goal"><b>Goal statement.</b> Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items on their body, and tells them what to wear today and whether a new piece is worth buying.</div>
+
+  <h3>Overview for a reviewer with no context (two minutes)</h3>
+  <p><b>What the system is.</b> A Gen 1 Mirror (an Android 6 smart mirror) becomes the screen for a closet assistant. A Kinect 360 on top of the Mirror sees the user in colour and depth. A Ubuntu PC in the home (the "brain") does all the work in eight layers, L1–L8 (D0, Fig 1): capture, perception, body, wardrobe, try-on, decision, connectors to outside services, and presentation. The Kinect stays off until the person at the glass allows it for that session. The user adds clothes by photographing them with a phone. The Mirror shows them on the user's body in live video and tells them what to wear today and whether a shop item is worth buying.</p>
+  <p><b>What D1 covered.</b> D1 detailed the two riskiest components. L4 Wardrobe has the main data model (D1 Fig 1) and the phone API. L5 Try-on has the fit check (algorithm A1) and the live garment drawing (algorithm A2).</p>
+  <p><b>What D2 adds.</b></p>
+  <ul>
+    <li><b>Changes driven by the Week 4 user stories</b>, marked [US-xx] where they appear: current weather in outfit suggestions (US-01), camera capture only after consent (US-04), a profile PIN so each person sees only their own wardrobe (US-05), and configuration rollback for maintainers (US-03).</li>
+    <li>Every remaining component (L1, L2, L3, L6, L7, L8) and the shared planes (data store, message bus) now has a data model, behaviour, and interface (part 2).</li>
+    <li>The four glue components get the same treatment: authentication, notifications, configuration, and logging and health.</li>
+    <li>Three state machines: the Mirror session (Fig D2-1), body measurement (Fig D2-2), and camera consent (Fig D2-5).</li>
+    <li>Two flows that show their error paths: "buy or skip?" (Fig D2-3) and "recommend an outfit" (Fig D2-6).</li>
+    <li>The data model for the new tables (Fig D2-4).</li>
+    <li>Revisions to five D0 interfaces that had grown too loose (part 2, first table).</li>
+    <li>The edge-case table, requirements traceability, design rationale, and peer-review notes (parts 3–6).</li>
+  </ul>
+
+  <h3>Known gaps and open questions</h3>
+  <table>
+    <tr><th style="width:4%">#</th><th style="width:40%">Gap or question</th><th>Current position</th></tr>
+    <tr><td class="id">G1</td><td>No shop product API or image search provider has been chosen yet (I14b, I14c).</td><td>L7 uses one adapter per provider, so the choice does not affect other layers. Candidates must allow non-commercial student use without fees. <span class="todo">[team: pick by Week 8]</span></td></tr>
+    <tr><td class="id">G2</td><td>A profile PIN typed on the glass can be watched by someone standing nearby (US-05).</td><td>The keypad shuffles its digits on every unlock and does not echo them. The PIN protects wardrobe privacy, not payments. Unlocking from the paired phone is a possible later improvement.</td></tr>
+    <tr><td class="id">G3</td><td>Accuracy of body circumferences from one front and one side depth view (A3) is unknown.</td><td>Target ±2 cm against a tape measure on all four team members before Week 9. The calibration factors live in the configuration file.</td></tr>
+    <tr><td class="id">G4</td><td>Phone notifications are in-app only (no push), because push services would send data off the home network.</td><td>The phone page polls when open; the glass shows toasts. Accepted as a privacy trade-off.</td></tr>
+    <tr><td class="id">G5</td><td>Which machine is the brain PC, and does it have an NVIDIA GPU (needed for A2 and NVENC)?</td><td>Fallback: libx264 software encoding at 20 fps. <span class="todo">[team: confirm]</span></td></tr>
+    <tr><td class="id">G6</td><td>Kinect 360 depth quality under the Mirror's own lighting and at 1–3 m in a typical room.</td><td>To be tested in the Week 8 hardware spike.</td></tr>
+    <tr><td class="id">G7</td><td>The traceability table (part 4) lists the five user stories but the mapping is not yet filled in.</td><td class="todo">[team: complete part 4]</td></tr>
+    <tr><td class="id">G8</td><td>The Week 4 user stories call the project "Smart Mirror Personal Stylist"; D0–D2 use "Smart Closet Mirror".</td><td class="todo">[team: choose one title and use it in every document and diagram]</td></tr>
+    <tr><td class="id">G9</td><td>The user stories do not mention try-on, body measurement, buy-or-skip, or looks from photos.</td><td>The reverse check in part 4 must either tie L3, L5, A3, A5, and A7 to a requirement or record them as scope to cut. <span class="todo">[team decision]</span></td></tr>
+  </table>
+</section>
+
+<section>
+  <h3>Conventions for every D2 figure</h3>
+  <p>Each figure carries the project title, the goal statement, and its own legend. The legend on the figure is the authority; this table repeats it. D0 and D1 figures keep the conventions stated in those documents.</p>
+  <table>
+    <tr><th style="width:18%">Figure</th><th style="width:28%">Boxes and shapes</th><th>Lines</th></tr>
+    <tr><td>Fig D2-1 Mirror session (state machine)<br>Fig D2-2 Body measurement (state machine)<br>Fig D2-5 Camera consent (state machine)</td><td>Rounded box = state. Dashed square box = error state. Thick box = final (success) state. Black dot = start state. Large dashed rounded outline = a group of states.</td><td>Arrow = transition, labelled "trigger" or "trigger / action"; text in [brackets] is a guard that must be true. Dashed arrow = error or timeout transition. An arrow leaving a group applies to every state inside it.</td></tr>
+    <tr><td>Fig D2-3 "Buy or skip?" with error paths (flow)<br>Fig D2-6 "Recommend an outfit" with error paths (flow)</td><td>Rounded box = step, naming the component and interface. Diamond = check. Thick box = successful end. Dashed box = error outcome, naming the decided behaviour (retry, degrade, fall back, surface error) and the handler.</td><td>Solid arrow = happy path. Dashed arrow = error path. Labels on arrows are check outcomes (yes / no).</td></tr>
+    <tr><td>Fig D2-4 Data model (entity-relationship)</td><td>Box = entity (table); rows = key attributes with types. Dashed box = entity defined in D1 Fig 1. Keys: PK = primary key (underlined), FK = foreign key, UQ = unique, UQ1 = unique together, IX = indexed.</td><td>Line = relationship; the italic verb reads from the first-named entity. Cardinality at both ends in crow's-foot notation, repeated as text: 1, 0..1, 1..*, 0..*.</td></tr>
+  </table>
+  <p class="small">Interface IDs continue D0's numbering (I1–I17). D2 adds I18–I28 and splits I14 into I14a–d (see "Interface revisions"). Algorithm IDs continue D1's: A1–A2 in D1, A3–A7 here. Edge-case IDs are EC-&lt;component&gt;-&lt;category&gt;, for example EC-L7-X.</p>
+</section>
+
+<!-- ============================================================ 2 -->
+<section>
+  <h2>2. Finished components (the D2 diagrams)</h2>
+  <p>D1 already finished L4 Wardrobe and L5 Try-on. This part finishes everything else. Each component lists its <b>data model</b>, its <b>behaviour</b>, and its <b>interface</b> with errors. Every error, on the bus or over HTTP, uses the D1 shape <code>{"error": {"code", "message", "fields"}}</code>.</p>
+
+  <h3>Interface revisions (D0 → D2)</h3>
+  <table>
+    <tr><th style="width:6%">ID</th><th style="width:24%">D0 definition</th><th style="width:28%">Problem</th><th>D2 revision</th></tr>
+    <tr><td class="id">I6 → I6 + I18</td><td>L8 → WebView: <code>ui_state</code> and <code>control</code> on one channel.</td><td>Mixed two concerns: screen content (idempotent, resendable) and device commands (not idempotent, such as waking the glass).</td><td><b>I6 ui.state</b> (WebSocket, full state with <code>seq</code>) and <b>I18 mirror.control</b> (JS bridge, one command per message with an ack).</td></tr>
+    <tr><td class="id">I7</td><td>FrameBundle with raw shared-memory handles.</td><td>Leaked L1's memory layout; a consumer could read a buffer L1 was overwriting.</td><td><code>frame_bundle/2</code>: ring <code>slot</code> 0–3 plus a <code>generation</code> counter. Consumers check the generation before and after reading and discard the frame if it changed.</td></tr>
+    <tr><td class="id">I9</td><td>Avatar {mesh_ref glTF, rig}.</td><td>After D1 moved rendering to a 2-D warp (A2), nothing reads a 3-D mesh; the mesh was an internal L3 detail.</td><td><b>BodyModel</b> {profile_id, version, rest_joints, proportions}, the only fields A1 and A2 use.</td></tr>
+    <tr><td class="id">I14 → I14a–d</td><td>One <code>ContextQuery{kind, params: map}</code>.</td><td>Too loose: an untyped map meant callers and L7 could disagree on parameters, and errors could not be specific. It also had no weather, which US-01 needs.</td><td>Four typed methods: <b>I14a ctx.calendar_day</b>, <b>I14b ctx.products</b>, <b>I14c ctx.images</b>, <b>I14d ctx.weather</b> [US-01].</td></tr>
+    <tr><td class="id">I5</td><td>Mirror camera + mic → L8: <code>presence</code> at 2 Hz and voice commands.</td><td>Presence came from watching the room through the Mirror's camera before anyone agreed, which US-04 forbids.</td><td>I5 carries only touch events and wake-word or voice commands. The Mirror's camera is never used [US-04].</td></tr>
+    <tr><td class="id">I15 → I15 + I19</td><td>L6 ↔ L2 carried image analysis <i>and</i> gesture events.</td><td>Two different timings (a 5 s request vs a stream of events) and directions on one ID.</td><td><b>I15 vision.analyze</b> (request/reply) and <b>I19 intent.gesture</b> (L2 → L6 events).</td></tr>
+    <tr><td class="id">I8</td><td>BodyMeasurements.</td><td>L3 needed the T-pose joint positions to build the BodyModel and had no way to get them.</td><td>Adds <code>rest_joints</code> (20 × xyz, metres). Schema <code>body_measurements/2</code>.</td></tr>
+    <tr><td class="id">New</td><td colspan="2">Glue and control interfaces that D0 did not draw.</td><td><b>I20</b> notify.create · <b>I21</b> ops.health · <b>I22</b> pairing API · <b>I23</b> config.changed · <b>I24</b> measure.start / cancel (L6 → L2) · <b>I25</b> measure.progress (L2 → L8) · <b>I26</b> notifications API (phone) · <b>I27</b> capture.enable / disable (L8 → L1) [US-04] · <b>I28</b> auth.unlock (L8 → Auth) [US-05].</td></tr>
+    <tr><td class="id">D1 entities</td><td colspan="2">Additions to D1 Fig 1 (D1 itself is unchanged; this table records them).</td><td><b>Garment</b> gains <code>warmth: INT 1–3</code> and <code>water_resistant: BOOL</code>, set when a photo is uploaded and editable by PATCH; A4 needs them [US-01]. <b>GET /api/v1/garments</b>: the optional <code>owner</code> parameter now accepts only the caller's own id; any other returns 403 FORBIDDEN [US-05].</td></tr>
+  </table>
+
+  <!-- L1 -->
+  <div class="comp">
+  <h3>L1 Capture — owner: Rehman Khalid</h3>
+  <p><b>Data model:</b> no persistent data. It holds only a 4-slot ring buffer in shared memory and its device settings from configuration.</p>
+  <p><b>Behaviour</b> (steps; the device states are Disabled → Opening → Streaming → Stalled, with Disabled the default):</p>
+  <ol>
+    <li><b>Consent gate [US-04]:</b> start in Disabled with the Kinect closed and its LED off. Open the device only when L8 sends capture.enable (I27) for a session where the user said yes (Fig D2-5). On capture.disable, or when the session ends, close the device, turn the LED off, and confirm. Frames stay in shared memory; L1 has no code path that writes them to disk.</li>
+    <li>Open the Kinect with libfreenect (device index from config). Set RGB to 640 × 480 and depth to "registered" mode, so depth pixels line up with colour pixels.</li>
+    <li>The driver calls back once per RGB frame and once per depth frame. Pair the two when their timestamps are within 20 ms, and write the pair into the next ring slot. Increment that slot's generation.</li>
+    <li>Publish a FrameBundle (I7) with the slot number and generation. Every 5 s, publish health (I21) with the measured frame rate.</li>
+    <li>If no pair arrives for 2 s, go to Stalled: publish health DOWN, close the device, and try to reopen it every 5 s. When frames flow again, publish health OK.</li>
+  </ol>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I7</b> frames.raw (publishes)</td><td>—</td><td><code>frame_bundle/2</code> {seq: uint64, ts: int64 ns, slot: int 0–3, generation: uint64, width: 640, height: 480}</td><td>None sent; a consumer that sees the generation change discards the frame.</td></tr>
+    <tr><td><b>capture.status</b> (bus request)</td><td>{}</td><td>{state: enum{disabled, opening, streaming, stalled}, device_open: bool, fps: float, last_frame_ts: int64 ns}</td><td>NO_SERVICE (bus) if L1 is not running; L8 treats this as "Camera status unknown".</td></tr>
+    <tr><td><b>I27</b> capture.enable / capture.disable (bus request, from L8)</td><td>{session_id: UUID, required; consent_id: UUID, required for enable}</td><td>{state: "streaming" | "disabled", device_open: bool}, sent only after L1 has checked the device</td><td>NO_CONSENT — consent_id unknown or already revoked · DEVICE_NOT_FOUND · TIMEOUT (3 s at the caller → Unknown, Fig D2-5)</td></tr>
+    <tr><td><b>I21</b> ops.health (publishes)</td><td>—</td><td>See Logging and health.</td><td>DEVICE_NOT_FOUND and USB_TRANSFER_ERROR are reported as <code>detail</code>, with state DOWN.</td></tr>
+  </table>
+  </div>
+
+  <!-- L2 -->
+  <div class="comp">
+  <h3>L2 Perception — owner: Arya Garg</h3>
+  <p><b>Data model:</b> no persistent data. Model weights are files listed in configuration. Measurements go to L3 (I8), which stores them.</p>
+  <p><b>Behaviour.</b> L2 only receives frames while capture is on (Fig D2-5), so pose, gestures, and measurement are unavailable when the user has declined [US-04]. L2 runs four jobs in one process:</p>
+  <ul>
+    <li><b>Pose (every frame, ≤ 60 ms, D0 budget):</b> run MediaPipe Pose on the RGB frame to get 33 landmarks, and map them to our 20 joints. Each joint's z is the median depth in a 5 × 5 window around it, ignoring zero pixels. Mask = MediaPipe segmentation AND depth within ±0.6 m of the torso. Publish I10, newest frame only.</li>
+    <li><b>Gestures:</b> rules over the smoothed joints.
+      <ul>
+        <li>A swipe is the right wrist moving more than 0.35 m sideways within 0.5 s at chest height: <i>next</i> or <i>back</i>.</li>
+        <li>A right hand held above the head for 1 s is <i>select</i>.</li>
+        <li>Only gestures with confidence ≥ 0.8 are published, at most one per second (I19).</li>
+      </ul></li>
+    <li><b>Measurement:</b> algorithm A3, below and in Fig D2-2.</li>
+    <li><b>Item detection (I15):</b> run an open-vocabulary detector (OWLv2) with one text prompt per garment category. Keep boxes with confidence ≥ 0.3, and merge overlaps (IoU &gt; 0.5). The dominant colour is k-means (k = 3) on the box pixels, named by the nearest of 16 palette colours in CIELAB.</li>
+  </ul>
+  <p><b>Algorithm A3: body measurement from T-pose</b> (state machine in Fig D2-2).</p>
+  <ul>
+    <li><b>What it is:</b> it turns about 30 front and 30 side depth frames into body measurements in centimetres.</li>
+    <li><b>In:</b> FrameBundles plus LivePose for one user, with <code>user_id</code> and <code>session_id</code>.</li>
+    <li><b>Out:</b> BodyMeasurements (I8).</li>
+    <li><b>Steps:</b>
+      <ol>
+        <li>Fit the floor plane once with RANSAC (200 iterations) on depth points below the hips.</li>
+        <li>Height = distance from the floor to the highest mask point.</li>
+        <li>At the chest, waist, and hip levels (set from the shoulder and hip joints), take the front width <i>w</i> = mask row width × depth / fx, and the side depth <i>d</i> the same way from the side frames.</li>
+        <li>Circumference = the perimeter of an ellipse with axes <i>w</i> and <i>d</i> (Ramanujan's formula), times a calibration factor from configuration (gap G3).</li>
+        <li>Shoulder width comes from the front mask at shoulder height. Inseam = hip-joint height above the floor minus a calibrated offset.</li>
+        <li>Each value is the median across frames.</li>
+        <li>Confidence = mean joint confidence × (1 − mean relative spread across frames), limited to 0–1.</li>
+      </ol></li>
+    <li><b>Complexity:</b> O(P) per frame for P = 307,200 pixels, over about 60 frames, which takes under 1 s in total.</li>
+  </ul>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I24</b> measure.start / measure.cancel (request)</td><td>{schema: "measure_start/1", user_id: UUID, required; session_id: UUID, required}</td><td>{accepted: true, state: "wait_front"}</td><td>BUSY — a session is already running · NO_PERSON — nobody in view at start</td></tr>
+    <tr><td><b>I25</b> measure.progress (publishes)</td><td>—</td><td>{session_id, state: enum (Fig D2-2), hint: string ≤ 60, progress: float 0–1, reason: string?}</td><td>On failure, <code>state</code> = failed and <code>reason</code> ∈ {TIMEOUT, PERSON_LOST, MULTIPLE_PEOPLE, LOW_CONFIDENCE, OUT_OF_RANGE}.</td></tr>
+    <tr><td><b>I8</b> body.measured (publishes)</td><td>—</td><td><code>body_measurements/2</code>: D0 fields plus rest_joints: 20 × {x, y, z: float m}</td><td>Only published when confidence ≥ 0.7.</td></tr>
+    <tr><td><b>I10</b> body.pose, <b>I19</b> intent.gesture (publishes)</td><td>—</td><td>I10 as in D0. I19 {user_id, intent: enum{next, back, select}, conf: float, ts}</td><td>None; when tracking is lost, I10 simply has no person.</td></tr>
+    <tr><td><b>I15</b> vision.analyze (request)</td><td>{request_id: UUID; image_refs: URI[], 1–6 items}</td><td>DetectedItems as in D0, plus <code>color_name</code>: string</td><td>TOO_MANY_IMAGES (&gt; 6) · IMAGE_UNREADABLE (per image, in <code>fields</code>) · MODEL_UNAVAILABLE — weights missing or GPU out of memory · timeout 5 s at the caller</td></tr>
+  </table>
+  </div>
+
+  <!-- L3 -->
+  <div class="comp">
+  <h3>L3 Body — owner: Arya Garg</h3>
+  <p><b>Data model:</b> BodyProfile (D1 Fig 1) and BodyModel (Fig D2-4). Each profile has 0..* model versions, one per algorithm version.</p>
+  <p><b>Behaviour</b> (steps on each I8 message):</p>
+  <ol>
+    <li>Check the message again (defence in depth): confidence ≥ 0.7 and every value within human range. If either fails, log and drop it.</li>
+    <li>If the user's current profile differs by less than 1.0 cm in every measurement, keep it. Only update <code>captured_at</code>, so the fit cache stays valid.</li>
+    <li>Otherwise, in one transaction: insert a new BodyProfile, clear <code>is_current</code> on the old one, and set it on the new one.</li>
+    <li>Build the BodyModel: rest joints from I8, and proportions (torso, arm, and leg length; shoulder width in cm) from the joints.</li>
+    <li>Publish I9. L5's fit cache misses on its own, because the profile_id is new.</li>
+  </ol>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I9</b> body.model (publishes)</td><td>—</td><td><code>body_model/1</code> {user_id, profile_id, version: int, rest_joints: 20 × xyz m, proportions: {torso_cm, arm_cm, leg_cm, shoulder_cm}}</td><td>—</td></tr>
+    <tr><td><b>body.current</b> (request)</td><td>{user_id: UUID, required}</td><td>The latest <code>body_model/1</code> for the current profile</td><td>NO_CURRENT_PROFILE — the user has never been measured · UNKNOWN_USER</td></tr>
+  </table>
+  </div>
+
+  <!-- L6 -->
+  <div class="comp">
+  <h3>L6 Decision — owner: Clare Hooper</h3>
+  <p><b>Data model:</b> Outfit, OutfitItem, and WearEvent (D1 Fig 1), plus Decision, StylePreference, and SpendEntry (Fig D2-4). StylePreference holds the home location, rounded to 0.1°, for weather. Every query is scoped to the unlocked user [US-05].</p>
+  <ul>
+    <li>Decision keeps <code>garment_ids</code> as a JSON snapshot, so a past decision still reads correctly after a garment is archived.</li>
+    <li><code>inputs_hash</code> lets L6 reuse a decision when nothing has changed.</li>
+    <li>Budget left this month = <code>User.monthly_budget</code> − the sum of this month's SpendEntry rows.</li>
+  </ul>
+  <p><b>Behaviour.</b> The five algorithm parts for A1/A2 are in D1. A4, A5, and A7 are given here as inputs, outputs, steps, and cost; their edge cases go in part 3.</p>
+  <ul>
+    <li><b>A4 Outfit recommendation [US-01, UC-01]</b> (flow and error paths in Fig D2-6).
+      <ul>
+        <li><b>In:</b>
+          <ul>
+            <li>occasion: from the request, else the first calendar event (I14a), else casual</li>
+            <li>closet index (I13) for the unlocked user only</li>
+            <li>weather (I14d)</li>
+            <li>StylePreference, WearEvents for the last 14 days, FitResults for the current profile</li>
+          </ul></li>
+        <li><b>Out:</b> a DecisionView of kind outfit_of_day with a top, a bottom (or a dress), shoes, and optional outerwear, plus a reason naming the occasion and the weather. Or "No complete outfit available" with the missing categories.</li>
+        <li><b>Steps:</b>
+          <ol>
+            <li><b>Completeness first:</b> the available items must include a top and a bottom (or a dress), and shoes. If not, return "No complete outfit available" with the missing categories (for example, "bottom"). Never suggest an item that is not in the inventory (C-01.3).</li>
+            <li><b>Formality:</b> the target comes from the occasion (business 4, formal 5, casual 2, sport 1), plus formality_bias.</li>
+            <li><b>Weather:</b> use it only if <code>observed_at</code> is no more than 60 minutes old.
+              <ul>
+                <li>Feels-like below 5 °C → warmth 3, outerwear required. 5–15 °C → warmth ≥ 2, outerwear optional. Above 25 °C → warmth 1, no outerwear.</li>
+                <li>Chance of rain ≥ 50% → prefer water-resistant outerwear and shoes.</li>
+                <li>If the weather is missing or older than 60 min, skip these rules. The reason then says "Weather unavailable" and does not call the outfit weather-appropriate (C-01.2).</li>
+              </ul></li>
+            <li><b>Shortlist:</b> for each category, keep garments that are available, not worn within repeat_window_days, and not tight. Score them: −|formality − target|, −|warmth − warmth target|, +1 for a favourite colour, −2 for an avoided colour. Keep the top 10.</li>
+            <li><b>Combine:</b> top × bottom (or a dress) × shoes, plus outerwear when required or optional. Combination score = sum of item scores + colour harmony (at most 2 non-neutral colours) + freshness (days since worn, capped at 14). Pick the highest score; on a tie, take the outfit worn least recently.</li>
+            <li><b>Reason (≤ 80 characters):</b> for example, "Class presentation, 8 °C and rain: wool coat, waterproof boots".</li>
+          </ol></li>
+        <li><b>Cost:</b> at most 10 × 10 × 10 × 10 = 10<sup>4</sup> combinations, under 50 ms. The weather call is cached for 15 min.</li>
+      </ul></li>
+    <li><b>A5 Buy-or-skip verdict.</b>
+      <ul>
+        <li><b>In:</b> a shop garment and its listing, FitEvaluation (A1, or "pending"), closet index, budget left.</li>
+        <li><b>Out:</b> verdict buy or skip, with up to 3 reasons. The rules are applied in order, and each one that fires adds a reason:
+          <ol>
+            <li>No size is "good" → skip.</li>
+            <li>Price is above the budget left → skip.</li>
+            <li>The closet already has a near-duplicate (same category and colour name, formality ±1) → skip.</li>
+            <li>The closet has fewer than 3 items in this category, or none at the event formality → buy ("fills a gap").</li>
+            <li>Otherwise → buy if the fit is good and the price is within budget.</li>
+          </ol></li>
+        <li><b>Cost:</b> O(closet) ≈ 300 comparisons.</li>
+      </ul></li>
+    <li><b>A7 Look from a photo of a public figure.</b>
+      <ol>
+        <li>Get images with ctx.images (I14c), up to 6.</li>
+        <li>Detect pieces with vision.analyze (I15).</li>
+        <li>For each category, keep the most frequent colour across the images.</li>
+        <li>For each piece, find a closet match (same category, colour difference ΔE &lt; 20). If there is none, search shop items with ctx.products (I14b), limited by category, colour, and max_price = budget left.</li>
+      </ol>
+      <b>Out:</b> a DecisionView of kind look. <b>Cost:</b> dominated by I15, about 0.6 s per image.</li>
+    <li><b>Request handling:</b> a UserAction (I17) chooses the algorithm. "measure" calls I24. The result is saved as a Decision and sent to L8 as a DecisionView. Fig D2-3 shows A5's full path, including its errors.</li>
+  </ul>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I17</b> ui.action → decision.view</td><td>UserAction as in D0; action adds <code>measure</code>, <code>ask_verdict</code>, and <code>recommend</code> with <code>occasion: enum, optional</code> and <code>location_name: string, optional</code> (default: StylePreference location) [US-01]</td><td>DecisionView as in D0; <code>reasons</code> limited to 3</td><td>UNKNOWN_ACTION · STALE_VIEW (old view_id: L6 resends the current view)</td></tr>
+    <tr><td><b>GET /api/v1/decisions</b> (phone)</td><td>kind: enum, optional · limit: int 1–50, default 20 · cursor: string, optional</td><td>200 {items: [{decision_id, kind, verdict, reasons, garment_ids, created_at}], next_cursor}</td><td>400 BAD_QUERY · 401 UNAUTHORIZED</td></tr>
+    <tr><td><b>POST /api/v1/spend</b> (phone)</td><td>amount: decimal string &gt; 0, required · currency: ISO 4217, required · listing_id: UUID, optional · spent_on: date, optional, default today</td><td>201 {spend_id, budget_left: decimal string}</td><td>400 VALIDATION_FAILED · 401 · 404 LISTING_NOT_FOUND</td></tr>
+    <tr><td><b>PUT /api/v1/preferences</b> (phone)</td><td>StylePreference fields, all optional, with the ranges in Fig D2-4</td><td>200 StylePreference</td><td>400 VALIDATION_FAILED · 401</td></tr>
+  </table>
+  </div>
+
+  <!-- L7 -->
+  <div class="comp">
+  <h3>L7 Connectors — owner: Jace Schubert</h3>
+  <p><b>Data model:</b> ProviderAccount, CategoryRule, and CacheEntry (Fig D2-4). OAuth tokens are encrypted with a key kept in the secrets file, never in the database.</p>
+  <p><b>Behaviour</b> (the same pipeline for every outside call):</p>
+  <ol>
+    <li>Build the cache key (sha256 of provider + endpoint + normalised parameters). Return a fresh hit right away.</li>
+    <li><b>Privacy filter:</b> each endpoint has an allowlist of outgoing parameters. Body data, images, and user ids never leave the house.</li>
+    <li>Take a token from the provider's rate-limit bucket (rate from configuration).</li>
+    <li>Call over HTTPS with a 3 s timeout. On 429, 5xx, or a timeout, retry after 1, 2, then 4 s, honouring Retry-After. On 401, refresh the token once.</li>
+    <li>Normalise the response into our models, cache it with a TTL (calendar 15 min, weather 15 min, products 6 h, images 7 days), and reply. Products the user opens are also sent to L4 (I16).</li>
+  </ol>
+  <p><b>A6 Calendar categorisation.</b></p>
+  <ul>
+    <li><b>In:</b> event title (string).</li>
+    <li><b>Out:</b> category ∈ {business, casual, formal, sport}.</li>
+    <li><b>Steps:</b> lower-case the title. Try the enabled CategoryRule patterns in priority order, user rules before default rules. The first match wins; no match → casual.</li>
+    <li><b>Default rules:</b> interview|client|presentation|meeting → business; wedding|gala|ceremony → formal; gym|run|yoga|match → sport.</li>
+    <li><b>Cost:</b> O(R) with R ≈ 30 rules.</li>
+  </ul>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I14a</b> ctx.calendar_day</td><td>user_id: UUID, required · date: YYYY-MM-DD, required, today ± 7 days</td><td>{events: [{start, end: RFC 3339, title, category}], stale: bool, fetched_at}</td><td>NOT_LINKED · NEEDS_RELINK · PROVIDER_UNAVAILABLE (no cache) · BAD_QUERY</td></tr>
+    <tr><td><b>I14d</b> ctx.weather [US-01]</td><td>lat, lon: float, required, rounded to 0.1° (about 10 km) before leaving the house</td><td>{temp_c, feels_like_c: float, precip_prob: int 0–100 %, condition: enum{clear, cloudy, rain, snow, storm, fog}, wind_kph: float, observed_at: RFC 3339, stale: bool}. Provider: Open-Meteo (no API key; free for non-commercial use).</td><td>PROVIDER_UNAVAILABLE — provider down and no cached reading · BAD_QUERY — coordinates out of range. A cached reading older than 60 min is still returned with <code>stale = true</code>; A4 treats it as "Weather unavailable".</td></tr>
+    <tr><td><b>I14b</b> ctx.products</td><td>query: string 1–100, required · category, color, size_label: optional · max_price: decimal, optional · currency: ISO 4217 · limit: int 1–20, default 10</td><td>{products: [{sku, shop, title, price, currency, url, sizes, image_ref}], stale, fetched_at}</td><td>PROVIDER_UNAVAILABLE · RATE_LIMITED (local bucket empty for &gt; 3 s) · BAD_QUERY</td></tr>
+    <tr><td><b>I14c</b> ctx.images</td><td>query: person name, 1–60 chars, required · limit: int 1–6, default 6</td><td>{image_refs: URI[] (downloaded into the data store), stale, fetched_at}</td><td>PROVIDER_UNAVAILABLE · RATE_LIMITED · BAD_QUERY</td></tr>
+    <tr><td><b>Provider linking</b> (phone)</td><td>POST /api/v1/providers/{provider}/link · GET …/callback?code&amp;state · DELETE …/{provider}</td><td>201 {auth_url} · 302 to the phone page after the callback · 204</td><td>400 UNKNOWN_PROVIDER · 400 BAD_STATE (CSRF state mismatch) · 502 PROVIDER_REFUSED</td></tr>
+  </table>
+  </div>
+
+  <!-- L8 -->
+  <div class="comp">
+  <h3>L8 Presentation — owner: all (lead <span class="todo">[team: name one lead]</span>)</h3>
+  <p><b>Data model:</b> ConsentEvent (Fig D2-4). It records each allow, decline, or revoke with a session id but no user link and no image [US-04]. Session state lives in memory and is rebuilt from L6 after a restart; screen text and layout come from configuration.</p>
+  <p><b>Behaviour:</b> the state machine in Fig D2-1, plus these steps:</p>
+  <ol>
+    <li>When the Mirror connects, check its device token (Auth), then send the full ui.state (I6).</li>
+    <li>Each state change sends a new full state with <code>seq</code> + 1.</li>
+    <li>Voice commands (I5) are matched against a fixed list: next, back, select, buy, skip, try, measure, recommend, camera off, sleep. A command is accepted when its edit distance is ≤ 1 and confidence ≥ 0.6, and it becomes a UserAction (I17).</li>
+    <li>Health events (I21) and measurement progress (I25) update the banner and the T-pose guide.</li>
+    <li><b>Camera consent [US-04]</b> (Fig D2-5):
+      <ul>
+        <li>The glass always shows "Camera off" or "Camera on".</li>
+        <li>Before try-on, measuring, or gestures, if capture is off, L8 asks "Allow the camera for this session?".</li>
+        <li><b>Allow:</b> L8 sends capture.enable (I27) and shows "Camera on" only after L1 confirms.</li>
+        <li><b>Decline, or no answer in 15 s:</b> L8 logs a ConsentEvent and leaves the camera off.</li>
+        <li><b>Revoke:</b> "Camera off" (touch or voice) sends capture.disable.</li>
+        <li>While awake, L8 checks capture.status every 2 s. No reply, or a state that contradicts what L8 expects, means "Camera status unknown", and image functions are blocked (C-02.2).</li>
+      </ul></li>
+    <li><b>Profile unlock [US-05]:</b> after the user picks a profile, the keypad (digits shuffled) sends auth.unlock (I28). The session is bound to that user_id, and only that user's wardrobe, cards, and toasts are shown. Asleep ends the session.</li>
+  </ol>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I5</b> (in, WebSocket)</td><td>touch {x, y: int px, ts} · wake_word {ts} · voice_command {text ≤ 40, confidence 0–1}. No camera data [US-04].</td><td>—</td><td>Close 4401 — bad device token · 4409 — a second Mirror connection replaced this one</td></tr>
+    <tr><td><b>I6</b> ui.state (out, WebSocket)</td><td>—</td><td><code>ui_state/2</code> {seq: int, screen: enum (Fig D2-1 states), cards: Card[] ≤ 4, banner: {kind, text} | null, toast: string | null}</td><td>Close 4500 — server error; the Mirror reconnects every 2 s</td></tr>
+    <tr><td><b>I27</b> capture.enable / disable (out, to L1)</td><td>—</td><td>See L1</td><td>TIMEOUT or NO_SERVICE → state Unknown, "Camera status unknown" (Fig D2-5)</td></tr>
+    <tr><td><b>I18</b> mirror.control (out, JS bridge)</td><td>—</td><td>{cmd: enum{wake, sleep, brightness}, value: int 0–100?, cmd_id: UUID}; the Mirror replies {cmd_id, ok: bool}</td><td>No reply in 1 s: retry once, then log (glass state unknown)</td></tr>
+  </table>
+  </div>
+
+  <!-- Planes -->
+  <div class="comp">
+  <h3>Planes: data store and message bus — owner: Rehman Khalid</h3>
+  <p><b>Data store — data model:</b> the union of D1 Fig 1 and Fig D2-4, in one SQLite file (<code>brain.db</code>), with images under <code>files/&lt;garment_id&gt;/</code>.</p>
+  <p><b>Data store — behaviour:</b></p>
+  <ul>
+    <li>Settings: WAL mode, <code>foreign_keys = ON</code>, <code>busy_timeout</code> 2,000 ms.</li>
+    <li><b>Each table has exactly one writing component</b> (the owners in Fig D2-4 and D1); others read only.</li>
+    <li>Schema migrations (Alembic) run at start-up.</li>
+    <li>Nightly at 03:00: a <code>.backup</code> of the database plus a copy of the files to an external drive, keeping 7 copies.</li>
+  </ul>
+  <p><b>Data store — interface:</b> one repository module per owning component (Python functions; no shared SQL strings).</p>
+  <ul>
+    <li><b>StorageBusy</b> (still locked after 2 s): callers map it to HTTP 503 or the bus error STORAGE_UNAVAILABLE.</li>
+    <li><b>StorageFull</b> (under 1 GB free): the store goes read-only and health reports DEGRADED.</li>
+  </ul>
+  <p><b>Message bus — data model:</b> no persistent data.</p>
+  <p><b>Message bus — behaviour:</b> one broker process, <code>busd</code>. A ZeroMQ XSUB/XPUB proxy handles events, and a ROUTER socket handles request/reply by service name. Heartbeats every 1 s.</p>
+  <p><b>Message bus — interface:</b></p>
+  <ul>
+    <li>Every message uses one envelope: <code>{schema: "name/version", msg_id: UUID, corr_id: UUID | null, sender: string, ts: int64 ns, body: object}</code>.</li>
+    <li><code>publish(topic, body)</code> and <code>request(service, body, timeout_ms) → body</code>.</li>
+    <li>Errors: TIMEOUT · NO_SERVICE (no worker registered) · TOO_LARGE (&gt; 1 MB; send a reference instead) · BAD_SCHEMA (unknown schema name or version).</li>
+  </ul>
+  </div>
+
+  <!-- Glue -->
+  <div class="comp">
+  <h3>Glue: Authentication — owner: Jace Schubert <span class="todo">(proposed)</span></h3>
+  <p><b>Data model:</b> Device and ProfileLock (Fig D2-4).</p>
+  <p><b>Behaviour</b> (pairing steps):</p>
+  <ol>
+    <li>On the glass, the user picks "pair phone". L8 asks Auth for a 6-digit code, valid for 120 s with at most 5 attempts.</li>
+    <li>The phone opens <code>/pair</code> and enters the code.</li>
+    <li>Auth creates a Device and returns a token <code>dv_&lt;device_id&gt;.&lt;32 random bytes, base64url&gt;</code>. The token is shown only once; only its argon2id hash is stored.</li>
+    <li>On each request, the device_id prefix finds the row and the hash is verified. Revoked devices fail.</li>
+  </ol>
+  <p>The Mirror's own token is provisioned once at install.</p>
+  <p><b>Profile unlock and wardrobe separation [US-05]</b> (steps):</p>
+  <ol>
+    <li>Each user sets a 4–6 digit PIN from their own paired phone. Only its argon2id hash is stored, in ProfileLock.</li>
+    <li>On the glass, auth.unlock (I28) checks the PIN. It returns a session bound to that user_id that lasts until Asleep. After 5 wrong PINs the profile is locked for 5 min.</li>
+    <li><b>Isolation rule:</b> every repository query takes user_id from the authenticated session or device token, never from the request body. Asking for another user's data returns 403 FORBIDDEN (HTTP) or the bus error FORBIDDEN.</li>
+  </ol>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>auth.pair_code</b> (bus, from L8)</td><td>{user_id: UUID, required}</td><td>{code: 6 digits, expires_at}</td><td>UNKNOWN_USER</td></tr>
+    <tr><td><b>I28</b> auth.unlock (bus, from L8)</td><td>{user_id: UUID, required; pin: 4–6 digits, required}</td><td>{session_id: UUID, user_id, expires_at}</td><td>WRONG_PIN (remaining attempts in <code>fields</code>) · LOCKED (until locked_until) · NO_PIN_SET — the user must set one from their phone</td></tr>
+    <tr><td><b>PUT /api/v1/profile/pin</b> (phone)</td><td>pin: 4–6 digits, required; current_pin: required if a PIN is already set</td><td>204</td><td>400 VALIDATION_FAILED · 401 · 403 WRONG_CURRENT_PIN</td></tr>
+    <tr><td><b>I22</b> POST /api/v1/pair</td><td>code: 6 digits, required · device_name: 1–40 chars, required</td><td>201 {device_id: UUID, token: string (shown once), user_id}</td><td>404 CODE_UNKNOWN · 410 CODE_EXPIRED · 429 TOO_MANY_ATTEMPTS</td></tr>
+    <tr><td><b>GET / DELETE /api/v1/devices[/{id}]</b></td><td>Bearer token; id: UUID for delete</td><td>200 {items: [{device_id, kind, name, last_seen_at}]} · 204</td><td>401 UNAUTHORIZED · 404 NOT_FOUND · 409 CANNOT_REVOKE_SELF</td></tr>
+    <tr><td><b>verify(token)</b> (in-process)</td><td>token: string</td><td>Device</td><td>Unauthorized (→ HTTP 401 / WebSocket close 4401)</td></tr>
+  </table>
+  </div>
+
+  <div class="comp">
+  <h3>Glue: Notifications — owner: Clare Hooper <span class="todo">(proposed)</span></h3>
+  <p><b>Data model:</b> Notification (Fig D2-4).</p>
+  <p><b>Behaviour:</b></p>
+  <ol>
+    <li>On notify.create, if an unread notification with the same (user_id, dedupe_key) exists, update it instead of adding a new one.</li>
+    <li>Publish notify.new; L8 shows a toast if that user is at the glass.</li>
+    <li>The phone page polls I26 every 60 s while it is open.</li>
+    <li>Expired rows are deleted daily.</li>
+  </ol>
+  <p>The kinds are outfit_ready, relink_needed, measure_due (30 days after the last measurement), and system.</p>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>I20</b> notify.create (bus)</td><td>user_id: UUID, required · kind: enum, required · title: 1–60 chars · body: ≤ 200 chars · dedupe_key: string, optional · ttl_h: int 1–720, default 72</td><td>{notification_id: UUID, deduped: bool}</td><td>BAD_INPUT · UNKNOWN_USER</td></tr>
+    <tr><td><b>I26</b> GET /api/v1/notifications</td><td>unread: bool, optional · limit: 1–50, default 20 · cursor, optional</td><td>200 {items: [{notification_id, kind, title, body, created_at, read_at}], next_cursor}</td><td>400 BAD_QUERY · 401</td></tr>
+    <tr><td><b>POST /api/v1/notifications/{id}/read</b></td><td>id: UUID</td><td>204</td><td>401 · 404 NOT_FOUND</td></tr>
+  </table>
+  </div>
+
+  <div class="comp">
+  <h3>Glue: Configuration — owner: Rehman Khalid <span class="todo">(proposed)</span></h3>
+  <p><b>Data model:</b> no persistent data in the database; configuration must still work when the database is the broken part. Three things on disk:</p>
+  <ul>
+    <li><code>/etc/scm/config.yaml</code>: in git as <code>config.example.yaml</code>.</li>
+    <li><code>/etc/scm/secrets.env</code>: mode 600 and never committed. It holds the OAuth client secrets and the token encryption key.</li>
+    <li><code>/var/lib/scm/config_history/</code> [US-03]: a numbered copy of every configuration that loaded successfully, plus <code>index.json</code> with {version, sha256, applied_at, known_good: bool}.</li>
+  </ul>
+  <p>Key groups: capture, perception thresholds, A1 ease bands, A3 calibration, A4 weights, L7 rates and TTLs, timeouts, UI text.</p>
+  <p><b>Behaviour:</b></p>
+  <ul>
+    <li><b>Start-up:</b> each process loads both files and validates them against a typed schema (Pydantic). If anything is invalid, it exits with a message naming the bad key, so systemd shows the cause.</li>
+    <li><b>Reload:</b> <code>scmctl reload</code> sends SIGHUP. The process validates again and applies only keys marked reloadable (thresholds, ease bands, rules). It then publishes I23. An invalid reload keeps the old configuration and logs an error.</li>
+    <li><b>Find and restore [US-03]:</b>
+      <ul>
+        <li>Every successful load saves a new version. A version becomes <i>known good</i> once every component has reported ok (I21) for 10 minutes.</li>
+        <li><code>scmctl status</code> lists each component's health, so a maintainer can see which service failed.</li>
+        <li><code>scmctl config rollback</code> restores the latest known-good version (or <code>--to N</code>), checks it, and restarts the affected services. The rollback is logged.</li>
+      </ul></li>
+  </ul>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>config.get</b> (in-process)</td><td>key: dotted string</td><td>typed value</td><td>KeyError at start-up (never at run time, because the schema has defaults)</td></tr>
+    <tr><td><b>I23</b> config.changed (bus)</td><td>—</td><td>{version: int, changed_keys: string[]}</td><td>—</td></tr>
+    <tr><td><b>scmctl config check</b> (CLI)</td><td>path</td><td>exit code 0, or 1 with a list of errors</td><td>—</td></tr>
+    <tr><td><b>scmctl status</b> (CLI) [US-03]</td><td>—</td><td>one line per component: name, state (ok / degraded / down), since, detail</td><td>exit 2 if busd is unreachable ("health unknown")</td></tr>
+    <tr><td><b>scmctl config rollback</b> (CLI) [US-03]</td><td>--to N: int, optional (default: latest known good)</td><td>exit 0, plus the restored version and the services restarted</td><td>exit 1 NO_KNOWN_GOOD · exit 1 INVALID_VERSION (fails the check; nothing changed) · exit 3 RESTART_FAILED (version restored, a service still down)</td></tr>
+  </table>
+  </div>
+
+  <div class="comp">
+  <h3>Glue: Logging and health — owner: Rehman Khalid <span class="todo">(proposed)</span></h3>
+  <p><b>Data model:</b> no persistent data in the database. Logs go to journald, capped at 500 MB or 14 days.</p>
+  <p><b>Behaviour:</b></p>
+  <ul>
+    <li><b>Log format:</b> every component logs JSON lines {ts, level, component, event, msg_id, corr_id, fields}. A <code>corr_id</code> follows one user request across layers.</li>
+    <li><b>Privacy rule:</b> never log images, measurements, tokens, or event titles.</li>
+    <li><b>Health:</b> every component publishes ops.health every 5 s. busd marks a component DOWN after 15 s of silence.</li>
+    <li><b>Restarts:</b> systemd restarts a crashed process, at most 5 times in 10 min.</li>
+  </ul>
+  <table>
+    <tr><th style="width:16%">Interface</th><th style="width:30%">Input</th><th style="width:30%">Output</th><th>Errors</th></tr>
+    <tr><td><b>log(event, **fields)</b> (in-process)</td><td>event: snake_case string; fields: JSON-safe</td><td>—</td><td>Fields with blocked names are dropped and counted.</td></tr>
+    <tr><td><b>I21</b> ops.health (bus)</td><td>—</td><td>{component, state: enum{ok, degraded, down}, detail: ≤ 120 chars, metrics: {fps?, p95_ms?, queue?}}</td><td>—</td></tr>
+    <tr><td><b>GET /api/v1/health</b> (phone)</td><td>—</td><td>200 {overall: enum, components: [{name, state, since}]}</td><td>401</td></tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <img class="diagram" src="D2_fig1_mirror_session.svg" alt="Fig D2-1 Mirror session state machine">
+  <p class="small">Fig D2-1. Source: <code>Design_Diagrams/D2_fig1_mirror_session.drawio</code>.</p>
+</section>
+<section>
+  <img class="diagram" src="D2_fig2_measurement.svg" alt="Fig D2-2 body measurement state machine">
+  <p class="small">Fig D2-2. Source: <code>Design_Diagrams/D2_fig2_measurement.drawio</code>.</p>
+</section>
+<section>
+  <img class="diagram" src="D2_fig3_buy_or_skip_errors.svg" alt="Fig D2-3 buy or skip error paths">
+  <p class="small">Fig D2-3, the figure required to show error paths. Source: <code>Design_Diagrams/D2_fig3_buy_or_skip_errors.drawio</code>.</p>
+</section>
+<section>
+  <img class="diagram" src="D2_fig5_camera_consent.svg" alt="Fig D2-5 camera consent">
+  <p class="small">Fig D2-5 [US-04, UC-02]. Source: <code>Design_Diagrams/D2_fig5_camera_consent.drawio</code>.</p>
+</section>
+<section>
+  <img class="diagram" src="D2_fig6_outfit_errors.svg" alt="Fig D2-6 recommend an outfit error paths">
+  <p class="small">Fig D2-6 [US-01, UC-01]. Source: <code>Design_Diagrams/D2_fig6_outfit_errors.drawio</code>.</p>
+</section>
+<section>
+  <img class="diagram" src="D2_fig4_data_model.svg" alt="Fig D2-4 data model">
+  <p class="small">Fig D2-4. Source: <code>Design_Diagrams/D2_fig4_data_model.drawio</code>.</p>
+</section>
+
+<!-- ============================================================ 3 -->
+<section>
+  <h2>3. Edge cases and error handling</h2>
+  <div class="team"><b>Team-written section.</b> The course policy requires the edge-case analysis to be the team's own work, so the rows below are a grid to fill in, not answers. The grid gives every component one row for each of the four categories: <b>B</b> boundary values, <b>T</b> timing and concurrency, <b>I</b> bad or missing input, <b>X</b> external dependencies. Add more rows as needed (EC-L6-I2, and so on). Every row needs a decided behaviour (retry, degrade, fall back, or surface error), a named handler, and whether it is recoverable. Figs D2-3 and D2-6 are the error-path diagrams, and D2-5 shows the camera-consent failures; cite their boxes where they apply.</div>
+  <table>
+    <tr><th style="width:7%">ID</th><th style="width:11%">Component</th><th style="width:9%">Category</th><th style="width:30%">Edge case</th><th style="width:25%">Design decision</th><th style="width:9%">Handler</th><th>Recoverable?</th></tr>
+    <tr><td class="id">EC-L1-B</td><td>L1 Capture</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L1-T</td><td>L1 Capture</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L1-I</td><td>L1 Capture</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L1-X</td><td>L1 Capture</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L2-B</td><td>L2 Perception</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L2-T</td><td>L2 Perception</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L2-I</td><td>L2 Perception</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L2-X</td><td>L2 Perception</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L3-B</td><td>L3 Body</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L3-T</td><td>L3 Body</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L3-I</td><td>L3 Body</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L3-X</td><td>L3 Body</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L4-B</td><td>L4 Wardrobe</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L4-T</td><td>L4 Wardrobe</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L4-I</td><td>L4 Wardrobe</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L4-X</td><td>L4 Wardrobe</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L5-B</td><td>L5 Try-on</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L5-T</td><td>L5 Try-on</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L5-I</td><td>L5 Try-on</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L5-X</td><td>L5 Try-on</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L6-B</td><td>L6 Decision</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L6-T</td><td>L6 Decision</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L6-I</td><td>L6 Decision</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L6-X</td><td>L6 Decision</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L7-B</td><td>L7 Connectors</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L7-T</td><td>L7 Connectors</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L7-I</td><td>L7 Connectors</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L7-X</td><td>L7 Connectors</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L8-B</td><td>L8 Presentation</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L8-T</td><td>L8 Presentation</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L8-I</td><td>L8 Presentation</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L8-X</td><td>L8 Presentation</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-DS-B</td><td>Data store</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-DS-T</td><td>Data store</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-DS-I</td><td>Data store</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-DS-X</td><td>Data store</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-BUS-B</td><td>Message bus</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-BUS-T</td><td>Message bus</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-BUS-I</td><td>Message bus</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-BUS-X</td><td>Message bus</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-AUTH-B</td><td>Authentication</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-AUTH-T</td><td>Authentication</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-AUTH-I</td><td>Authentication</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-AUTH-X</td><td>Authentication</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-NOTIF-B</td><td>Notifications</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-NOTIF-T</td><td>Notifications</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-NOTIF-I</td><td>Notifications</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-NOTIF-X</td><td>Notifications</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-CFG-B</td><td>Configuration</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-CFG-T</td><td>Configuration</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-CFG-I</td><td>Configuration</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-CFG-X</td><td>Configuration</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-LOG-B</td><td>Logging and health</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-LOG-T</td><td>Logging and health</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-LOG-I</td><td>Logging and health</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-LOG-X</td><td>Logging and health</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+</section>
+
+<!-- ============================================================ 4 -->
+<section>
+  <h2>4. Requirements traceability table</h2>
+  <div class="team"><b>Team-written section.</b> One row per user story or requirement, functional (F) and non-functional (NF). Rows US-01 to US-05 are copied from User_Stories (Week 4); add NF rows for the measurable targets in its acceptance criteria (for example, weather data no older than 60 minutes, and zero image files written after consent is declined). Cite specific design elements from the catalogue below (an entity, endpoint, algorithm, interface, or figure, not just a component name), and cite edge-case IDs from part 3. Explain every gap; no blank cells.</div>
+  <table>
+    <tr><th style="width:7%">Req ID</th><th style="width:20%">Requirement (short)</th><th style="width:5%">F / NF</th><th style="width:7%">Priority</th><th style="width:22%">Design elements</th><th style="width:24%">How they satisfy it</th><th>Edge cases · figures</th></tr>
+    <tr><td class="id">US-01</td><td>Outfit suggestions from owned clothing, the occasion, and current weather (UC-01; C-01.1–C-01.3)</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">US-02</td><td>Add, correct, and remove clothing items in my personal inventory</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">US-03</td><td>Maintainer can identify a failed service and restore the last working configuration</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">US-04</td><td>Know whether the camera is active and decline image capture (UC-02; C-02.1–C-02.3)</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">US-05</td><td>Access only my own wardrobe and preferences on a shared mirror</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="blank">NF-01</td><td class="blank"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="blank">NF-02</td><td class="blank"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="blank">NF-03</td><td class="blank"></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <h3>Reverse check: component → requirements</h3>
+  <table>
+    <tr><th style="width:20%">Component</th><th style="width:35%">Requirements it serves (IDs)</th><th>If none: keep (why) or cut</th></tr>
+    <tr><td>L1 Capture</td><td></td><td></td></tr><tr><td>L2 Perception</td><td></td><td></td></tr><tr><td>L3 Body</td><td></td><td></td></tr>
+    <tr><td>L4 Wardrobe</td><td></td><td></td></tr><tr><td>L5 Try-on</td><td></td><td></td></tr><tr><td>L6 Decision</td><td></td><td></td></tr>
+    <tr><td>L7 Connectors</td><td></td><td></td></tr><tr><td>L8 Presentation</td><td></td><td></td></tr><tr><td>Data store, message bus</td><td></td><td></td></tr>
+    <tr><td>Authentication</td><td></td><td></td></tr><tr><td>Notifications</td><td></td><td></td></tr><tr><td>Configuration</td><td></td><td></td></tr><tr><td>Logging and health</td><td></td><td></td></tr>
+  </table>
+</section>
+
+<section>
+  <h3>Design element catalogue (for citing in parts 3 and 4)</h3>
+  <table>
+    <tr><th style="width:14%">Kind</th><th>Elements and where they are defined</th></tr>
+    <tr><td>Entities</td><td><b>D1 Fig 1:</b> User, BodyProfile, Garment, GarmentSize, GarmentAsset, Listing, Outfit, OutfitItem, WearEvent, FitResult. <b>Fig D2-4:</b> Device, ProfileLock, ConsentEvent, Notification, BodyModel, Decision, StylePreference, SpendEntry, ProviderAccount, CategoryRule, CacheEntry. <b>Added attributes:</b> Garment.warmth, Garment.water_resistant.</td></tr>
+    <tr><td>Algorithms</td><td><b>A1</b> fit evaluation (D1 §3) · <b>A2</b> live garment overlay (D1 §3) · <b>A3</b> body measurement (L2, Fig D2-2) · <b>A4</b> outfit recommendation (L6, Fig D2-6) · <b>A5</b> buy-or-skip verdict (L6, Fig D2-3) · <b>A6</b> calendar categorisation (L7) · <b>A7</b> look from a photo (L6)</td></tr>
+    <tr><td>HTTP endpoints</td><td><b>D1 §5:</b> POST / GET / PATCH / DELETE /api/v1/garments. <b>D2:</b> GET /api/v1/decisions · POST /api/v1/spend · PUT /api/v1/preferences · /api/v1/providers/* · POST /api/v1/pair · PUT /api/v1/profile/pin · /api/v1/devices · /api/v1/notifications · GET /api/v1/health</td></tr>
+    <tr><td>Bus methods and events</td><td>wardrobe.get (I11) · tryon.request (I12) · vision.analyze (I15) · ctx.calendar_day / products / images / weather (I14a–d) · capture.enable / disable (I27) · auth.unlock (I28) · measure.start / cancel (I24) · measure.progress (I25) · body.current · capture.status · auth.pair_code · notify.create (I20) · ops.health (I21) · config.changed (I23) · intent.gesture (I19)</td></tr>
+    <tr><td>Interfaces</td><td>I1–I17 (D0 §4, revised above) · I18–I28 (D2)</td></tr>
+    <tr><td>Figures</td><td>D0: block diagram, data flow (Flows A, B). D1: Fig 1 data model. D2: Fig D2-1 session, D2-2 measurement, D2-3 buy-or-skip error paths, D2-4 data model, D2-5 camera consent, D2-6 outfit error paths.</td></tr>
+    <tr><td>Timing budgets</td><td>Motion → glass ≤ 250 ms (D0 Flow A; A2 30 ms, encode 25 ms) · verdict ≤ 2 s (D0 Flow B, Fig D2-3) · outfit card ≤ 5 s after the request (Figs D2-1, D2-6) · weather no older than 60 min (A4, C-01.2) · fit reply ≤ 1.5 s (I12)</td></tr>
+  </table>
+</section>
+
+<!-- ============================================================ 5 -->
+<section>
+  <h2>5. Design rationale</h2>
+  <div class="team"><b>Team-written section.</b> Write 6–10 entries in the required form. Mark any decision the peer review changed, giving its action item ID from part 6. The D0 decision log (D1–D7: brain PC, Kinect 360, H.264 video, single L7, message bus, voice in L8, clip-over bracket) is referenced by number, not repeated.</div>
+  <table>
+    <tr><th style="width:4%">#</th><th style="width:54%">We chose ___ over ___ because ___.</th><th style="width:30%">We accepted the trade-off of ___ because ___.</th><th>Changed by review? (item ID)</th></tr>
+    <tr><td class="id">R1</td><td></td><td></td><td></td></tr><tr><td class="id">R2</td><td></td><td></td><td></td></tr>
+    <tr><td class="id">R3</td><td></td><td></td><td></td></tr><tr><td class="id">R4</td><td></td><td></td><td></td></tr>
+    <tr><td class="id">R5</td><td></td><td></td><td></td></tr><tr><td class="id">R6</td><td></td><td></td><td></td></tr>
+    <tr><td class="id">R7</td><td></td><td></td><td></td></tr><tr><td class="id">R8</td><td></td><td></td><td></td></tr>
+  </table>
+  <p class="small"><b>Decisions in D1 and D2 that may be worth an entry</b> (pick the significant ones; the reasoning is yours):</p>
+  <ul class="small">
+    <li>SQLite vs PostgreSQL (D1 §6)</li>
+    <li>2-D skinned warp vs 3-D cloth or neural try-on (A2)</li>
+    <li>Ease bands vs ML fit prediction (A1)</li>
+    <li>Front + side depth ellipse vs a single front view (A3)</li>
+    <li>MediaPipe Pose on Kinect RGB vs OpenNI/NiTE skeleton tracking</li>
+    <li>Splitting I14, I15, and I6 (interface revisions)</li>
+    <li>Dropping the 3-D avatar mesh from I9</li>
+    <li>Device pairing tokens vs user accounts with passwords</li>
+    <li>In-app notifications vs web push</li>
+    <li>One writer per table</li>
+    <li>JSON snapshot of garment_ids in Decision</li>
+    <li>Wake by touch or voice vs presence detection from a camera (US-04)</li>
+    <li>Consent per session vs remembered consent (US-04)</li>
+    <li>Profile PIN vs phone unlock vs face recognition (US-05)</li>
+    <li>Open-Meteo vs a paid weather API (US-01)</li>
+    <li>File-based configuration history vs storing it in the database (US-03)</li>
+  </ul>
+</section>
+
+<!-- ============================================================ 6 -->
+<section>
+  <h2>6. Peer design review notes</h2>
+  <div class="team"><b>Team-written section</b>, from the in-class review. The same table is in <code>Design_Diagrams/Peer_Review_Notes.md</code>; keep the two in step. Add one block of rows per reviewing team. Priorities: must-fix, worth considering, out of scope for now. Apply the must-fix items to D2 before submitting and mark them in part 5.</div>
+  <table>
+    <tr><th style="width:6%">ID</th><th style="width:11%">Criterion</th><th style="width:26%">Issue</th><th style="width:10%">Raised by (team)</th><th style="width:22%">Action</th><th style="width:9%">Owner</th><th style="width:9%">Priority</th><th>Due</th></tr>
+    <tr><td class="id">PR-01</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">PR-02</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">PR-03</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">PR-04</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">PR-05</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">PR-06</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <h3>Summary</h3>
+  <p><b>Criterion that drew the most feedback:</b> <span class="todo">[completeness / feasibility / clarity / risk, and why]</span></p>
+  <p><b>Top two issues we raised while reviewing other teams:</b></p>
+  <ol><li class="todo">[team reviewed, issue, criterion]</li><li class="todo">[team reviewed, issue, criterion]</li></ol>
+</section>
+
+</body>
+</html>

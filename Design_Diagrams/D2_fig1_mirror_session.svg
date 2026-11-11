@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 985" width="1480" height="985" font-family="Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="1480" height="985" fill="#fff"/>
+<text x="30" y="44" font-size="26" font-weight="bold">Smart Closet Mirror — Fig D2-1: Mirror session state machine (L8 Presentation)</text>
+<text x="30" y="76" font-size="15">Goal: Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items</text>
+<text x="30" y="96" font-size="15">on their body, and tells them what to wear today and whether a new piece is worth buying.</text>
+<rect x="20" y="855" width="1440" height="114" fill="#fff" stroke="#000" stroke-width="1"/>
+<rect x="400" y="175" width="980" height="480" rx="16" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="12,7"/>
+<text x="414" y="199" font-size="15" font-weight="bold">Awake (glass on)</text>
+<rect x="973.3333333333334" y="929" width="64" height="24" rx="16" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="12,7"/>
+<text x="987.3333333333334" y="953" font-size="15" font-weight="bold"></text>
+<circle cx="71.0" cy="416.0" r="11.0" fill="#000"/>
+<rect x="120" y="380" width="200" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="220.0" y="411.0" font-size="15" text-anchor="middle" font-weight="bold">Asleep</text>
+<text x="220.0" y="429.0" font-size="12.5" text-anchor="middle">glass dark, camera off</text>
+<rect x="440" y="380" width="200" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="540.0" y="411.0" font-size="15" text-anchor="middle" font-weight="bold">Waking</text>
+<text x="540.0" y="429.0" font-size="12.5" text-anchor="middle">pick profile, enter PIN</text>
+<rect x="760" y="380" width="200" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="860.0" y="411.0" font-size="15" text-anchor="middle" font-weight="bold">Home</text>
+<text x="860.0" y="429.0" font-size="12.5" text-anchor="middle">today&#x27;s outfit, menu</text>
+<rect x="760" y="205" width="200" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="860.0" y="236.0" font-size="15" text-anchor="middle" font-weight="bold">Measuring</text>
+<text x="860.0" y="254.0" font-size="12.5" text-anchor="middle">T-pose guide (Fig D2-2)</text>
+<rect x="1100" y="380" width="200" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1200.0" y="411.0" font-size="15" text-anchor="middle" font-weight="bold">TryOn</text>
+<text x="1200.0" y="429.0" font-size="12.5" text-anchor="middle">live video (I4)</text>
+<rect x="1100" y="555" width="200" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1200.0" y="586.0" font-size="15" text-anchor="middle" font-weight="bold">Verdict</text>
+<text x="1200.0" y="604.0" font-size="12.5" text-anchor="middle">buy / skip card</text>
+<rect x="760" y="720" width="280" height="72" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="900.0" y="742.0" font-size="15" text-anchor="middle" font-weight="bold">CameraUnknown</text>
+<text x="900.0" y="760.0" font-size="12.5" text-anchor="middle">&#x27;Camera status unknown&#x27;;</text>
+<text x="900.0" y="778.0" font-size="12.5" text-anchor="middle">image functions blocked</text>
+<rect x="30" y="720" width="690" height="110" fill="#fff" stroke="#000" stroke-width="1"/>
+<text x="42" y="742" font-size="13">Rules</text>
+<text x="42" y="760" font-size="13">• [capture on] is a guard. If capture is off, &#x27;try&#x27; and &#x27;measure&#x27; open the consent prompt (Fig D2-5);</text>
+<text x="42" y="778" font-size="13">   declining keeps the user on Home with the camera off.</text>
+<text x="42" y="796" font-size="13">• Only the unlocked user&#x27;s wardrobe and cards are shown; Asleep ends the session (US-05).</text>
+<text x="42" y="814" font-size="13">• Socket loss to the WebView is handled inside the Mirror: it reconnects every 2 s (I6).</text>
+<rect x="40.0" y="895" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="72.0" y="911.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<rect x="506.6666666666667" y="895" width="64" height="24" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="538.6666666666667" y="911.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<circle cx="1005.3333333333334" cy="906.0" r="10.0" fill="#000"/>
+<polyline points="82,416 120,416" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="82,416 120,416" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="320,404 440,404" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="320,404 440,404" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="640,400 760,400" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="640,400 760,400" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="640,432 760,432" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="640,432 760,432" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="800,380 800,277" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="800,380 800,277" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="880,277 880,380" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="880,277 880,380" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="935,277 935,380" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="935,277 935,380" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="960,398 1100,398" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="960,398 1100,398" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1100,434 960,434" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1100,434 960,434" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1130,452 1130,510 920,510 920,452" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1130,452 1130,510 920,510 920,452" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="1200,452 1200,555" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1200,452 1200,555" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1270,555 1270,452" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1270,555 1270,452" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1100,600 860,600 860,452" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1100,600 860,600 860,452" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="400,600 220,600 220,452" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="400,600 220,600 220,452" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="470,452 470,520 280,520 280,452" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="470,452 470,520 280,520 280,452" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="800,655 800,720" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="800,655 800,720" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="980,720 980,655" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="980,720 980,655" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="40.0,940 104.0,940" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="40.0,940 104.0,940" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="506.6666666666667,940 570.6666666666667,940" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="506.6666666666667,940 570.6666666666667,940" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<rect x="329.8" y="363" width="100.39999999999999" height="36" fill="#fff"/>
+<text x="380" y="376" font-size="12.5" font-style="italic" text-anchor="middle">touch or</text>
+<text x="380" y="392" font-size="12.5" font-style="italic" text-anchor="middle">wake word (I5)</text>
+<rect x="656.4" y="355" width="87.19999999999999" height="36" fill="#fff"/>
+<text x="700" y="368" font-size="12.5" font-style="italic" text-anchor="middle">PIN OK; card</text>
+<text x="700" y="384" font-size="12.5" font-style="italic" text-anchor="middle">ready ≤ 5 s</text>
+<rect x="656.4" y="462" width="87.19999999999999" height="52" fill="#fff"/>
+<text x="700" y="475" font-size="12.5" font-style="italic" text-anchor="middle">5 s timeout:</text>
+<text x="700" y="491" font-size="12.5" font-style="italic" text-anchor="middle">Home without</text>
+<text x="700" y="507" font-size="12.5" font-style="italic" text-anchor="middle">outfit card</text>
+<rect x="706.8" y="309" width="87.19999999999999" height="36" fill="#fff"/>
+<text x="790" y="322" font-size="12.5" font-style="italic" text-anchor="end">measure</text>
+<text x="790" y="338" font-size="12.5" font-style="italic" text-anchor="end">[capture on]</text>
+<rect x="886" y="293" width="67.4" height="36" fill="#fff"/>
+<text x="890" y="306" font-size="12.5" font-style="italic" text-anchor="start">done (I8)</text>
+<text x="890" y="322" font-size="12.5" font-style="italic" text-anchor="start">or cancel</text>
+<rect x="941" y="337" width="100.39999999999999" height="36" fill="#fff"/>
+<text x="945" y="350" font-size="12.5" font-style="italic" text-anchor="start">failed: show</text>
+<text x="945" y="366" font-size="12.5" font-style="italic" text-anchor="start">reason + Retry</text>
+<rect x="973.2" y="373" width="113.6" height="20" fill="#fff"/>
+<text x="1030" y="386" font-size="12.5" font-style="italic" text-anchor="middle">try [capture on]</text>
+<rect x="1012.8" y="441" width="34.4" height="20" fill="#fff"/>
+<text x="1030" y="454" font-size="12.5" font-style="italic" text-anchor="middle">back</text>
+<rect x="961.6" y="522" width="126.8" height="36" fill="#fff"/>
+<text x="1025" y="535" font-size="12.5" font-style="italic" text-anchor="middle">stream lost: toast</text>
+<text x="1025" y="551" font-size="12.5" font-style="italic" text-anchor="middle">&#x27;try-on paused&#x27;</text>
+<rect x="1206" y="487" width="87.19999999999999" height="20" fill="#fff"/>
+<text x="1210" y="500" font-size="12.5" font-style="italic" text-anchor="start">buy or skip?</text>
+<rect x="1276" y="502" width="34.4" height="20" fill="#fff"/>
+<text x="1280" y="515" font-size="12.5" font-style="italic" text-anchor="start">back</text>
+<rect x="982.8" y="577" width="34.4" height="20" fill="#fff"/>
+<text x="1000" y="590" font-size="12.5" font-style="italic" text-anchor="middle">done</text>
+<rect x="243.3" y="612" width="133.39999999999998" height="36" fill="#fff"/>
+<text x="310" y="625" font-size="12.5" font-style="italic" text-anchor="middle">no interaction 60 s</text>
+<text x="310" y="641" font-size="12.5" font-style="italic" text-anchor="middle">(warning at 45 s)</text>
+<rect x="328.1" y="532" width="93.8" height="36" fill="#fff"/>
+<text x="375" y="545" font-size="12.5" font-style="italic" text-anchor="middle">5 wrong PINs:</text>
+<text x="375" y="561" font-size="12.5" font-style="italic" text-anchor="middle">lock 5 min</text>
+<rect x="647.4" y="667" width="146.6" height="36" fill="#fff"/>
+<text x="790" y="680" font-size="12.5" font-style="italic" text-anchor="end">status not verifiable</text>
+<text x="790" y="696" font-size="12.5" font-style="italic" text-anchor="end">(I21 / I27)</text>
+<rect x="986" y="669" width="113.6" height="36" fill="#fff"/>
+<text x="990" y="682" font-size="12.5" font-style="italic" text-anchor="start">status verified:</text>
+<text x="990" y="698" font-size="12.5" font-style="italic" text-anchor="start">back to Home</text>
+<text x="30" y="142" font-size="14" text-anchor="start">Every transition is caused by a Mirror event (I5: touch or wake word), a user action (I17), or a capture-state event (I21, I27). L8 is the only component that changes these states.</text>
+<text x="36" y="879" font-size="15" text-anchor="start" font-weight="bold">Legend</text>
+<text x="118.0" y="911" font-size="13" text-anchor="start">State</text>
+<text x="584.6666666666667" y="911" font-size="13" text-anchor="start">Error state</text>
+<text x="1051.3333333333335" y="911" font-size="13" text-anchor="start">Start (first state on power-up)</text>
+<text x="118.0" y="945" font-size="13" text-anchor="start">Transition: trigger / action</text>
+<text x="584.6666666666667" y="945" font-size="13" text-anchor="start">Error or timeout transition</text>
+<text x="1051.3333333333335" y="945" font-size="13" text-anchor="start">Group: an arrow leaving it applies to every state inside</text>
+</svg>

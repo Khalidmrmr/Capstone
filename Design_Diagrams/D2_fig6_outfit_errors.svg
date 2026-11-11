@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 780" width="1480" height="780" font-family="Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="1480" height="780" fill="#fff"/>
+<text x="30" y="44" font-size="26" font-weight="bold">Smart Closet Mirror — Fig D2-6: &#x27;Recommend an outfit&#x27; flow (UC-01, algorithm A4) with error paths</text>
+<text x="30" y="76" font-size="15">Goal: Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items</text>
+<text x="30" y="96" font-size="15">on their body, and tells them what to wear today and whether a new piece is worth buying.</text>
+<rect x="20" y="600" width="1440" height="114" fill="#fff" stroke="#000" stroke-width="1"/>
+<rect x="20" y="230" width="175" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="107.5" y="258.0" font-size="15" text-anchor="middle" font-weight="bold">User asks</text>
+<text x="107.5" y="276.0" font-size="12.5" text-anchor="middle">occasion + location</text>
+<text x="107.5" y="294.0" font-size="12.5" text-anchor="middle">L8 → L6 (I17)</text>
+<rect x="225" y="230" width="175" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="312.5" y="258.0" font-size="15" text-anchor="middle" font-weight="bold">L6 loads closet</text>
+<text x="312.5" y="276.0" font-size="12.5" text-anchor="middle">available items</text>
+<text x="312.5" y="294.0" font-size="12.5" text-anchor="middle">(I13)</text>
+<polygon points="512.5,217 595,272.0 512.5,327 430,272.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="512.5" y="267.0" font-size="15" text-anchor="middle" font-weight="bold">Top, bottom</text>
+<text x="512.5" y="285.0" font-size="12.5" text-anchor="middle">and shoes?</text>
+<rect x="625" y="230" width="175" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="712.5" y="267.0" font-size="15" text-anchor="middle" font-weight="bold">L7 weather</text>
+<text x="712.5" y="285.0" font-size="12.5" text-anchor="middle">ctx.weather (I14d)</text>
+<polygon points="912.5,217 995,272.0 912.5,327 830,272.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="912.5" y="267.0" font-size="15" text-anchor="middle" font-weight="bold">Weather</text>
+<text x="912.5" y="285.0" font-size="12.5" text-anchor="middle">≤ 60 min old?</text>
+<rect x="1025" y="230" width="175" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1112.5" y="267.0" font-size="15" text-anchor="middle" font-weight="bold">L6 picks outfit</text>
+<text x="1112.5" y="285.0" font-size="12.5" text-anchor="middle">algorithm A4</text>
+<rect x="1230" y="230" width="230" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="4.5"/>
+<text x="1345.0" y="258.0" font-size="15" text-anchor="middle" font-weight="bold">Card: outfit + reason</text>
+<text x="1345.0" y="276.0" font-size="12.5" text-anchor="middle">naming occasion</text>
+<text x="1345.0" y="294.0" font-size="12.5" text-anchor="middle">and weather</text>
+<rect x="380" y="430" width="265" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="512.5" y="459.5" font-size="15" text-anchor="middle" font-weight="bold">SURFACE ERROR · L6</text>
+<text x="512.5" y="477.5" font-size="12.5" text-anchor="middle">&#x27;No complete outfit available&#x27;;</text>
+<text x="512.5" y="495.5" font-size="12.5" text-anchor="middle">names the missing category;</text>
+<text x="512.5" y="513.5" font-size="12.5" text-anchor="middle">invents nothing (C-01.3).</text>
+<rect x="780" y="430" width="265" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="912.5" y="459.5" font-size="15" text-anchor="middle" font-weight="bold">DEGRADE · L7 → L6</text>
+<text x="912.5" y="477.5" font-size="12.5" text-anchor="middle">card says &#x27;Weather unavailable&#x27;;</text>
+<text x="912.5" y="495.5" font-size="12.5" text-anchor="middle">occasion-only outfit, not</text>
+<text x="912.5" y="513.5" font-size="12.5" text-anchor="middle">labelled weather-appropriate.</text>
+<rect x="40.0" y="640" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="72.0" y="656.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<polygon points="538.6666666666667,640 570.6666666666667,652.0 538.6666666666667,664 506.6666666666667,652.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="538.6666666666667" y="656.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<rect x="973.3333333333334" y="640" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="4.5"/>
+<text x="1005.3333333333334" y="656.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<rect x="40.0" y="674" width="64" height="24" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="72.0" y="690.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<polyline points="195,272 225,272" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="195,272 225,272" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="400,272 430,272" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="400,272 430,272" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="595,272 625,272" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="595,272 625,272" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="800,272 830,272" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="800,272 830,272" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="995,272 1025,272" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="995,272 1025,272" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1200,272 1230,272" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1200,272 1230,272" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="512,327 512,430" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="512,327 512,430" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="912,327 912,430" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="912,327 912,430" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="1045,482 1112,482 1112,314" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1045,482 1112,482 1112,314" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="506.6666666666667,685 570.6666666666667,685" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="506.6666666666667,685 570.6666666666667,685" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="973.3333333333334,685 1037.3333333333335,685" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="973.3333333333334,685 1037.3333333333335,685" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<rect x="596.1" y="245" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="610" y="258" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="996.1" y="245" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="1010" y="258" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="518" y="367" width="21.2" height="20" fill="#fff"/>
+<text x="522" y="380" font-size="12.5" font-style="italic" text-anchor="start">no</text>
+<rect x="918" y="367" width="126.8" height="20" fill="#fff"/>
+<text x="922" y="380" font-size="12.5" font-style="italic" text-anchor="start">no / provider down</text>
+<rect x="1116" y="392" width="93.8" height="20" fill="#fff"/>
+<text x="1120" y="405" font-size="12.5" font-style="italic" text-anchor="start">occasion only</text>
+<text x="30" y="142" font-size="14" text-anchor="start">Covers acceptance criteria C-01.1 (main), C-01.2 (weather unavailable), and C-01.3 (incomplete wardrobe). Budget: card ≤ 5 s after the request.</text>
+<text x="36" y="624" font-size="15" text-anchor="start" font-weight="bold">Legend</text>
+<text x="118.0" y="656" font-size="13" text-anchor="start">Step (component, interface)</text>
+<text x="584.6666666666667" y="656" font-size="13" text-anchor="start">Check</text>
+<text x="1051.3333333333335" y="656" font-size="13" text-anchor="start">Successful end</text>
+<text x="118.0" y="690" font-size="13" text-anchor="start">Error outcome: decided behaviour · handler</text>
+<text x="584.6666666666667" y="690" font-size="13" text-anchor="start">Happy path</text>
+<text x="1051.3333333333335" y="690" font-size="13" text-anchor="start">Error path</text>
+</svg>

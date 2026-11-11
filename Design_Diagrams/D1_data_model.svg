@@ -1,0 +1,380 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1150" width="1480" height="1150" font-family="Arial, sans-serif">
+<rect width="1480" height="1150" fill="#fff"/>
+<text x="30" y="44" font-size="26" font-weight="bold">Smart Closet Mirror — D1 Data Model (L4 Wardrobe + L5 fit cache)</text>
+<text x="30" y="76" font-size="15">Goal: Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items</text>
+<text x="30" y="96" font-size="15">on their body, and tells them what to wear today and whether a new piece is worth buying.</text>
+<text x="30" y="142" font-size="14">Scope: entities owned by L4 Wardrobe, plus the BodyProfile rows L5 reads and the FitResult cache L5 writes. One SQLite database; image files on disk.</text>
+<polyline points="410,240 310,240" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="402.0" y1="248.0" x2="402.0" y2="232.0" stroke="#000" stroke-width="1.8"/>
+<line x1="396.0" y1="248.0" x2="396.0" y2="232.0" stroke="#000" stroke-width="1.8"/>
+<line x1="324.0" y1="240.0" x2="310.0" y2="231.0" stroke="#000" stroke-width="1.8"/>
+<line x1="324.0" y1="240.0" x2="310.0" y2="249.0" stroke="#000" stroke-width="1.8"/>
+<line x1="324.0" y1="240.0" x2="310.0" y2="240.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="334.0" cy="240.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="374" y="233" font-size="13" text-anchor="middle" font-weight="bold">1</text>
+<text x="346" y="233" font-size="13" text-anchor="middle" font-weight="bold">0..*</text>
+<text x="360.0" y="257.0" font-size="12" font-style="italic" text-anchor="middle">has</text>
+<polyline points="690,240 790,240" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="698.0" y1="232.0" x2="698.0" y2="248.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="710.0" cy="240.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="240.0" x2="790.0" y2="249.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="240.0" x2="790.0" y2="231.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="240.0" x2="790.0" y2="240.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="766.0" cy="240.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="726" y="233" font-size="13" text-anchor="middle" font-weight="bold">0..1</text>
+<text x="754" y="233" font-size="13" text-anchor="middle" font-weight="bold">0..*</text>
+<text x="740.0" y="257.0" font-size="12" font-style="italic" text-anchor="middle">owns</text>
+<polyline points="550,310 550,390" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="558.0" y1="318.0" x2="542.0" y2="318.0" stroke="#000" stroke-width="1.8"/>
+<line x1="558.0" y1="324.0" x2="542.0" y2="324.0" stroke="#000" stroke-width="1.8"/>
+<line x1="550.0" y1="376.0" x2="541.0" y2="390.0" stroke="#000" stroke-width="1.8"/>
+<line x1="550.0" y1="376.0" x2="559.0" y2="390.0" stroke="#000" stroke-width="1.8"/>
+<line x1="550.0" y1="376.0" x2="550.0" y2="390.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="550.0" cy="366.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="563" y="341" font-size="13" text-anchor="start" font-weight="bold">1</text>
+<text x="563" y="369" font-size="13" text-anchor="start" font-weight="bold">0..*</text>
+<text x="541.0" y="354.0" font-size="12" font-style="italic" text-anchor="end">plans</text>
+<polyline points="550,530 550,610" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="558.0" y1="538.0" x2="542.0" y2="538.0" stroke="#000" stroke-width="1.8"/>
+<line x1="558.0" y1="544.0" x2="542.0" y2="544.0" stroke="#000" stroke-width="1.8"/>
+<line x1="550.0" y1="596.0" x2="541.0" y2="610.0" stroke="#000" stroke-width="1.8"/>
+<line x1="550.0" y1="596.0" x2="559.0" y2="610.0" stroke="#000" stroke-width="1.8"/>
+<line x1="550.0" y1="596.0" x2="550.0" y2="610.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="550.0" cy="586.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="563" y="561" font-size="13" text-anchor="start" font-weight="bold">1</text>
+<text x="563" y="589" font-size="13" text-anchor="start" font-weight="bold">0..*</text>
+<text x="541.0" y="574.0" font-size="12" font-style="italic" text-anchor="end">worn as</text>
+<polyline points="690,480 740,480 740,600 790,600" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="698.0" y1="472.0" x2="698.0" y2="488.0" stroke="#000" stroke-width="1.8"/>
+<line x1="704.0" y1="472.0" x2="704.0" y2="488.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="600.0" x2="790.0" y2="609.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="600.0" x2="790.0" y2="591.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="600.0" x2="790.0" y2="600.0" stroke="#000" stroke-width="1.8"/>
+<line x1="770.0" y1="608.0" x2="770.0" y2="592.0" stroke="#000" stroke-width="1.8"/>
+<text x="726" y="473" font-size="13" text-anchor="middle" font-weight="bold">1</text>
+<text x="754" y="593" font-size="13" text-anchor="middle" font-weight="bold">1..*</text>
+<text x="731.0" y="544.0" font-size="12" font-style="italic" text-anchor="end">contains</text>
+<polyline points="930,470 930,550" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="938.0" y1="478.0" x2="922.0" y2="478.0" stroke="#000" stroke-width="1.8"/>
+<line x1="938.0" y1="484.0" x2="922.0" y2="484.0" stroke="#000" stroke-width="1.8"/>
+<line x1="930.0" y1="536.0" x2="921.0" y2="550.0" stroke="#000" stroke-width="1.8"/>
+<line x1="930.0" y1="536.0" x2="939.0" y2="550.0" stroke="#000" stroke-width="1.8"/>
+<line x1="930.0" y1="536.0" x2="930.0" y2="550.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="930.0" cy="526.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="943" y="501" font-size="13" text-anchor="start" font-weight="bold">1</text>
+<text x="943" y="529" font-size="13" text-anchor="start" font-weight="bold">0..*</text>
+<text x="921.0" y="514.0" font-size="12" font-style="italic" text-anchor="end">used in</text>
+<polyline points="1070,260 1170,260" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="1078.0" y1="252.0" x2="1078.0" y2="268.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1084.0" y1="252.0" x2="1084.0" y2="268.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="260.0" x2="1170.0" y2="269.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="260.0" x2="1170.0" y2="251.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="260.0" x2="1170.0" y2="260.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1150.0" y1="268.0" x2="1150.0" y2="252.0" stroke="#000" stroke-width="1.8"/>
+<text x="1106" y="253" font-size="13" text-anchor="middle" font-weight="bold">1</text>
+<text x="1134" y="253" font-size="13" text-anchor="middle" font-weight="bold">1..*</text>
+<text x="1120.0" y="277.0" font-size="12" font-style="italic" text-anchor="middle">has</text>
+<polyline points="1070,420 1170,420" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="1078.0" y1="412.0" x2="1078.0" y2="428.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1084.0" y1="412.0" x2="1084.0" y2="428.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="420.0" x2="1170.0" y2="429.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="420.0" x2="1170.0" y2="411.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="420.0" x2="1170.0" y2="420.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="1146.0" cy="420.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="1106" y="413" font-size="13" text-anchor="middle" font-weight="bold">1</text>
+<text x="1134" y="413" font-size="13" text-anchor="middle" font-weight="bold">0..*</text>
+<text x="1120.0" y="437.0" font-size="12" font-style="italic" text-anchor="middle">sold as</text>
+<polyline points="1070,455 1120,455 1120,720 1170,720" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="1078.0" y1="447.0" x2="1078.0" y2="463.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1084.0" y1="447.0" x2="1084.0" y2="463.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="720.0" x2="1170.0" y2="729.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="720.0" x2="1170.0" y2="711.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="720.0" x2="1170.0" y2="720.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1150.0" y1="728.0" x2="1150.0" y2="712.0" stroke="#000" stroke-width="1.8"/>
+<text x="1106" y="448" font-size="13" text-anchor="middle" font-weight="bold">1</text>
+<text x="1134" y="713" font-size="13" text-anchor="middle" font-weight="bold">1..*</text>
+<rect x="1088" y="630" width="64" height="18" fill="#fff"/>
+<text x="1120" y="644" font-size="12" font-style="italic" text-anchor="middle">comes in</text>
+<polyline points="1170,840 1070,840" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="1162.0" y1="848.0" x2="1162.0" y2="832.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1156.0" y1="848.0" x2="1156.0" y2="832.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1084.0" y1="840.0" x2="1070.0" y2="831.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1084.0" y1="840.0" x2="1070.0" y2="849.0" stroke="#000" stroke-width="1.8"/>
+<line x1="1084.0" y1="840.0" x2="1070.0" y2="840.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="1094.0" cy="840.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="1134" y="833" font-size="13" text-anchor="middle" font-weight="bold">1</text>
+<text x="1106" y="833" font-size="13" text-anchor="middle" font-weight="bold">0..*</text>
+<text x="1120.0" y="857.0" font-size="12" font-style="italic" text-anchor="middle">scored in</text>
+<polyline points="170,450 170,900 790,900" fill="none" stroke="#000" stroke-width="1.8"/>
+<line x1="178.0" y1="458.0" x2="162.0" y2="458.0" stroke="#000" stroke-width="1.8"/>
+<line x1="178.0" y1="464.0" x2="162.0" y2="464.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="900.0" x2="790.0" y2="909.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="900.0" x2="790.0" y2="891.0" stroke="#000" stroke-width="1.8"/>
+<line x1="776.0" y1="900.0" x2="790.0" y2="900.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="766.0" cy="900.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="183" y="481" font-size="13" text-anchor="start" font-weight="bold">1</text>
+<text x="754" y="893" font-size="13" text-anchor="middle" font-weight="bold">0..*</text>
+<text x="480.0" y="917.0" font-size="12" font-style="italic" text-anchor="middle">scored in</text>
+<rect x="30" y="190" width="280" height="260" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="30" y1="222" x2="310" y2="222" stroke="#000" stroke-width="1.5"/>
+<text x="170.0" y="212" font-size="16" font-weight="bold" text-anchor="middle">BodyProfile</text>
+<text x="38" y="240" font-size="11" font-weight="bold">PK</text>
+<text x="96" y="240" font-size="13" text-decoration="underline">profile_id</text>
+<text x="302" y="240" font-size="11" text-anchor="end">UUID</text>
+<text x="38" y="260" font-size="11" font-weight="bold">FK·IX</text>
+<text x="96" y="260" font-size="13">user_id</text>
+<text x="302" y="260" font-size="11" text-anchor="end">UUID</text>
+<text x="38" y="280" font-size="11" font-weight="bold"></text>
+<text x="96" y="280" font-size="13">captured_at</text>
+<text x="302" y="280" font-size="11" text-anchor="end">TIMESTAMP</text>
+<text x="38" y="300" font-size="11" font-weight="bold"></text>
+<text x="96" y="300" font-size="13">height_cm</text>
+<text x="302" y="300" font-size="11" text-anchor="end">REAL</text>
+<text x="38" y="320" font-size="11" font-weight="bold"></text>
+<text x="96" y="320" font-size="13">chest_cm</text>
+<text x="302" y="320" font-size="11" text-anchor="end">REAL</text>
+<text x="38" y="340" font-size="11" font-weight="bold"></text>
+<text x="96" y="340" font-size="13">waist_cm</text>
+<text x="302" y="340" font-size="11" text-anchor="end">REAL</text>
+<text x="38" y="360" font-size="11" font-weight="bold"></text>
+<text x="96" y="360" font-size="13">hips_cm</text>
+<text x="302" y="360" font-size="11" text-anchor="end">REAL</text>
+<text x="38" y="380" font-size="11" font-weight="bold"></text>
+<text x="96" y="380" font-size="13">shoulder_cm</text>
+<text x="302" y="380" font-size="11" text-anchor="end">REAL</text>
+<text x="38" y="400" font-size="11" font-weight="bold"></text>
+<text x="96" y="400" font-size="13">inseam_cm</text>
+<text x="302" y="400" font-size="11" text-anchor="end">REAL</text>
+<text x="38" y="420" font-size="11" font-weight="bold"></text>
+<text x="96" y="420" font-size="13">confidence</text>
+<text x="302" y="420" font-size="11" text-anchor="end">REAL 0–1</text>
+<text x="38" y="440" font-size="11" font-weight="bold">IX</text>
+<text x="96" y="440" font-size="13">is_current</text>
+<text x="302" y="440" font-size="11" text-anchor="end">BOOL</text>
+<rect x="410" y="190" width="280" height="120" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="410" y1="222" x2="690" y2="222" stroke="#000" stroke-width="1.5"/>
+<text x="550.0" y="212" font-size="16" font-weight="bold" text-anchor="middle">User</text>
+<text x="418" y="240" font-size="11" font-weight="bold">PK</text>
+<text x="476" y="240" font-size="13" text-decoration="underline">user_id</text>
+<text x="682" y="240" font-size="11" text-anchor="end">UUID</text>
+<text x="418" y="260" font-size="11" font-weight="bold"></text>
+<text x="476" y="260" font-size="13">display_name</text>
+<text x="682" y="260" font-size="11" text-anchor="end">TEXT</text>
+<text x="418" y="280" font-size="11" font-weight="bold"></text>
+<text x="476" y="280" font-size="13">monthly_budget</text>
+<text x="682" y="280" font-size="11" text-anchor="end">DECIMAL</text>
+<text x="418" y="300" font-size="11" font-weight="bold"></text>
+<text x="476" y="300" font-size="13">created_at</text>
+<text x="682" y="300" font-size="11" text-anchor="end">TIMESTAMP</text>
+<rect x="410" y="390" width="280" height="140" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="410" y1="422" x2="690" y2="422" stroke="#000" stroke-width="1.5"/>
+<text x="550.0" y="412" font-size="16" font-weight="bold" text-anchor="middle">Outfit</text>
+<text x="418" y="440" font-size="11" font-weight="bold">PK</text>
+<text x="476" y="440" font-size="13" text-decoration="underline">outfit_id</text>
+<text x="682" y="440" font-size="11" text-anchor="end">UUID</text>
+<text x="418" y="460" font-size="11" font-weight="bold">FK·IX</text>
+<text x="476" y="460" font-size="13">user_id</text>
+<text x="682" y="460" font-size="11" text-anchor="end">UUID</text>
+<text x="418" y="480" font-size="11" font-weight="bold"></text>
+<text x="476" y="480" font-size="13">occasion</text>
+<text x="682" y="480" font-size="11" text-anchor="end">ENUM</text>
+<text x="418" y="500" font-size="11" font-weight="bold"></text>
+<text x="476" y="500" font-size="13">created_by</text>
+<text x="682" y="500" font-size="11" text-anchor="end">ENUM</text>
+<text x="418" y="520" font-size="11" font-weight="bold"></text>
+<text x="476" y="520" font-size="13">created_at</text>
+<text x="682" y="520" font-size="11" text-anchor="end">TIMESTAMP</text>
+<rect x="410" y="610" width="280" height="100" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="410" y1="642" x2="690" y2="642" stroke="#000" stroke-width="1.5"/>
+<text x="550.0" y="632" font-size="16" font-weight="bold" text-anchor="middle">WearEvent</text>
+<text x="418" y="660" font-size="11" font-weight="bold">PK</text>
+<text x="476" y="660" font-size="13" text-decoration="underline">wear_id</text>
+<text x="682" y="660" font-size="11" text-anchor="end">UUID</text>
+<text x="418" y="680" font-size="11" font-weight="bold">FK·IX</text>
+<text x="476" y="680" font-size="13">outfit_id</text>
+<text x="682" y="680" font-size="11" text-anchor="end">UUID</text>
+<text x="418" y="700" font-size="11" font-weight="bold">IX</text>
+<text x="476" y="700" font-size="13">worn_on</text>
+<text x="682" y="700" font-size="11" text-anchor="end">DATE</text>
+<rect x="790" y="190" width="280" height="280" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="790" y1="222" x2="1070" y2="222" stroke="#000" stroke-width="1.5"/>
+<text x="930.0" y="212" font-size="16" font-weight="bold" text-anchor="middle">Garment</text>
+<text x="798" y="240" font-size="11" font-weight="bold">PK</text>
+<text x="856" y="240" font-size="13" text-decoration="underline">garment_id</text>
+<text x="1062" y="240" font-size="11" text-anchor="end">UUID</text>
+<text x="798" y="260" font-size="11" font-weight="bold">FK·IX</text>
+<text x="856" y="260" font-size="13">owner_user_id</text>
+<text x="1062" y="260" font-size="11" text-anchor="end">UUID NULL</text>
+<text x="798" y="280" font-size="11" font-weight="bold"></text>
+<text x="856" y="280" font-size="13">source</text>
+<text x="1062" y="280" font-size="11" text-anchor="end">ENUM</text>
+<text x="798" y="300" font-size="11" font-weight="bold">IX</text>
+<text x="856" y="300" font-size="13">category</text>
+<text x="1062" y="300" font-size="11" text-anchor="end">ENUM</text>
+<text x="798" y="320" font-size="11" font-weight="bold">IX</text>
+<text x="856" y="320" font-size="13">status</text>
+<text x="1062" y="320" font-size="11" text-anchor="end">ENUM</text>
+<text x="798" y="340" font-size="11" font-weight="bold"></text>
+<text x="856" y="340" font-size="13">fit_type</text>
+<text x="1062" y="340" font-size="11" text-anchor="end">ENUM</text>
+<text x="798" y="360" font-size="11" font-weight="bold"></text>
+<text x="856" y="360" font-size="13">stretch_pct</text>
+<text x="1062" y="360" font-size="11" text-anchor="end">REAL 0–40</text>
+<text x="798" y="380" font-size="11" font-weight="bold"></text>
+<text x="856" y="380" font-size="13">formality</text>
+<text x="1062" y="380" font-size="11" text-anchor="end">INT 1–5</text>
+<text x="798" y="400" font-size="11" font-weight="bold"></text>
+<text x="856" y="400" font-size="13">colors</text>
+<text x="1062" y="400" font-size="11" text-anchor="end">JSON text[]</text>
+<text x="798" y="420" font-size="11" font-weight="bold"></text>
+<text x="856" y="420" font-size="13">season</text>
+<text x="1062" y="420" font-size="11" text-anchor="end">ENUM</text>
+<text x="798" y="440" font-size="11" font-weight="bold">UQ</text>
+<text x="856" y="440" font-size="13">photo_hash</text>
+<text x="1062" y="440" font-size="11" text-anchor="end">TEXT (pHash)</text>
+<text x="798" y="460" font-size="11" font-weight="bold"></text>
+<text x="856" y="460" font-size="13">created_at</text>
+<text x="1062" y="460" font-size="11" text-anchor="end">TIMESTAMP</text>
+<rect x="790" y="550" width="280" height="100" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="790" y1="582" x2="1070" y2="582" stroke="#000" stroke-width="1.5"/>
+<text x="930.0" y="572" font-size="16" font-weight="bold" text-anchor="middle">OutfitItem</text>
+<text x="798" y="600" font-size="11" font-weight="bold">PK·FK</text>
+<text x="856" y="600" font-size="13" text-decoration="underline">outfit_id</text>
+<text x="1062" y="600" font-size="11" text-anchor="end">UUID</text>
+<text x="798" y="620" font-size="11" font-weight="bold">PK·FK·IX</text>
+<text x="856" y="620" font-size="13" text-decoration="underline">garment_id</text>
+<text x="1062" y="620" font-size="11" text-anchor="end">UUID</text>
+<text x="798" y="640" font-size="11" font-weight="bold"></text>
+<text x="856" y="640" font-size="13">layer_order</text>
+<text x="1062" y="640" font-size="11" text-anchor="end">INT 0–4</text>
+<rect x="1170" y="190" width="280" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="1170" y1="222" x2="1450" y2="222" stroke="#000" stroke-width="1.5"/>
+<text x="1310.0" y="212" font-size="16" font-weight="bold" text-anchor="middle">GarmentAsset</text>
+<text x="1178" y="240" font-size="11" font-weight="bold">PK</text>
+<text x="1236" y="240" font-size="13" text-decoration="underline">asset_id</text>
+<text x="1442" y="240" font-size="11" text-anchor="end">UUID</text>
+<text x="1178" y="260" font-size="11" font-weight="bold">FK·IX</text>
+<text x="1236" y="260" font-size="13">garment_id</text>
+<text x="1442" y="260" font-size="11" text-anchor="end">UUID</text>
+<text x="1178" y="280" font-size="11" font-weight="bold"></text>
+<text x="1236" y="280" font-size="13">kind</text>
+<text x="1442" y="280" font-size="11" text-anchor="end">ENUM</text>
+<text x="1178" y="300" font-size="11" font-weight="bold"></text>
+<text x="1236" y="300" font-size="13">uri</text>
+<text x="1442" y="300" font-size="11" text-anchor="end">TEXT path</text>
+<text x="1178" y="320" font-size="11" font-weight="bold"></text>
+<text x="1236" y="320" font-size="13">sha256</text>
+<text x="1442" y="320" font-size="11" text-anchor="end">TEXT</text>
+<text x="1178" y="340" font-size="11" font-weight="bold"></text>
+<text x="1236" y="340" font-size="13">width_px</text>
+<text x="1442" y="340" font-size="11" text-anchor="end">INT</text>
+<text x="1178" y="360" font-size="11" font-weight="bold"></text>
+<text x="1236" y="360" font-size="13">height_px</text>
+<text x="1442" y="360" font-size="11" text-anchor="end">INT</text>
+<rect x="1170" y="400" width="280" height="200" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="1170" y1="432" x2="1450" y2="432" stroke="#000" stroke-width="1.5"/>
+<text x="1310.0" y="422" font-size="16" font-weight="bold" text-anchor="middle">Listing</text>
+<text x="1178" y="450" font-size="11" font-weight="bold">PK</text>
+<text x="1236" y="450" font-size="13" text-decoration="underline">listing_id</text>
+<text x="1442" y="450" font-size="11" text-anchor="end">UUID</text>
+<text x="1178" y="470" font-size="11" font-weight="bold">FK·IX</text>
+<text x="1236" y="470" font-size="13">garment_id</text>
+<text x="1442" y="470" font-size="11" text-anchor="end">UUID</text>
+<text x="1178" y="490" font-size="11" font-weight="bold">UQ1</text>
+<text x="1236" y="490" font-size="13">shop</text>
+<text x="1442" y="490" font-size="11" text-anchor="end">TEXT</text>
+<text x="1178" y="510" font-size="11" font-weight="bold">UQ1</text>
+<text x="1236" y="510" font-size="13">sku</text>
+<text x="1442" y="510" font-size="11" text-anchor="end">TEXT</text>
+<text x="1178" y="530" font-size="11" font-weight="bold"></text>
+<text x="1236" y="530" font-size="13">price</text>
+<text x="1442" y="530" font-size="11" text-anchor="end">DECIMAL</text>
+<text x="1178" y="550" font-size="11" font-weight="bold"></text>
+<text x="1236" y="550" font-size="13">currency</text>
+<text x="1442" y="550" font-size="11" text-anchor="end">CHAR(3)</text>
+<text x="1178" y="570" font-size="11" font-weight="bold"></text>
+<text x="1236" y="570" font-size="13">url</text>
+<text x="1442" y="570" font-size="11" text-anchor="end">TEXT</text>
+<text x="1178" y="590" font-size="11" font-weight="bold"></text>
+<text x="1236" y="590" font-size="13">fetched_at</text>
+<text x="1442" y="590" font-size="11" text-anchor="end">TIMESTAMP</text>
+<rect x="1170" y="650" width="280" height="220" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="1170" y1="682" x2="1450" y2="682" stroke="#000" stroke-width="1.5"/>
+<text x="1310.0" y="672" font-size="16" font-weight="bold" text-anchor="middle">GarmentSize</text>
+<text x="1178" y="700" font-size="11" font-weight="bold">PK</text>
+<text x="1236" y="700" font-size="13" text-decoration="underline">size_id</text>
+<text x="1442" y="700" font-size="11" text-anchor="end">UUID</text>
+<text x="1178" y="720" font-size="11" font-weight="bold">FK·UQ1</text>
+<text x="1236" y="720" font-size="13">garment_id</text>
+<text x="1442" y="720" font-size="11" text-anchor="end">UUID</text>
+<text x="1178" y="740" font-size="11" font-weight="bold">UQ1</text>
+<text x="1236" y="740" font-size="13">size_label</text>
+<text x="1442" y="740" font-size="11" text-anchor="end">TEXT</text>
+<text x="1178" y="760" font-size="11" font-weight="bold"></text>
+<text x="1236" y="760" font-size="13">chest_cm</text>
+<text x="1442" y="760" font-size="11" text-anchor="end">REAL NULL</text>
+<text x="1178" y="780" font-size="11" font-weight="bold"></text>
+<text x="1236" y="780" font-size="13">waist_cm</text>
+<text x="1442" y="780" font-size="11" text-anchor="end">REAL NULL</text>
+<text x="1178" y="800" font-size="11" font-weight="bold"></text>
+<text x="1236" y="800" font-size="13">hips_cm</text>
+<text x="1442" y="800" font-size="11" text-anchor="end">REAL NULL</text>
+<text x="1178" y="820" font-size="11" font-weight="bold"></text>
+<text x="1236" y="820" font-size="13">length_cm</text>
+<text x="1442" y="820" font-size="11" text-anchor="end">REAL NULL</text>
+<text x="1178" y="840" font-size="11" font-weight="bold"></text>
+<text x="1236" y="840" font-size="13">shoulder_cm</text>
+<text x="1442" y="840" font-size="11" text-anchor="end">REAL NULL</text>
+<text x="1178" y="860" font-size="11" font-weight="bold"></text>
+<text x="1236" y="860" font-size="13">is_owned</text>
+<text x="1442" y="860" font-size="11" text-anchor="end">BOOL</text>
+<rect x="790" y="760" width="280" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<line x1="790" y1="792" x2="1070" y2="792" stroke="#000" stroke-width="1.5"/>
+<text x="930.0" y="782" font-size="16" font-weight="bold" text-anchor="middle">FitResult</text>
+<text x="798" y="810" font-size="11" font-weight="bold">PK</text>
+<text x="856" y="810" font-size="13" text-decoration="underline">fit_id</text>
+<text x="1062" y="810" font-size="11" text-anchor="end">UUID</text>
+<text x="798" y="830" font-size="11" font-weight="bold">FK·UQ1</text>
+<text x="856" y="830" font-size="13">profile_id</text>
+<text x="1062" y="830" font-size="11" text-anchor="end">UUID</text>
+<text x="798" y="850" font-size="11" font-weight="bold">FK·UQ1</text>
+<text x="856" y="850" font-size="13">size_id</text>
+<text x="1062" y="850" font-size="11" text-anchor="end">UUID</text>
+<text x="798" y="870" font-size="11" font-weight="bold">UQ1</text>
+<text x="856" y="870" font-size="13">algo_version</text>
+<text x="1062" y="870" font-size="11" text-anchor="end">INT</text>
+<text x="798" y="890" font-size="11" font-weight="bold"></text>
+<text x="856" y="890" font-size="13">overall</text>
+<text x="1062" y="890" font-size="11" text-anchor="end">ENUM</text>
+<text x="798" y="910" font-size="11" font-weight="bold"></text>
+<text x="856" y="910" font-size="13">zones</text>
+<text x="1062" y="910" font-size="11" text-anchor="end">JSON</text>
+<text x="798" y="930" font-size="11" font-weight="bold"></text>
+<text x="856" y="930" font-size="13">computed_at</text>
+<text x="1062" y="930" font-size="11" text-anchor="end">TIMESTAMP</text>
+<rect x="20" y="990" width="1440" height="140" fill="#fff" stroke="#000" stroke-dasharray="8,5"/>
+<text x="36" y="1014" font-size="15" font-weight="bold">Legend</text>
+<line x1="40" y1="1042" x2="110" y2="1042" stroke="#000" stroke-width="1.8"/>
+<line x1="102.0" y1="1050.0" x2="102.0" y2="1034.0" stroke="#000" stroke-width="1.8"/>
+<line x1="96.0" y1="1050.0" x2="96.0" y2="1034.0" stroke="#000" stroke-width="1.8"/>
+<text x="122" y="1047" font-size="13">exactly one (1)</text>
+<line x1="340" y1="1042" x2="410" y2="1042" stroke="#000" stroke-width="1.8"/>
+<line x1="402.0" y1="1050.0" x2="402.0" y2="1034.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="390.0" cy="1042.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="422" y="1047" font-size="13">zero or one (0..1)</text>
+<line x1="640" y1="1042" x2="710" y2="1042" stroke="#000" stroke-width="1.8"/>
+<line x1="696.0" y1="1042.0" x2="710.0" y2="1051.0" stroke="#000" stroke-width="1.8"/>
+<line x1="696.0" y1="1042.0" x2="710.0" y2="1033.0" stroke="#000" stroke-width="1.8"/>
+<line x1="696.0" y1="1042.0" x2="710.0" y2="1042.0" stroke="#000" stroke-width="1.8"/>
+<line x1="690.0" y1="1050.0" x2="690.0" y2="1034.0" stroke="#000" stroke-width="1.8"/>
+<text x="722" y="1047" font-size="13">one or more (1..*)</text>
+<line x1="940" y1="1042" x2="1010" y2="1042" stroke="#000" stroke-width="1.8"/>
+<line x1="996.0" y1="1042.0" x2="1010.0" y2="1051.0" stroke="#000" stroke-width="1.8"/>
+<line x1="996.0" y1="1042.0" x2="1010.0" y2="1033.0" stroke="#000" stroke-width="1.8"/>
+<line x1="996.0" y1="1042.0" x2="1010.0" y2="1042.0" stroke="#000" stroke-width="1.8"/>
+<circle cx="986.0" cy="1042.0" r="5" fill="#fff" stroke="#000" stroke-width="1.8"/>
+<text x="1022" y="1047" font-size="13">zero or more (0..*)</text>
+<text x="36" y="1078" font-size="13">Box = entity (one table). Rows = key attributes only, not every column. Line = relationship; italic word reads from the first-named entity.</text>
+<text x="36" y="1097" font-size="13">Cardinality is drawn at BOTH ends in crow&#x27;s-foot notation and repeated as text (1, 0..1, 1..*, 0..*). The symbol nearest an entity says how many of THAT entity.</text>
+<text x="36" y="1116" font-size="13">PK = primary key (also underlined) · FK = foreign key · UQ = unique · UQ1 = fields unique together · IX = indexed for lookup.</text>
+</svg>

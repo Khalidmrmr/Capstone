@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D1 Detailed Design</title>
+<style>
+  @page { size: letter landscape; margin: 0.5in 0.55in; }
+  body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; line-height: 1.38; margin: 0; background: #fff; }
+  h1 { font-size: 20pt; margin: 0 0 2pt; }
+  h2 { font-size: 14pt; margin: 0 0 6pt; padding-bottom: 3pt; border-bottom: 1.5px solid #000; color: #000; }
+  h3 { font-size: 11pt; margin: 10pt 0 4pt; }
+  h4 { font-size: 10pt; margin: 8pt 0 2pt; }
+  p { margin: 4pt 0 6pt; }
+  section { break-before: page; }
+  section.first { break-before: auto; }
+  .keep { break-inside: avoid; }
+  .sub { color: #000; margin-bottom: 10pt; }
+  .goal { border: 1px solid #000; background: #fff; padding: 8pt 12pt; margin: 8pt 0; }
+  
+  table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: 4pt 0 8pt; }
+  th, td { border: 1px solid #000; padding: 3pt 5pt; vertical-align: top; text-align: left; }
+  th { background: #fff; font-weight: bold; }
+  tr { break-inside: avoid; }
+  td.id { font-weight: bold; white-space: nowrap; }
+  code { font-family: Arial, sans-serif; font-size: inherit; }
+  pre { font-family: Arial, sans-serif; font-size: 8.4pt; }
+  pre { background: #fff; border: 1px solid #000; padding: 6pt 8pt; margin: 4pt 0; white-space: pre-wrap; }
+  img.diagram { width: 100%; max-height: 6.4in; object-fit: contain; display: block; }
+  ul, ol { margin: 3pt 0 6pt 16pt; padding: 0; } li { margin: 1pt 0; }
+  .small { font-size: 8.6pt; color: #000; }
+  .two { display: flex; gap: 16pt; } .two > div { flex: 1; min-width: 0; }
+  dl.alg { margin: 0; } dl.alg dt { font-weight: bold; margin-top: 5pt; } dl.alg dd { margin: 1pt 0 0 0; }
+</style>
+</head>
+<body>
+
+<section class="first">
+  <h1>D1 Detailed Design — Smart Closet Mirror</h1>
+  <div class="sub">Assignment #4 (Design Diagrams), part D1 · Team bullriders · Arya Garg, Clare Hooper, Rehman Khalid, Jace Schubert · Week 6</div>
+
+  <h2>1. Header, scope, and conventions</h2>
+  <p><b>Project title:</b> Smart Closet Mirror</p>
+  <div class="goal"><b>Goal statement.</b> Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items on their body, and tells them what to wear today and whether a new piece is worth buying.</div>
+  <p><b>Scope.</b> This document details <b>L4 Wardrobe</b> (owner: Jace Schubert), which holds the data model, and <b>L5 Try-on</b> (owner: Arya Garg), whose fit check and live rendering break the product if they are slow or wrong; L1 Capture, L2 Perception, L3 Body, L6 Decision, L7 Connectors, L8 Presentation, and the shared planes are deferred to D2.</p>
+
+  <h3>Conventions for every figure and table</h3>
+  <table>
+    <tr><th style="width:24%">Item</th><th>Meaning</th></tr>
+    <tr><td>Figure 1 — box</td><td>An entity, stored as one table. The top row is the entity name; the rows below are the key attributes that affect behaviour, not every column. The right-hand column gives each attribute's type.</td></tr>
+    <tr><td>Figure 1 — line</td><td>A relationship between two entities. The italic word on the line reads from the first-named entity to the second (for example, "Garment <i>comes in</i> GarmentSize").</td></tr>
+    <tr><td>Figure 1 — keys</td><td><b>PK</b> = primary key, also underlined. <b>FK</b> = foreign key. <b>UQ</b> = unique. <b>UQ1</b> = these fields are unique together. <b>IX</b> = indexed for fast lookup. A tag like FK·IX means both.</td></tr>
+    <tr><td>Figure 1 — cardinality</td><td>Drawn at <b>both ends</b> of every line in crow's-foot notation and repeated as text. Two bars = exactly one (1). Circle + bar = zero or one (0..1). Bar + crow's foot = one or more (1..*). Circle + crow's foot = zero or more (0..*). The symbol next to an entity says how many of <i>that</i> entity relate to one of the other.</td></tr>
+    <tr><td>Types and units</td><td>UUID = 128-bit id as text. All lengths are centimetres (<code>_cm</code>), all times are UTC (RFC 3339 in HTTP, nanoseconds since epoch on the bus), prices are decimal strings with an ISO 4217 currency code.</td></tr>
+    <tr><td>Interface IDs (I1–I17)</td><td>Same numbering as D0. D1 does not add or remove interfaces.</td></tr>
+  </table>
+
+  <h3>What changed since D0</h3>
+  <ul>
+    <li><b>L5 rendering method fixed.</b> L5 draws garments as a 2-D warp of the garment photo driven by the live pose (I10). The avatar from L3 (I9) is used for sizing the fit check, not for 3-D rendering. Decision record in part 3, algorithm A2.</li>
+    <li><b>FitReport (I12) extended</b> with a recommended size and per-size results. It is now versioned as <code>fit_report/1</code> (part 5).</li>
+    <li><b>Garment photo cutout and anchor points</b> are produced by L4 when a photo is uploaded, so L5 never processes a raw photo during a live frame.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. Data model (the D1 diagram)</h2>
+  <img class="diagram" src="D1_data_model.svg" alt="D1 data model">
+  <p class="small">Figure 1. Source: <code>Design_Diagrams/D1_data_model.drawio</code>. Realistic size: one household, up to 4 users, about 300 closet garments, about 2,000 cached shop items, about 6 sizes each (≈ 14,000 GarmentSize rows), and up to ≈ 56,000 FitResult rows.</p>
+</section>
+
+<section>
+  <h3>Structural decisions</h3>
+  <table>
+    <tr><th style="width:24%">Decision</th><th>Why</th></tr>
+    <tr><td><b>GarmentSize is an entity</b>, not columns on Garment</td><td>A shop item comes in several sizes, each with its own measurements, and the fit check (A1) scores every size to recommend one. A closet item keeps one row with <code>is_owned = true</code>. Size values store the body measurement the size is made for, as shop size charts do.</td></tr>
+    <tr><td><b>BodyProfile is an entity</b>, not columns on User</td><td>Users re-measure. Keeping each profile lets a FitResult point to the exact measurements it used; <code>is_current</code> marks the one in use.</td></tr>
+    <tr><td><b>GarmentAsset is an entity</b>, not a photo column</td><td>One garment has several files (original photo, cutout, anchor points), each with its own hash and size. Files stay on disk; the table holds paths only, which keeps the database small.</td></tr>
+    <tr><td><b>Listing is an entity</b>, Garment → Listing is one-to-many</td><td>The same product can be sold by several shops at different prices, and prices change (<code>fetched_at</code>). Each listing is one shop's offer for one product, so it is not many-to-many.</td></tr>
+    <tr><td><b>Outfit ↔ Garment is many-to-many</b> through OutfitItem</td><td>An outfit has several garments and a garment appears in many outfits. The junction table also holds <code>layer_order</code> (shirt under jacket), which L5 needs to draw layers in order.</td></tr>
+    <tr><td><b>User → Garment is 0..1 to 0..*</b></td><td>A closet garment has exactly one owner. A shop garment has none (<code>owner_user_id = NULL</code>), so one table serves both and the fit check treats them the same. Shared garments between household members are out of scope.</td></tr>
+    <tr><td><b>WearEvent is an entity</b>, not a <code>last_worn</code> column</td><td>L6 needs history ("not worn in the last 7 days", "worn 3 times this month"), not just the last date.</td></tr>
+    <tr><td><b>FitResult is a cache entity</b></td><td>Scoring is cheap for one garment but L6 asks "what in my closet fits?" across thousands of sizes. Unique on (profile_id, size_id, algo_version): a new profile or a new algorithm version simply misses the cache.</td></tr>
+    <tr><td><b>colors is an attribute</b> (JSON list), not an entity</td><td>Only used to filter, never joined, and at most 5 values per garment.</td></tr>
+    <tr><td><b>Enum values</b></td><td>category {top, bottom, dress, outer, shoes}; status {active, incomplete, archived}; fit_type {slim, regular, relaxed}; source {closet, catalog}; asset kind {photo, cutout, anchors}; overall {tight, good, loose, unknown}. Stored as text with CHECK constraints.</td></tr>
+  </table>
+
+  <h3>Indexes</h3>
+  <table>
+    <tr><th style="width:34%">Index</th><th>Why</th></tr>
+    <tr><td>Garment (owner_user_id, status, category)</td><td>The closet list query runs on every phone and glass screen load.</td></tr>
+    <tr><td>Garment (photo_hash) UNIQUE</td><td>Duplicate upload check for I2 (409) in O(log n) instead of a full scan.</td></tr>
+    <tr><td>Listing (shop, sku) UNIQUE</td><td>L7's catalog feed (I16) upserts by shop + sku.</td></tr>
+    <tr><td>GarmentSize (garment_id, size_label) UNIQUE</td><td>Fetching all sizes of a garment for A1; also blocks duplicate size labels.</td></tr>
+    <tr><td>FitResult (profile_id, size_id, algo_version) UNIQUE</td><td>Cache lookup in A1. This is the hottest read in L5.</td></tr>
+    <tr><td>BodyProfile (user_id, is_current)</td><td>Fetching the current profile for each try-on request.</td></tr>
+    <tr><td>WearEvent (outfit_id), (worn_on); OutfitItem (garment_id)</td><td>L6's last-worn and "outfits using this garment" queries.</td></tr>
+    <tr><td><i>Not indexed:</i> colors, season, formality</td><td>Scanning about 300 closet rows takes under 1 ms; an index would only slow writes.</td></tr>
+  </table>
+
+  <p><b>Relational model: SQLite 3 in WAL mode, with image files on disk.</b> The data has real relationships with cardinality, and the design depends on uniqueness rules (duplicate photos, shop upserts, the fit cache), which a relational database enforces for us. A JSON or document store would push those checks into our code and would handle two writers poorly (the phone upload API and L7's catalog feed). A database server such as PostgreSQL is not needed for one household on one PC; SQLite is a single file with no server to run, and WAL mode lets L5 read while L4 writes. At 100× our size (≈ 1.4 M sizes, 5.6 M fit rows) the indexed lookups above stay in the millisecond range.</p>
+</section>
+
+<section>
+  <h2>3. Core algorithms</h2>
+  <p>Two computations break the product if they are wrong or slow: <b>A1</b> decides whether clothes fit, and the buy-or-skip verdict rests on it. <b>A2</b> draws the garment on the user every frame; if it lags, the mirror stops feeling like a mirror.</p>
+
+  <h3>A1. Fit evaluation and size recommendation (L5)</h3>
+  <dl class="alg">
+    <dt>1. What it is and the problem it solves</dt>
+    <dd>For each size of a garment, it compares the size's measurements to the user's body, zone by zone, and labels each zone tight, good, or loose. It then picks the best size. L6 uses the result for the buy-or-skip verdict, and L8 shows the reasons ("chest 1.5 cm tight").</dd>
+    <dt>2. Inputs and outputs (exact types)</dt>
+    <dd><b>In:</b> <code>profile: BodyProfile</code> {height_cm, chest_cm, waist_cm, hips_cm, shoulder_cm, inseam_cm: float; confidence: float 0–1}; <code>garment: {category: enum, fit_type: enum, stretch_pct: float 0–40}</code>; <code>sizes: list[GarmentSize]</code>, each {size_id: UUID, size_label: str, chest_cm, waist_cm, hips_cm, length_cm, shoulder_cm: float | None}; <code>bands: EaseTable</code>, a versioned config mapping (category, fit_type, zone) → (min_ease_cm: float, max_ease_cm: float).<br>
+    <b>Out:</b> <code>FitEvaluation</code> {recommended_size_id: UUID | None; sizes: list of {size_id: UUID, zones: dict[zone, enum{tight, good, loose, unknown}], ease_cm: dict[zone, float], overall: enum, score: float ≥ 0}; confidence: float 0–1; algo_version: int}.</dd>
+    <dt>How it works (a teammate could implement this)</dt>
+    <dd><ol>
+      <li>Reject the profile if confidence &lt; 0.7 or any measurement is outside human range (for example, chest outside 50–180 cm).</li>
+      <li>Pick the zones for the category: top → chest, waist, shoulder; bottom → waist, hips, inseam (against length_cm); dress → chest, waist, hips; outer → chest, shoulder; shoes → skipped (no foot measurement, all unknown).</li>
+      <li>For each size and zone with a value: effective size = size_cm × (1 + stretch_pct / 100) for circumference zones (chest, waist, hips) and size_cm for lengths. Ease = effective size − body measurement.</li>
+      <li>Look up the band for (category, fit_type, zone). Ease below min_ease → tight; above max_ease → loose; otherwise good. Missing value → unknown.</li>
+      <li>Score each size: the sum over known zones of weight × (distance outside the band)², with weights 2 for the main zone (chest for tops and outerwear, waist for bottoms and dresses) and 1 for the others. Inside the band costs 0.</li>
+      <li>overall = tight if any zone is tight, else loose if any is loose, else good; unknown if every zone is unknown.</li>
+      <li>Recommend the size with the lowest score among sizes with at least one known zone (ties are covered under edge cases). Confidence = profile.confidence × (known zones / total zones).</li>
+      <li>Write each size's result to FitResult; read from it first next time.</li>
+    </ol></dd>
+    <dt>3. Expected complexity</dt>
+    <dd>Per garment: O(S × Z), with S ≤ 10 sizes and Z ≤ 4 zones, so about 40 comparisons, far inside I12's 1.5 s timeout. The closet-wide query L6 makes is ≈ 2,300 garments × 6 sizes × 4 zones ≈ 55,000 comparisons: about 50 ms in plain Python, under 5 ms vectorised with NumPy. At 100× (≈ 5.5 M) plain Python takes several seconds, while NumPy plus the FitResult cache keeps it under 0.5 s and repeats are near 0. The 100× case does not change the design, because the cache already exists for this reason. Measure before tuning anything further.</dd>
+    <dt>4. Why this approach rather than the alternatives</dt>
+    <dd>A <b>cloth physics simulation</b> on the 3-D avatar needs sewing patterns we cannot get from a phone photo and takes seconds to minutes per garment. An <b>ML fit predictor</b> needs return and fit data we do not have. <b>Matching size labels only</b> ("you are an M") ignores how much sizes differ between brands. Ease bands use the data we actually have (size charts and Kinect measurements), run instantly, and explain themselves, which L6 needs for its reasons.</dd>
+    <dt>5. Edge cases</dt>
+    <dd><ul>
+      <li><b>Empty size list:</b> overall unknown, no recommendation, and L4 marks the garment <i>incomplete</i> so it is not offered for try-on.</li>
+      <li><b>Duplicate size labels:</b> blocked by the (garment_id, size_label) unique rule; L7's feed keeps the newest.</li>
+      <li><b>Ties</b> (scores within 0.01): prefer the size with no tight zones, then the one with fewer unknown zones, then the larger size (a loose garment can be worn, a tight one may not be).</li>
+      <li><b>Missing measurements:</b> those zones are unknown and left out of the score; the confidence output drops accordingly.</li>
+      <li><b>Low-confidence or out-of-range profile:</b> rejected with <code>PROFILE_LOW_CONFIDENCE</code>, and L8 asks the user to repeat the T-pose.</li>
+      <li><b>One-size items</b> ("OS"): a single size, scored normally.</li>
+      <li><b>Missing stretch:</b> treated as 0.</li>
+      <li><b>Units:</b> inch size charts are converted to cm by L7 before storage.</li>
+    </ul></dd>
+  </dl>
+</section>
+
+<section>
+  <h3>A2. Live garment overlay — pose-driven 2-D warp (L5)</h3>
+  <dl class="alg">
+    <dt>1. What it is and the problem it solves</dt>
+    <dd>Every frame, it bends the selected garment's cut-out photo to match the user's current pose and draws it over the camera image, so the glass shows the user wearing it. D0 sets a motion-to-glass budget of 250 ms with L5 allowed 80 ms; A2 gets 30 ms of that, encoding gets 25 ms, and 25 ms is slack.</dd>
+    <dt>2. Inputs and outputs (exact types)</dt>
+    <dd><b>In, per frame:</b> <code>LivePose</code> (I10) {seq: uint64, ts: int64 ns, joints: 20 × {x, y, z: float32 m in camera space, conf: float32 0–1}}; <code>mask: uint8[480][640]</code> (1 = person); <code>rgb: uint8[480][640][3]</code> (shared memory from I7).<br>
+    <b>In, per garment, prepared once by L4:</b> <code>cutout: uint8[H][W][4]</code> RGBA, H, W ≤ 1024; <code>anchors: dict[name, (u, v) float px]</code> for neck, shoulders, elbows, wrists, hips, knees, ankles; <code>fit: FitEvaluation</code> from A1; <code>layer_order: int 0–4</code>. <b>Constants:</b> Kinect intrinsics fx, fy, cx, cy: float.<br>
+    <b>Out:</b> <code>frame: uint8[720][1280][3]</code>, mirrored, passed to the H.264 encoder (I4).</dd>
+    <dt>How it works</dt>
+    <dd><ol>
+      <li><b>Once per garment:</b> lay an 8 × 8 grid of control points over the cutout, add the anchors, and triangulate. Give each point weights to its nearest "bones" (shoulder→elbow, hip→knee, and so on), like 2-D skinning.</li>
+      <li><b>Each frame:</b> smooth every joint with a One Euro filter (removes jitter without adding lag), then project the joints to pixels and scale them to 1280 × 720.</li>
+      <li>For each bone, compute the 2-D rotate-scale-move transform from its rest position in the photo to the live joints. Move each mesh point by its weighted blend of bone transforms.</li>
+      <li>Apply the fit: widen a loose zone by its ease, narrow a tight one, so the user sees the fit, not just the garment.</li>
+      <li>Draw the textured triangles on the GPU into an off-screen image, garments in layer_order.</li>
+      <li><b>Occlusion:</b> where a forearm joint is closer to the camera than the torso, redraw the user's own arm pixels (from the mask) over the garment.</li>
+      <li>Blend over the mirrored camera image and hand the result to the encoder.</li>
+    </ol></dd>
+    <dt>3. Expected complexity</dt>
+    <dd>CPU: O(J + G × V) per frame, with J = 20 joints, V ≈ 100 mesh points, and G ≤ 4 garments, so about 400 point transforms, which takes microseconds. GPU: O(G × P), with P = 1280 × 720 ≈ 0.92 M pixels, so ≤ 3.7 M pixel operations, about 2 ms on a mid-range GPU. Copying the camera image to the GPU (≈ 0.9 MB) and reading the result back (≈ 2.8 MB) are the largest fixed costs, so these are what we measure first. Closet size does not affect per-frame cost, since only the garments on screen are drawn. At 100× the mesh detail (10,000 points) the CPU step is still under 5 ms. The frame budget holds at 100× because what grows is data at rest, not work per frame.</dd>
+    <dt>4. Why this approach rather than the alternatives</dt>
+    <dd>A <b>3-D cloth simulation</b> on the avatar needs 3-D garment models that phone photos cannot give us, and it runs far below 30 fps. <b>Neural image try-on</b> models (VITON-HD and similar) take hundreds of milliseconds per frame on large GPUs, flicker from frame to frame, and are released under non-commercial licences. <b>Pasting the photo with one rigid transform</b> is cheap, but sleeves come off the arms as soon as the user moves. The skinned 2-D warp works from the photos we have and fits the frame budget.</dd>
+    <dt>5. Edge cases</dt>
+    <dd><ul>
+      <li><b>Nobody in view</b>, or tracking lost for &gt; 0.5 s: no garment is drawn, and the glass shows the plain camera image.</li>
+      <li><b>Empty garment selection:</b> the plain camera image passes straight through.</li>
+      <li><b>Joint confidence &lt; 0.5:</b> hold the last smoothed position for up to 10 frames, then hide the parts that depend on it (for example, one sleeve).</li>
+      <li><b>User turned sideways</b> (shoulder width under 40% of the T-pose width): fade the garment and show "face the mirror".</li>
+      <li><b>Two people in view:</b> follow the body nearest the centre with the smallest depth, and ignore the other.</li>
+      <li><b>Missing anchors</b> (for example, no elbow marked): fall back to fewer bones, so the sleeve moves rigidly with the shoulder.</li>
+      <li><b>Frame older than 100 ms:</b> skip it and resend the last frame, so the delay does not pile up.</li>
+      <li><b>GPU context lost:</b> restart the renderer and show the plain video meanwhile.</li>
+      <li><b>Duplicate garment ids</b> in a request: drawn once.</li>
+    </ul></dd>
+  </dl>
+</section>
+
+<section>
+  <h2>4. Build-versus-reuse decisions</h2>
+  <table>
+    <tr><th style="width:15%">Piece</th><th style="width:6%">Build / reuse</th><th style="width:15%">Library or service</th><th style="width:10%">Licence</th><th style="width:27%">Checks: maturity · performance · fit</th><th>Reason</th></tr>
+    <tr><td colspan="6"><b>L4 Wardrobe</b></td></tr>
+    <tr><td>Phone-facing HTTP API (I2)</td><td>Reuse</td><td>FastAPI + Uvicorn</td><td>MIT / BSD-3</td><td>Released 2018, very widely used · thousands of requests/s against our handful · Python, async</td><td>Validation and API docs come built in.</td></tr>
+    <tr><td>Input and record validation</td><td>Reuse</td><td>Pydantic v2</td><td>MIT</td><td>Mature · Rust core, fast · FastAPI uses it already</td><td>One schema shared by the API and the bus messages.</td></tr>
+    <tr><td>Database engine</td><td>Reuse</td><td>SQLite 3 (Python sqlite3)</td><td>Public domain</td><td>Decades old · far beyond our size · single file</td><td>No server to run or back up.</td></tr>
+    <tr><td>Data access and schema migrations</td><td>Reuse</td><td>SQLAlchemy 2 + Alembic</td><td>MIT</td><td>Mature · light overhead · works with SQLite</td><td>Schema changes are versioned in git.</td></tr>
+    <tr><td>Image decode, resize, EXIF rotation</td><td>Reuse</td><td>Pillow</td><td>MIT-CMU (HPND)</td><td>Mature · one photo per upload, fast enough · standard</td><td>Never hand-parse image formats.</td></tr>
+    <tr><td>Duplicate photo detection</td><td>Reuse</td><td>ImageHash (pHash)</td><td>BSD-2</td><td>Stable, small · microseconds per hash · catches re-saved copies</td><td>Exact byte hashes miss recompressed photos.</td></tr>
+    <tr><td>Garment cut-out (background removal)</td><td>Reuse</td><td>rembg with the U²-Net model</td><td>MIT (code), Apache-2.0 (model)</td><td>Active project · ≈ 1 s per photo on CPU at upload time · runs offline</td><td>Photos never leave the house, which our privacy constraint requires.</td></tr>
+    <tr><td>Garment anchor points</td><td>Build</td><td>— (OpenCV for contours)</td><td>Apache-2.0</td><td>No library finds our anchor set on flat-lay photos</td><td>Contour heuristic, plus the user drags dots on the phone to correct it.</td></tr>
+    <tr><td>Phone authentication (device pairing)</td><td>Reuse</td><td>FastAPI HTTPBearer + Python secrets + argon2-cffi</td><td>MIT / PSF</td><td>Mature · cheap · standard bearer-token pattern</td><td>No hand-rolled crypto or token handling.</td></tr>
+    <tr><td>Dates and time zones</td><td>Reuse</td><td>Python datetime + zoneinfo</td><td>PSF</td><td>Standard library</td><td>Never hand-parse dates.</td></tr>
+    <tr><td>Message bus client</td><td>Reuse</td><td>pyzmq (libzmq)</td><td>BSD-3 / MPL-2.0</td><td>Mature since 2010 · microsecond latency · pub/sub and request/reply</td><td>Carries I11 and I12 (see part 6).</td></tr>
+    <tr><td colspan="6"><b>L5 Try-on</b></td></tr>
+    <tr><td>Fit evaluation (A1)</td><td>Build</td><td>NumPy for vector maths</td><td>BSD-3</td><td>NumPy is mature and fast; the rules are ours</td><td>No library knows our ease bands; this is the project-specific core.</td></tr>
+    <tr><td>Ease band table</td><td>Build (config)</td><td>PyYAML to load it</td><td>MIT</td><td>Mature · read once at start-up</td><td>The team can tune the bands without code changes.</td></tr>
+    <tr><td>Joint smoothing</td><td>Build</td><td>— (One Euro filter, published method)</td><td>—</td><td>About 40 lines · microseconds</td><td>Too small to justify a dependency; behaviour is documented in the paper.</td></tr>
+    <tr><td>Garment mesh triangulation</td><td>Reuse</td><td>SciPy Delaunay (Qhull)</td><td>BSD-3</td><td>Mature · once per garment, milliseconds</td><td>Standard, well tested.</td></tr>
+    <tr><td>2-D skinned warp and drawing (A2)</td><td>Build on reuse</td><td>ModernGL (OpenGL 3.3)</td><td>MIT</td><td>Active · GPU speed · works with NumPy arrays</td><td>The warp is ours; GPU access is not worth writing.</td></tr>
+    <tr><td>Mask clean-up, colour conversion, resizing</td><td>Reuse</td><td>OpenCV (opencv-python-headless)</td><td>Apache-2.0</td><td>Industry standard · SIMD-optimised</td><td>Fast, well-tested image operations.</td></tr>
+    <tr><td>H.264 encode + MPEG-TS stream (I4)</td><td>Reuse</td><td>FFmpeg through PyAV, h264_nvenc encoder</td><td>PyAV BSD-3; FFmpeg LGPL-2.1</td><td>Industry standard · NVENC encodes 720p in &lt; 5 ms · Media3 plays MPEG-TS</td><td>Fallback libx264 is GPL-2.0, which is acceptable because we do not distribute the build.</td></tr>
+    <tr><td>Streaming HTTP response to the Mirror</td><td>Reuse</td><td>FastAPI StreamingResponse</td><td>MIT</td><td>Same stack as the L4 API</td><td>One web server, not two.</td></tr>
+    <tr><td>Neural image try-on</td><td><i>Rejected</i></td><td>VITON-HD / HR-VITON</td><td>CC BY-NC-SA</td><td>Research code · hundreds of ms per frame · needs studio-style photos</td><td>Too slow for 30 fps, and the licence forbids commercial use.</td></tr>
+    <tr><td>Tests</td><td>Reuse</td><td>pytest</td><td>MIT</td><td>Standard</td><td>Unit tests for A1's edge cases.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>5. API contract</h2>
+  <p class="small">L4 serves the phone over HTTPS on the home network (I2). L4 and L5 also answer request/reply methods on the message bus (I11, I12). Every HTTP call needs <code>Authorization: Bearer &lt;device token&gt;</code>. Every error, HTTP or bus, uses one shape: <code>{"error": {"code": string, "message": string, "fields": object | null}}</code>.</p>
+  <table>
+    <tr><th style="width:13%">Endpoint / method</th><th style="width:30%">Inputs (type, required?, valid range)</th><th style="width:30%">Output (shape, types, units)</th><th>Errors (code — when)</th></tr>
+    <tr><td><b>POST /api/v1/garments</b><br>(L4, I2)<br>multipart/form-data</td><td><code>photo</code> file, <b>required</b>, JPEG or PNG, ≤ 8 MB, ≥ 400 × 400 px · <code>category</code> enum, <b>required</b> · <code>size_label</code> string, optional, 1–12 chars · <code>fit_type</code> enum, optional, default regular · <code>stretch_pct</code> float, optional, 0–40, default 0 · <code>formality</code> int, optional, 1–5, default 3 · <code>brand</code> string, optional, ≤ 60 chars</td><td><b>201</b> <code>Garment</code> {garment_id: UUID, status: "active" | "incomplete", category, size_label: string | null, fit_type, stretch_pct: float %, formality: int, colors: string[] (detected), assets: [{kind, url: string}], created_at: RFC 3339 UTC}. <code>Location</code> header = garment URL.</td><td>400 VALIDATION_FAILED — a field is missing or out of range (<code>fields</code> lists which) · 401 UNAUTHORIZED — token missing or revoked · 409 DUPLICATE_PHOTO — pHash within distance 6 of a stored photo (the response carries that garment_id) · 413 PHOTO_TOO_LARGE · 415 UNSUPPORTED_MEDIA — not JPEG/PNG · 503 STORAGE_UNAVAILABLE — disk full or database busy for &gt; 2 s (<code>Retry-After</code> header)</td></tr>
+    <tr><td><b>GET /api/v1/garments</b><br>(L4)</td><td><code>owner</code> UUID, optional, default = caller · <code>category</code> enum, optional · <code>status</code> enum, optional, default active · <code>limit</code> int, optional, 1–100, default 50 · <code>cursor</code> string, optional</td><td><b>200</b> {items: Garment[], next_cursor: string | null}, newest first</td><td>400 BAD_QUERY — unknown enum value or limit out of range · 401 UNAUTHORIZED</td></tr>
+    <tr><td><b>GET /api/v1/garments/{garment_id}</b><br>(L4)</td><td><code>garment_id</code> UUID, required (path)</td><td><b>200</b> Garment plus sizes: [{size_id: UUID, size_label, chest_cm, waist_cm, hips_cm, length_cm, shoulder_cm: float cm | null, is_owned: bool}], listings: [{shop, sku, price: decimal string, currency: ISO 4217, url, fetched_at}], anchors: {name: [u, v] px}. <code>ETag</code> header.</td><td>401 UNAUTHORIZED · 404 NOT_FOUND — no such garment, or it belongs to another user</td></tr>
+    <tr><td><b>PATCH /api/v1/garments/{garment_id}</b><br>(L4)</td><td>JSON, any of: <code>size_label</code>, <code>fit_type</code>, <code>stretch_pct</code> (0–40), <code>formality</code> (1–5), <code>sizes</code> (list as in GET), <code>anchors</code> {name: [u, v]} with u, v inside the cutout · header <code>If-Match</code> ETag, required</td><td><b>200</b> updated Garment. A change to sizes or fit_type deletes that garment's FitResult rows.</td><td>400 VALIDATION_FAILED · 401 · 404 NOT_FOUND · 412 VERSION_CONFLICT — ETag is stale (someone else edited it; re-fetch and retry)</td></tr>
+    <tr><td><b>DELETE /api/v1/garments/{garment_id}</b><br>(L4)</td><td><code>garment_id</code> UUID, required</td><td><b>204</b> no body. Soft delete: status = archived, files kept 30 days.</td><td>401 · 404 NOT_FOUND</td></tr>
+    <tr><td><b>wardrobe.get</b><br>(L4, bus, I11)</td><td>{schema: "wardrobe_get/1", garment_id: UUID, required}</td><td>{schema: "garment_asset/1", garment_id, category, fit_type, stretch_pct: float %, sizes: [as GET], cutout_uri: string, anchors: {name: [u, v] px}}</td><td>NOT_FOUND — unknown id · INCOMPLETE — cutout or anchors not ready yet (L5 reports the garment as unavailable) · timeout 500 ms → L5 treats it as unavailable</td></tr>
+    <tr><td><b>tryon.request</b><br>(L5, bus, I12)</td><td>{schema: "tryon_request/1", request_id: UUID, required · user_id: UUID, required · garment_ids: UUID[], required, 1–4 items · stream: bool, optional, default true}</td><td>{schema: "fit_report/1", request_id, profile_id: UUID, algo_version: int, results: [{garment_id, recommended_size_id: UUID | null, confidence: float 0–1, sizes: [{size_id, size_label, overall: enum, score: float ≥ 0, zones: {zone: enum}, ease_cm: {zone: float cm}}]}], streaming: bool, generated_at: int64 ns}</td><td>NO_CURRENT_PROFILE — user has never done the T-pose · PROFILE_LOW_CONFIDENCE — confidence &lt; 0.7 (L8 asks for a new T-pose) · GARMENT_NOT_FOUND — <code>fields</code> lists the ids · TOO_MANY_GARMENTS — more than 4 · RENDER_BUSY — another stream is live; the fit is still returned with streaming = false · L6 applies its own 1.5 s timeout (D0, I12)</td></tr>
+  </table>
+
+  <div class="two keep">
+    <div>
+      <h4>Example — POST /api/v1/garments</h4>
+<pre>POST /api/v1/garments HTTP/1.1
+Host: brain.local:8443
+Authorization: Bearer dv_7Hq2...
+Content-Type: multipart/form-data; boundary=XyZ
+
+--XyZ
+Content-Disposition: form-data; name="photo"; filename="shirt.jpg"
+Content-Type: image/jpeg
+(binary JPEG, 2.1 MB)
+--XyZ
+Content-Disposition: form-data; name="category"
+
+top
+--XyZ
+Content-Disposition: form-data; name="size_label"
+
+M
+--XyZ--</pre>
+    </div>
+    <div>
+      <h4>Response — 201 Created</h4>
+<pre>{
+  "garment_id": "2c9e7d41-0b6a-4f3e-8e55-a1d2c3b4e5f6",
+  "status": "incomplete",
+  "category": "top",
+  "size_label": "M",
+  "fit_type": "regular",
+  "stretch_pct": 0,
+  "formality": 3,
+  "colors": ["navy", "white"],
+  "assets": [
+    { "kind": "photo",  "url": "/files/2c9e7d41/photo.jpg" },
+    { "kind": "cutout", "url": "/files/2c9e7d41/cutout.png" }
+  ],
+  "created_at": "2026-11-10T18:42:07Z"
+}</pre>
+      <p class="small">Status is "incomplete" until the user confirms the anchor points and a size chart is attached (PATCH).</p>
+    </div>
+  </div>
+  <p><b>Versioning.</b> The HTTP API is versioned in its path (<code>/api/v1</code>) and every bus message carries a <code>schema</code> name with a version (<code>fit_report/1</code>). Adding an optional field is not a breaking change. Removing or renaming a field, changing a type or unit, making an optional input required, adding a value to an enum that callers switch on, or changing what an error code means is breaking: it gets a new version (<code>/api/v2</code>, <code>fit_report/2</code>), and the old version is served until the next milestone.</p>
+</section>
+
+<section>
+  <h2>6. Technology choices with justification</h2>
+  <p class="small">Each paragraph covers the five criteria from class in this order: <b>team skill fit</b>, <b>licensing</b>, <b>community support</b>, <b>performance</b>, and <b>cost and hosting</b>.</p>
+
+  <p><b>Database — SQLite 3 (WAL mode) with image files on disk.</b> <i>Team skill fit:</i> everyone has written SQL, and SQLite needs no administration, so Jace can own L4's data without learning server setup. <i>Licensing:</i> public domain, no conditions. <i>Community support:</i> one of the most widely deployed databases, with full support in Python's standard library, SQLAlchemy, and Alembic. <i>Performance:</i> indexed lookups on our ≈ 70,000 rows take well under a millisecond; WAL mode lets L5 read while L4 writes. <i>Cost and hosting:</i> free, and it is one file on the brain PC that we back up by copying. <b>Passed over: PostgreSQL</b>, which adds a server process, users, and backups to manage for no benefit at one household's scale; we can move to it later through SQLAlchemy if we ever need several machines.</p>
+
+  <p><b>Backend language and framework — Python 3.12 with FastAPI; heavy work in NumPy, OpenCV, and ModernGL.</b> <i>Team skill fit:</i> Python is the language all four of us have used in coursework, and the libraries for imaging and maths are Python-first. <i>Licensing:</i> Python is PSF-licensed, FastAPI is MIT, and NumPy, SciPy, and OpenCV are BSD or Apache, so all are permissive. <i>Community support:</i> FastAPI and the scientific Python stack are among the most used and best documented in their areas. <i>Performance:</i> Python alone is slow per frame, so the per-pixel work runs in compiled libraries (NumPy, OpenCV) and on the GPU (ModernGL); Python only coordinates. A2's CPU part is about 400 point transforms per frame. <i>Cost and hosting:</i> free, and it runs on the same Ubuntu PC as everything else. <b>Passed over: Node.js with Express</b>, which would serve HTTP well but lacks mature equivalents of NumPy, OpenCV, and the Kinect bindings, so L1–L5 would end up in a second language anyway. <b>Also passed over: C++ throughout</b>, which is faster but would slow a student team down far more than the per-frame budget requires.</p>
+
+  <p><b>Front ends — plain HTML, CSS, and ES5 JavaScript for the glass (WebView 44); a mobile web page for the phone.</b> <i>Team skill fit:</i> basic web development is familiar to the whole team, and no build tools are needed. <i>Licensing:</i> the pages are our own code with no framework licence; the phone page uses only browser APIs (camera capture, file upload). <i>Community support:</i> standard web APIs with complete documentation; we test against WebView 44's limits early. <i>Performance:</i> the glass only draws cards and receives JSON over a WebSocket, and the video plays in Media3, so the Mirror's weak processor is not a bottleneck. <i>Cost and hosting:</i> served by the same FastAPI process on the brain PC, so there is no app store fee and no separate hosting. <b>Passed over: React with a Babel build</b> (it needs transpiling down to ES5 and polyfills, and adds a large bundle for an old WebView) and <b>a native React Native phone app</b> (app store setup and two codebases for a page that only uploads photos).</p>
+
+  <p><b>Messaging — ZeroMQ (pyzmq) with JSON messages, and MessagePack for per-frame pose.</b> <i>Team skill fit:</i> a small API with publish/subscribe and request/reply sockets; the team learns two socket types instead of a broker to run. <i>Licensing:</i> pyzmq is BSD-3 and libzmq is MPL-2.0, which allows our use. <i>Community support:</i> mature since 2010 with a well-known guide and active maintainers. <i>Performance:</i> microsecond latency within one machine, with no broker hop, which matters for the 30 Hz pose stream (I10) in a 250 ms budget; "keep newest only" settings stop stale frames piling up. <i>Cost and hosting:</i> a library, not a service, so there is nothing extra to install or run. <b>Passed over: MQTT with a Mosquitto broker</b>, which suits many small devices, but adds a broker process and a network hop that our single-machine design does not need. <b>Also passed over: Redis pub/sub</b>, which drops messages when a subscriber is slow and adds a server.</p>
+
+  <p><b>Hardware platform and hosting — an Ubuntu 24.04 LTS desktop with an NVIDIA GPU at home, a Kinect 360 over USB 2.0, and the Gen 1 Mirror on home Wi-Fi.</b> <i>Team skill fit:</i> the team already uses Linux for coursework, and Ubuntu is the platform the Kinect driver (libfreenect) and NVIDIA's encoder are documented on. <i>Licensing:</i> Ubuntu is free; libfreenect is dual Apache-2.0/GPL-2.0; NVIDIA's driver is proprietary but free to use. <i>Community support:</i> Ubuntu LTS gets security updates until 2029, and libfreenect has years of Kinect 360 support threads. <i>Performance:</i> a mid-range GPU (GTX 1660 or RTX 3050 class) draws A2 in about 2 ms and encodes 720p H.264 in under 5 ms, leaving most of the 80 ms L5 budget free. <i>Cost and hosting:</i> a used Kinect 360 and power adapter cost about $35, the Mirror is already owned, and the PC is team-owned by Clare ; there are no cloud costs, and body data never leaves the house. <b>Passed over: an NVIDIA Jetson Orin Nano</b> (smaller, but about $500 and with weaker libfreenect support on ARM) and <b>a cloud GPU server</b> (monthly fees, extra network delay, and body images leaving the home network).</p>
+</section>
+
+</body>
+</html>

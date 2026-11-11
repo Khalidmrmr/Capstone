@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D0 High Level Design</title>
+<style>
+  @page { size: letter landscape; margin: 0.5in 0.55in; }
+  body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; line-height: 1.38; margin: 0; background: #fff; }
+  h1 { font-size: 20pt; margin: 0 0 2pt; }
+  h2 { font-size: 14pt; margin: 0 0 6pt; padding-bottom: 3pt; border-bottom: 1.5px solid #000; color: #000; }
+  h3 { font-size: 11pt; margin: 10pt 0 4pt; }
+  p { margin: 4pt 0 6pt; }
+  section { break-before: page; }
+  section.first { break-before: auto; }
+  .sub { color: #000; margin-bottom: 10pt; }
+  .goal { border: 1px solid #000; background: #fff; padding: 8pt 12pt; margin: 8pt 0; }
+  
+  table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: 4pt 0 8pt; }
+  th, td { border: 1px solid #000; padding: 3pt 5pt; vertical-align: top; text-align: left; }
+  th { background: #fff; font-weight: bold; }
+  tr { break-inside: avoid; }
+  td.id { font-weight: bold; white-space: nowrap; }
+  code, pre { font-family: Arial, sans-serif; font-size: 8.4pt; }
+  pre { background: #fff; border: 1px solid #000; padding: 6pt 8pt; margin: 4pt 0; white-space: pre-wrap; }
+  img.diagram { width: 100%; max-height: 6.55in; object-fit: contain; display: block; }
+  .two { display: flex; gap: 18pt; } .two > div { flex: 1; }
+  ul { margin: 3pt 0 6pt 16pt; padding: 0; } li { margin: 1pt 0; }
+  .small { font-size: 8.6pt; color: #000; }
+</style>
+</head>
+<body>
+
+<section class="first">
+  <h1>D0 High Level Design — Smart Closet Mirror</h1>
+  <div class="sub">Assignment #4 (Design Diagrams), part D0 · Team bullriders · Arya Garg, Clare Hooper, Rehman Khalid, Jace Schubert · Week 5</div>
+
+  <h2>1. Title, goal statement, and conventions</h2>
+  <p><b>Project title:</b> Smart Closet Mirror</p>
+  <div class="goal"><b>Goal statement.</b> Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items on their body, and tells them what to wear today and whether a new piece is worth buying.</div>
+  <p><b>Basic input:</b> the person standing in front of the glass (Kinect 360 colour and depth frames, plus presence and voice from the Mirror's camera and mic), garment photos sent from the user's phone, and calendar and shop data pulled from web APIs.</p>
+  <p><b>Basic output:</b> on the glass, a live try-on video of garments on the user's body and decision cards: today's outfit, a buy-or-skip verdict, and looks built from inspiration photos.</p>
+
+  <h3>Conventions used in every D0 diagram</h3>
+  <p>Each diagram carries its own title, goal statement, and legend. The legend on the diagram is the authority; this table repeats it.</p>
+  <table>
+    <tr><th style="width:28%">Symbol</th><th>Meaning</th></tr>
+    <tr><td>Rounded box, solid border</td><td>A component the team builds. Components are the eight layers L1–L8 that run on the brain computer.</td></tr>
+    <tr><td>Square box, dashed border</td><td>An external system, device, or service we depend on but do not build (Kinect 360, phone, web APIs, the Mirror's player, camera, and WebView).</td></tr>
+    <tr><td>Large dashed outline</td><td>A physical boundary: the brain computer (Ubuntu PC) or the Gen 1 Mirror hardware platform.</td></tr>
+    <tr><td>Solid dark arrow</td><td>An internal interface carried on the message bus. The arrow points the way data moves.</td></tr>
+    <tr><td>Dashed arrow</td><td>An external interface that leaves the brain computer (USB, Wi-Fi, or internet).</td></tr>
+    <tr><td>Two-headed arrow</td><td>A request/response interface: the caller sends a request and gets a reply on the same interface.</td></tr>
+    <tr><td>Pill label I1…I17</td><td>Interface ID. Each matches one row of the Interface Specification table (part 4).</td></tr>
+    <tr><td>Wide band labelled "Planes"</td><td>Shared planes (data store, message bus, ops). All components use them, so they have no lines of their own.</td></tr>
+    <tr><td>Box labelled "Timing budget" (data-flow diagram)</td><td>A timing budget set by a requirement.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>2. Block diagram (D0)</h2>
+  <img class="diagram" src="D0_block_diagram.svg" alt="D0 block diagram">
+  <p class="small">Source: <code>Design_Diagrams/D0_block_diagram.drawio</code> (open in draw.io / diagrams.net). Eight components, 17 labelled interfaces; external systems use the dashed square style.</p>
+</section>
+
+<section>
+  <h2>3. Component responsibility table</h2>
+  <table>
+    <tr><th style="width:13%">Component</th><th style="width:37%">Responsibility (one sentence)</th><th style="width:13%">Interfaces in</th><th style="width:13%">Interfaces out</th><th style="width:12%">Primary owner</th><th>Example jobs it owns</th></tr>
+    <tr><td class="id">L1 Capture</td><td>Turns the Kinect's raw streams into synchronized, time-stamped frame bundles.</td><td>I1</td><td>I7</td><td>Rehman Khalid</td><td>Read Kinect pixels</td></tr>
+    <tr><td class="id">L2 Perception</td><td>Extracts facts about bodies and garments from images (joints, mask, measurements, gesture intents, garment detections).</td><td>I7, I15 (request)</td><td>I8, I10, I15 (reply, gestures)</td><td>Arya Garg</td><td>Turn a T-pose into chest size; find the pieces in a celebrity photo</td></tr>
+    <tr><td class="id">L3 Body</td><td>Converts body measurements into a sized, rigged avatar of the user.</td><td>I8</td><td>I9</td><td>Arya Garg</td><td>Measurements → avatar</td></tr>
+    <tr><td class="id">L4 Wardrobe</td><td>Keeps the record of every garment the user owns or is considering.</td><td>I2, I16</td><td>I11, I13</td><td>Jace Schubert</td><td>Store a phone photo as a garment; hold shop catalog items</td></tr>
+    <tr><td class="id">L5 Try-on</td><td>Places chosen garments on the user's avatar to report fit and render try-on video.</td><td>I9, I10, I11, I12 (request)</td><td>I4, I12 (reply)</td><td>Arya Garg</td><td>Calculate if a shirt is tight</td></tr>
+    <tr><td class="id">L6 Decision</td><td>Chooses what the user should wear, buy, or skip.</td><td>I12, I13, I14, I15, I17 (action)</td><td>I12, I14, I15 (requests), I17 (view)</td><td>Clare Hooper</td><td>Pick today's outfit; say "buy" or "skip"; build a look from detected pieces</td></tr>
+    <tr><td class="id">L7 Connectors</td><td>Normalizes all outside-world data into the system's own models.</td><td>I3 (reply), I14 (query)</td><td>I3 (request), I14 (bundle), I16</td><td>Jace Schubert</td><td>Turn a calendar title into "business"; find a celebrity's photos</td></tr>
+    <tr><td class="id">L8 Presentation</td><td>Owns everything the user sees on the glass, including Mirror control.</td><td>I5, I17 (view)</td><td>I6, I17 (action)</td><td>All</td><td>Wake the glass; draw decision cards</td></tr>
+    <tr><td class="id">Planes (shared)</td><td>Provide storage, messaging, and health monitoring to every layer (infrastructure, not a feature component).</td><td colspan="2">Used by all; carries I7–I17</td><td>Rehman Khalid</td><td>Data store, message bus, logs and health</td></tr>
+  </table>
+  <h3>Boundary rules (why each job sits where it does)</h3>
+  <table>
+    <tr><th style="width:28%">Job</th><th style="width:8%">Owner</th><th>Why not the next closest layer</th></tr>
+    <tr><td>Read Kinect pixels</td><td>L1</td><td>L2 only reads FrameBundles, never the device.</td></tr>
+    <tr><td>Turn a T-pose into chest size</td><td>L2</td><td>L3 only consumes numbers; it does not measure.</td></tr>
+    <tr><td>Turn a calendar title into "business"</td><td>L7</td><td>L7 normalizes all outside data into our models.</td></tr>
+    <tr><td>Pick today's outfit</td><td>L6</td><td>L7 only fetches; L8 only shows.</td></tr>
+    <tr><td>Calculate if a shirt is tight</td><td>L5</td><td>Fit needs the avatar and the garment together.</td></tr>
+    <tr><td>Say "buy" or "skip"</td><td>L6</td><td>L5 gives fit facts; L6 adds style, gaps, and budget.</td></tr>
+    <tr><td>Wake the glass</td><td>L8</td><td>All Mirror control calls come from one place.</td></tr>
+    <tr><td>Find a celebrity's photos</td><td>L7</td><td>It is an outside call.</td></tr>
+    <tr><td>Find the pieces in those photos</td><td>L2</td><td>Image understanding is perception, the same as a live frame.</td></tr>
+    <tr><td>Build the look from those pieces</td><td>L6</td><td>Choosing is a decision.</td></tr>
+  </table>
+  
+</section>
+
+<section>
+  <h2>4. Interface specification table</h2>
+  <p class="small">Internal interfaces (I7–I17) travel on the message bus as named topics. Large binary data (frames, images, meshes) stays in the data plane; messages carry a reference (<code>*_ref</code>) to it. All timestamps are nanoseconds since Unix epoch; all lengths are centimetres unless stated.</p>
+  <table>
+    <tr><th style="width:3.5%">ID</th><th style="width:8%">From → To</th><th style="width:27%">Inputs / outputs (name: type)</th><th style="width:10%">Data format</th><th style="width:13%">Protocol</th><th style="width:28%">On error</th><th style="width:7%">Handled by</th></tr>
+    <tr><td class="id">I1</td><td>Kinect 360 → L1</td><td>out: <code>rgb_frame: uint8[480][640][3]</code>, <code>depth_frame: uint16[480][640]</code> (11-bit raw), <code>device_ts: uint32</code></td><td>Raw RGB + packed 11-bit depth, 30 fps each</td><td>USB 2.0 isochronous (Kinect camera protocol); 12 V adapter</td><td>No frame for 2 s or USB unplugged: L1 reopens the device every 5 s and publishes <code>capture.health = DOWN</code>; L8 shows "Camera offline".</td><td>L1</td></tr>
+    <tr><td class="id">I2</td><td>Phone → L4</td><td>in: <code>photo: JPEG ≤ 8 MB</code>, <code>category: enum{top, bottom, dress, outer, shoes}</code>, <code>size_label: string</code>, <code>brand: string?</code>, <code>price: decimal?</code>; out: <code>garment_id: UUID</code></td><td>multipart/form-data (JPEG + JSON part); JSON reply</td><td>HTTPS <code>POST /api/v1/garments</code> on home LAN</td><td>Bad image or missing field: 400 with field errors, phone keeps the draft. Same photo hash already stored: 409 returning existing <code>garment_id</code>.</td><td>L4</td></tr>
+    <tr><td class="id">I3</td><td>L7 ↔ Web APIs</td><td>out: <code>provider</code>, <code>endpoint</code>, query params, OAuth token; in: provider JSON (calendar events, product listings, image-search results)</td><td>JSON</td><td>HTTPS REST, OAuth 2.0 bearer tokens</td><td>401: refresh token once, then mark provider "needs re-link". 429/5xx: back off 1, 2, 4 s (max 3 tries), then answer from cache with <code>stale = true</code>.</td><td>L7</td></tr>
+    <tr><td class="id">I4</td><td>L5 → Mirror Media3 player</td><td>out: <code>video: H.264 Main, 1280×720, 30 fps, ≤ 4 Mbit/s</code>, <code>stream_id: string</code></td><td>H.264 in MPEG-TS</td><td>HTTP progressive stream over home Wi-Fi</td><td>Player disconnects: L5 keeps a 2 s buffer, player reconnects with backoff. Send buffer > 500 ms: L5 drops to 2 Mbit/s.</td><td>L5</td></tr>
+    <tr><td class="id">I5</td><td>Mirror camera + mic → L8</td><td>out: <code>presence{present: bool, ts}</code> at 2 Hz; <code>voice_command{text: string, confidence: float 0–1}</code></td><td>JSON messages</td><td>WebSocket from the Mirror shell app</td><td>Socket drop: Mirror app reconnects every 2 s; L8 treats user as absent after 30 s with no presence. <code>confidence &lt; 0.6</code>: L8 ignores the command.</td><td>L8</td></tr>
+    <tr><td class="id">I6</td><td>L8 → Mirror WebView 44</td><td>out: <code>ui_state{screen: enum, cards: Card[], seq: int}</code>, <code>control{cmd: enum{wake, sleep, brightness}, value: int?}</code></td><td>HTML/CSS/ES5 bundle + JSON</td><td>HTTP GET for the bundle, WebSocket for state; JS bridge for control</td><td>Socket drop: WebView keeps last screen with a "reconnecting" badge; on reconnect L8 resends the full state (idempotent by <code>seq</code>).</td><td>L8</td></tr>
+    <tr><td class="id">I7</td><td>L1 → L2</td><td><code>FrameBundle{seq: uint64, ts: int64, rgb_ref: shm 640×480×3 uint8, depth_mm_ref: shm 640×480 uint16 (registered to RGB)}</code></td><td>Binary header + shared-memory buffers</td><td>Bus pub/sub <code>frames.raw</code>, keep newest 2</td><td>L2 falls behind: it drops all but the newest bundle and counts drops on the ops plane; bundles older than 100 ms are skipped.</td><td>L2</td></tr>
+    <tr><td class="id">I8</td><td>L2 → L3</td><td><code>BodyMeasurements{user_id: UUID, height, chest, waist, hips, inseam, shoulder: float cm, confidence: float 0–1, captured_at: ts}</code></td><td>JSON (also stored as a row)</td><td>Bus pub/sub <code>body.measured</code></td><td>Confidence &lt; 0.7 or a value outside human range: L3 rejects with a reason; L6/L8 ask the user to repeat the T-pose.</td><td>L3</td></tr>
+    <tr><td class="id">I9</td><td>L3 → L5</td><td><code>Avatar{user_id, avatar_id: UUID, version: int, mesh_ref: URI (glTF binary), rig: map&lt;joint, bone&gt;}</code></td><td>JSON + glTF blob in data plane</td><td>Bus pub/sub <code>body.avatar</code></td><td>Mesh missing or corrupt: L5 keeps the previous avatar version; if none exists it switches to a 2-D overlay mode.</td><td>L5</td></tr>
+    <tr><td class="id">I10</td><td>L2 → L5</td><td><code>LivePose{seq, ts, joints: [{name: enum(20), x, y, z: float m, conf: float}], mask_ref: 640×480 bitmask}</code></td><td>MessagePack (binary)</td><td>Bus pub/sub <code>body.pose</code>, 30 Hz, newest only</td><td>No person for &gt; 0.5 s: L5 hides garments. A joint with <code>conf &lt; 0.5</code>: L5 holds its last good position.</td><td>L5</td></tr>
+    <tr><td class="id">I11</td><td>L4 → L5</td><td>req: <code>garment_id: UUID</code>; reply: <code>GarmentAsset{garment_id, category, size_label, size_chart{chest, waist, length: float cm}, texture_ref: URI, template_mesh_ref: URI}</code></td><td>JSON + images in data plane</td><td>Bus request/reply <code>wardrobe.get</code>, timeout 500 ms</td><td>Not found: error reply, L5 marks the garment "unavailable" in its fit report. No size chart: L5 renders it but reports fit "unknown".</td><td>L5</td></tr>
+    <tr><td class="id">I12</td><td>L6 ↔ L5</td><td>req: <code>TryOnRequest{request_id, user_id, garment_ids: UUID[], stream: bool}</code>; reply: <code>FitReport</code> (see example below)</td><td>JSON</td><td>Bus request/reply <code>tryon.request</code> → <code>tryon.fit</code>, timeout 1.5 s</td><td>Timeout: L6 shows its decision without fit and labels it "fit pending"; the late report updates the card.</td><td>L6</td></tr>
+    <tr><td class="id">I13</td><td>L4 → L6</td><td><code>ClosetIndex{items: [{garment_id, category, colors: string[], formality: int 1–5, season: enum, last_worn: date?}]}</code></td><td>JSON</td><td>Bus query <code>wardrobe.list</code> + change events <code>wardrobe.changed</code></td><td>L4 not answering: L6 uses its cached index (if ≤ 24 h old) and flags results as possibly out of date.</td><td>L6</td></tr>
+    <tr><td class="id">I14</td><td>L6 ↔ L7</td><td>req: <code>ContextQuery{kind: enum{calendar_day, product_search, celebrity_images}, params: map}</code>; reply: <code>ContextBundle{events: [{start, title, category: enum{business, casual, formal, sport}}], products: [{sku, shop, price: decimal, currency, url, sizes}], image_refs: URI[], stale: bool, fetched_at: ts}</code></td><td>JSON</td><td>Bus request/reply <code>ctx.query</code>, timeout 3 s</td><td>Provider down: L7 returns a partial bundle from cache with <code>stale = true</code>. Nothing usable: L6 falls back to defaults (event category "casual", no shop items).</td><td>L7, then L6</td></tr>
+    <tr><td class="id">I15</td><td>L6 ↔ L2</td><td>req: <code>AnalyzeImages{request_id, image_refs: URI[]}</code>; reply: <code>DetectedItems{request_id, items: [{image_ref, category, color, bbox: int[4], conf: float}]}</code>; event: <code>GestureIntent{user_id, intent: enum{next, back, select, buy, skip}, conf, ts}</code></td><td>JSON</td><td>Bus request/reply <code>vision.analyze</code> (timeout 5 s) + pub/sub <code>intent.gesture</code></td><td>Unreadable image: empty item list with a per-image error. Gesture with <code>conf &lt; 0.8</code>: L2 drops it, so nothing reaches L6.</td><td>L2</td></tr>
+    <tr><td class="id">I16</td><td>L7 → L4</td><td><code>CatalogItem{sku, shop, title, category, price: decimal, currency, size_chart, image_ref: URI}</code></td><td>JSON</td><td>Bus pub/sub <code>catalog.items</code></td><td>Missing size chart or image: L4 stores it as "incomplete", hidden from try-on. Repeated sku: update in place.</td><td>L4</td></tr>
+    <tr><td class="id">I17</td><td>L6 ↔ L8</td><td>L6→L8: <code>DecisionView{view_id, view: enum{outfit_of_day, verdict, look}, verdict: enum{buy, skip}?, reasons: string[] (≤ 80 chars each), garment_ids: UUID[], budget_left: decimal?}</code>; L8→L6: <code>UserAction{view_id, action: enum{next, select, buy, skip, try, wake}, target_id: UUID?, source: enum{touch, voice, gesture}}</code></td><td>JSON</td><td>Bus pub/sub <code>decision.view</code> / <code>ui.action</code></td><td>Unknown view type: L8 shows a generic card and logs it. Action for an old <code>view_id</code>: L6 ignores it and resends the current view.</td><td>L8, L6</td></tr>
+  </table>
+  <h3>Example payload — I12 FitReport (L5 → L6)</h3>
+<pre>{ "request_id": "b0c2f6e1-7a1d-4f52-9d0e-3c6a2f8e1b77",
+  "user_id": "5f0a3e2c-91b4-4d8e-a1c3-7e2b9d4f6a10",
+  "results": [ { "garment_id": "2c9e7d41-0b6a-4f3e-8e55-a1d2c3b4e5f6",
+                 "size_label": "M",
+                 "zones": { "chest": "tight", "waist": "good", "hips": "good", "length": "good" },
+                 "ease_cm": { "chest": -1.5, "waist": 4.0, "hips": 5.5 },
+                 "overall": "tight", "confidence": 0.86 } ],
+  "avatar_version": 3, "generated_at": 1794182400000000000 }</pre>
+</section>
+
+<section>
+  <h2>5. Data-flow diagram</h2>
+  <img class="diagram" src="D0_data_flow.svg" alt="D0 data-flow diagram">
+  <p class="small">Source: <code>Design_Diagrams/D0_data_flow.drawio</code>. Flow A runs every frame while someone stands at the glass; Flow B runs when a decision is asked for or the Mirror wakes. Inspiration looks follow Flow B with one extra loop: L7 fetches photos (I14), L6 sends them to L2 (I15), and L2 returns detected pieces for L6 to match against the closet. 
+</section>
+
+<section>
+  <h2>6. Architecture pattern and justification</h2>
+  <p><b>Chosen combination:</b> a <b>layered</b> architecture governs the brain computer, a <b>pipeline</b> governs the live try-on path inside it, and <b>client-server</b> governs everything that crosses the brain's boundary.</p>
+  <table>
+    <tr><th style="width:16%">Pattern</th><th style="width:30%">Where it applies</th><th>What it means for us</th></tr>
+    <tr><td><b>Layered</b></td><td>L1–L8 on the brain computer</td><td>Each layer has one job and talks only through its numbered interfaces. Only L1 touches the Kinect, only L7 calls the internet, only L8 controls the Mirror.</td></tr>
+    <tr><td><b>Pipeline</b></td><td>Flow A: L1 → L2 → (L3) → L5 → I4</td><td>Frames move one way through fixed stages, each with its own time budget. Stages drop stale frames rather than queueing them, so delay never builds up.</td></tr>
+    <tr><td><b>Client-server</b></td><td>Brain ↔ Mirror (I4–I6), Phone → L4 (I2), L7 → Web APIs (I3)</td><td>The brain is the server for the Mirror and the phone, which are thin clients. L7 is the client of outside web APIs.</td></tr>
+  </table>
+  <h3>Justification against the five criteria</h3>
+  <table>
+    <tr><th style="width:18%">Criterion</th><th>How the combination meets it</th></tr>
+    <tr><td>Fit to the problem</td><td>The problem is a sensor-to-screen chain (Kinect → body → garments → glass) plus slower decision work. A pipeline fits the chain, layers keep decision logic away from device code, and client-server matches the real hardware split between a capable PC and a weak Mirror.</td></tr>
+    <tr><td>Team skills</td><td>One layer per owner, each with a written interface, so members can build and test in parallel. Everyone already knows HTTP/JSON client-server work; no one needs container orchestration. </td></tr>
+    <tr><td>Performance and timing</td><td>The 250 ms motion-to-glass budget needs the heavy work (depth, pose, rendering, H.264 encoding) on one machine with a GPU and no network hops between stages. Shared memory for frames (I7) avoids copying. The Mirror only decodes video.</td></tr>
+    <tr><td>Scalability</td><td>The system serves one household, so scaling means more garments and more users per Mirror, not more traffic. The data plane and bus handle that. Layers could later move to separate processes behind the same bus topics without changing the interfaces.</td></tr>
+    <tr><td>Hardware constraints</td><td>The Gen 1 Mirror runs Android 6 with WebView 44 (no modern JavaScript, weak GPU), so it cannot run perception or 3-D rendering. The Kinect 360 needs a USB 2.0 host and its own 12 V power, which the PC provides. The Kinect sits on a clip-over bracket on the Mirror's top edge (see decision D7).</td></tr>
+  </table>
+  <p><b>Week 3 constraints</b>: <b>Budget</b> — reuse the Gen 1 Mirror and a second-hand Kinect 360; no paid cloud GPU. <b>Hosting</b> — everything runs on one Ubuntu PC at home. <b>Privacy</b> — body images, depth frames, and measurements never leave the home network; only L7 talks to the internet, and it sends search terms, never body data. <b>Accessibility</b> — every action can be done by touch, voice, or gesture, and glass cards use large high-contrast type.</p>
+  <h3>Patterns rejected</h3>
+  <ul>
+    <li><b>Microservices</b> — eight separately deployed services would add network hops inside the 250 ms budget and need container and ops work a student team cannot spare, all on one PC for one household.</li>
+    <li><b>Embedded sensor-actuator as the main pattern</b> — it assumes the processing runs on the device that has the sensors. The Mirror cannot run depth processing or rendering, and the Kinect cannot attach to it directly, so the logic must live on a separate computer.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Decision log</h2>
+  <table>
+    <tr><th style="width:4%">#</th><th style="width:22%">Decision</th><th style="width:30%">Alternatives considered</th><th>Why the chosen option won</th></tr>
+    <tr><td class="id">D1</td><td>Run all processing on a separate Ubuntu "brain" PC; the Mirror is a thin client.</td><td>(a) Run everything on the Mirror's Android 6 board. (b) Run perception in the cloud.</td><td>(a) Android 6 and WebView 44 cannot run depth processing or 3-D rendering at frame rate. (b) Cloud adds latency beyond the 250 ms budget, costs money, and sends body images off the home network, breaking the privacy constraint.</td></tr>
+    <tr><td class="id">D2</td><td>Use a Kinect 360 for colour + depth body sensing.</td><td>(a) The Mirror's own RGB camera with a pose model. (b) A newer depth camera (Kinect v2 / Azure Kinect).</td><td>(a) RGB-only pose gives joint positions but not reliable sizes in centimetres; depth does. (b) Newer cameras cost far more and need USB 3.0. The Kinect 360 is cheap, well documented, and good enough at 1–3 m.</td></tr>
+    <tr><td class="id">D3</td><td>Send try-on to the glass as H.264 video (I4) played by Media3.</td><td>(a) Render the 3-D scene in WebView 44. (b) Stream JPEG frames over WebSocket.</td><td>(a) WebView 44 lacks the WebGL support and GPU power for real-time garments. (b) JPEG frames use several times the bandwidth of H.264 at 720p and add decode jitter. The Mirror has hardware H.264 decoding, so video is the lightest load.</td></tr>
+    <tr><td class="id">D4</td><td>All outside calls go through one layer, L7, which normalizes data.</td><td>Each layer calls the API it needs directly (L6 → calendar, L4 → shops).</td><td>One place holds API keys, caching, retry rules, and the privacy check on what leaves the house. Other layers depend on our models, not on each provider's format, so swapping a provider touches only L7.</td></tr>
+    <tr><td class="id">D5</td><td>Layers talk through a message bus with named topics; large data stays in the data plane.</td><td>(a) One program with direct function calls. (b) REST calls between layer services.</td><td>(a) Direct calls tie layers together, so one owner's change can break another, and frames can't be dropped cleanly. (b) REST adds overhead per frame and no publish/subscribe. A bus gives clear contracts, lets Flow A drop stale frames, and lets layers be tested alone.</td></tr>
+    <tr><td class="id">D6</td><td>Voice from the Mirror's mic arrives at L8 as short commands (I5) and is treated like a button press; gesture intents stay in L2.</td><td>Stream raw audio to L2 so all intents come from perception.</td><td>Commands are a small fixed set (next, buy, skip, try, wake). Handling them like taps keeps audio work off L2's frame budget and keeps every user action entering L6 through one interface (I17). </td></tr>
+    <tr><td class="id">D7</td><td>Mount the Kinect on a printed bracket that clips over the Mirror's top edge (lip in front of the glass, hook down the back to −45 mm, gusset for stiffness).</td><td>(a) Separate wall bracket above the Mirror. (b) Adhesive mount on the frame.</td><td>No drilling and fully removable. The sensor stays centred above the glass at a fixed, known position, which L2 needs for measurements in centimetres. The gusset stops the lip from flexing under the Kinect's weight; adhesive could creep or fail.</td></tr>
+  </table>
+  <p class="small">These entries will be reused as design rationale in D2 and the Week 9 technical specification.</p>
+</section>
+
+</body>
+</html>

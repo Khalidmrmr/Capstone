@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1110" width="1480" height="1110" font-family="Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="1480" height="1110" fill="#fff"/>
+<text x="30" y="44" font-size="26" font-weight="bold">Smart Closet Mirror — Fig D2-3: &#x27;Buy or skip?&#x27; decision flow with error paths</text>
+<text x="30" y="76" font-size="15">Goal: Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items</text>
+<text x="30" y="96" font-size="15">on their body, and tells them what to wear today and whether a new piece is worth buying.</text>
+<rect x="20" y="925" width="1440" height="145" fill="#fff" stroke="#000" stroke-width="1"/>
+<rect x="20" y="210" width="190" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="115.0" y="238.0" font-size="15" text-anchor="middle" font-weight="bold">User asks</text>
+<text x="115.0" y="256.0" font-size="12.5" text-anchor="middle">&#x27;buy or skip?&#x27;</text>
+<text x="115.0" y="274.0" font-size="12.5" text-anchor="middle">L8 → L6 (I17)</text>
+<rect x="255" y="210" width="190" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="350.0" y="247.0" font-size="15" text-anchor="middle" font-weight="bold">L6 loads item</text>
+<text x="350.0" y="265.0" font-size="12.5" text-anchor="middle">wardrobe.get (I11)</text>
+<polygon points="580.0,197 665,252.0 580.0,307 495,252.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="580.0" y="247.0" font-size="15" text-anchor="middle" font-weight="bold">Found and</text>
+<text x="580.0" y="265.0" font-size="12.5" text-anchor="middle">complete?</text>
+<polygon points="815.0,197 900,252.0 815.0,307 730,252.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="815.0" y="247.0" font-size="15" text-anchor="middle" font-weight="bold">Current</text>
+<text x="815.0" y="265.0" font-size="12.5" text-anchor="middle">profile OK?</text>
+<rect x="960" y="210" width="190" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1055.0" y="247.0" font-size="15" text-anchor="middle" font-weight="bold">L5 fit check</text>
+<text x="1055.0" y="265.0" font-size="12.5" text-anchor="middle">tryon.request (I12)</text>
+<polygon points="1290.0,197 1375,252.0 1290.0,307 1205,252.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1290.0" y="247.0" font-size="15" text-anchor="middle" font-weight="bold">Fit back</text>
+<text x="1290.0" y="265.0" font-size="12.5" text-anchor="middle">within 1.5 s?</text>
+<rect x="1195" y="585" width="190" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1290.0" y="622.0" font-size="15" text-anchor="middle" font-weight="bold">L7 refreshes price</text>
+<text x="1290.0" y="640.0" font-size="12.5" text-anchor="middle">ctx.products (I14b)</text>
+<polygon points="1045.0,572 1130,627.0 1045.0,682 960,627.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1045.0" y="631.0" font-size="15" text-anchor="middle" font-weight="bold">Price fresh?</text>
+<rect x="720" y="585" width="190" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="815.0" y="622.0" font-size="15" text-anchor="middle" font-weight="bold">L6 verdict</text>
+<text x="815.0" y="640.0" font-size="12.5" text-anchor="middle">algorithm A5</text>
+<polygon points="570.0,572 655,627.0 570.0,682 485,627.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="570.0" y="622.0" font-size="15" text-anchor="middle" font-weight="bold">L8 socket</text>
+<text x="570.0" y="640.0" font-size="12.5" text-anchor="middle">connected?</text>
+<rect x="230" y="585" width="200" height="84" rx="14" fill="#fff" stroke="#000" stroke-width="4.5"/>
+<text x="330.0" y="622.0" font-size="15" text-anchor="middle" font-weight="bold">Card on glass</text>
+<text x="330.0" y="640.0" font-size="12.5" text-anchor="middle">≤ 2 s after asking</text>
+<rect x="455" y="395" width="250" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="580.0" y="424.5" font-size="15" text-anchor="middle" font-weight="bold">SURFACE ERROR · L6</text>
+<text x="580.0" y="442.5" font-size="12.5" text-anchor="middle">card: &#x27;item no longer</text>
+<text x="580.0" y="460.5" font-size="12.5" text-anchor="middle">available&#x27;. Ends this</text>
+<text x="580.0" y="478.5" font-size="12.5" text-anchor="middle">request (not recoverable).</text>
+<rect x="720" y="395" width="210" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="825.0" y="424.5" font-size="15" text-anchor="middle" font-weight="bold">RECOVER · L8 + L2</text>
+<text x="825.0" y="442.5" font-size="12.5" text-anchor="middle">go to Measuring</text>
+<text x="825.0" y="460.5" font-size="12.5" text-anchor="middle">(Fig D2-2); ask again</text>
+<text x="825.0" y="478.5" font-size="12.5" text-anchor="middle">when done.</text>
+<rect x="1165" y="395" width="250" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="1290.0" y="424.5" font-size="15" text-anchor="middle" font-weight="bold">DEGRADE · L6</text>
+<text x="1290.0" y="442.5" font-size="12.5" text-anchor="middle">decide without fit;</text>
+<text x="1290.0" y="460.5" font-size="12.5" text-anchor="middle">card says &#x27;fit pending&#x27;;</text>
+<text x="1290.0" y="478.5" font-size="12.5" text-anchor="middle">late report updates it.</text>
+<rect x="925" y="790" width="250" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="1050.0" y="828.5" font-size="15" text-anchor="middle" font-weight="bold">FALL BACK · L7 → L6</text>
+<text x="1050.0" y="846.5" font-size="12.5" text-anchor="middle">use cached price; card</text>
+<text x="1050.0" y="864.5" font-size="12.5" text-anchor="middle">says &#x27;price from &lt;date&gt;&#x27;.</text>
+<rect x="445" y="790" width="250" height="105" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="570.0" y="819.5" font-size="15" text-anchor="middle" font-weight="bold">RETRY · Mirror + L8</text>
+<text x="570.0" y="837.5" font-size="12.5" text-anchor="middle">WebView reconnects every</text>
+<text x="570.0" y="855.5" font-size="12.5" text-anchor="middle">2 s; L8 resends the card.</text>
+<text x="570.0" y="873.5" font-size="12.5" text-anchor="middle">Gives up at 30 s → Asleep.</text>
+<rect x="40.0" y="965" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="72.0" y="981.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<polygon points="538.6666666666667,965 570.6666666666667,977.0 538.6666666666667,989 506.6666666666667,977.0" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="538.6666666666667" y="981.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<rect x="973.3333333333334" y="965" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="4.5"/>
+<text x="1005.3333333333334" y="981.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<rect x="40.0" y="999" width="64" height="24" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="72.0" y="1015.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<polyline points="210,252 255,252" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="210,252 255,252" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="445,252 495,252" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="445,252 495,252" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="665,252 730,252" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="665,252 730,252" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="900,252 960,252" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="900,252 960,252" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1150,252 1205,252" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1150,252 1205,252" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="580,307 580,395" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="580,307 580,395" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="815,307 815,395" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="815,307 815,395" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="1290,307 1290,395" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1290,307 1290,395" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="1375,252 1450,252 1450,627 1385,627" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1375,252 1450,252 1450,627 1385,627" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1290,500 1290,585" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1290,500 1290,585" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="1195,627 1130,627" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1195,627 1130,627" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="960,627 910,627" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="960,627 910,627" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1045,682 1045,790" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1045,682 1045,790" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="925,842 815,842 815,669" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="925,842 815,842 815,669" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="720,627 655,627" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="720,627 655,627" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="485,627 430,627" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="485,627 430,627" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="570,682 570,790" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="570,682 570,790" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="445,842 330,842 330,669" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="445,842 330,842 330,669" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="506.6666666666667,1010 570.6666666666667,1010" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="506.6666666666667,1010 570.6666666666667,1010" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="973.3333333333334,1010 1037.3333333333335,1010" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="973.3333333333334,1010 1037.3333333333335,1010" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<rect x="683.1" y="227" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="697" y="240" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="916.1" y="227" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="930" y="240" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="586" y="347" width="21.2" height="20" fill="#fff"/>
+<text x="590" y="360" font-size="12.5" font-style="italic" text-anchor="start">no</text>
+<rect x="821" y="339" width="74.0" height="36" fill="#fff"/>
+<text x="825" y="352" font-size="12.5" font-style="italic" text-anchor="start">no / low</text>
+<text x="825" y="368" font-size="12.5" font-style="italic" text-anchor="start">confidence</text>
+<rect x="1296" y="347" width="21.2" height="20" fill="#fff"/>
+<text x="1300" y="360" font-size="12.5" font-style="italic" text-anchor="start">no</text>
+<rect x="1398.1" y="227" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="1412" y="240" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="921.1" y="602" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="935" y="615" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="1051" y="729" width="93.8" height="36" fill="#fff"/>
+<text x="1055" y="742" font-size="12.5" font-style="italic" text-anchor="start">no / provider</text>
+<text x="1055" y="758" font-size="12.5" font-style="italic" text-anchor="start">down</text>
+<rect x="443.1" y="602" width="27.799999999999997" height="20" fill="#fff"/>
+<text x="457" y="615" font-size="12.5" font-style="italic" text-anchor="middle">yes</text>
+<rect x="576" y="739" width="21.2" height="20" fill="#fff"/>
+<text x="580" y="752" font-size="12.5" font-style="italic" text-anchor="start">no</text>
+<rect x="336.5" y="855" width="107.0" height="20" fill="#fff"/>
+<text x="390" y="868" font-size="12.5" font-style="italic" text-anchor="middle">after reconnect</text>
+<text x="30" y="142" font-size="14" text-anchor="start">Riskiest flow: it crosses L8, L6, L4, L5, L7 and the internet, under a 2 s budget (D0 Flow B). Row 1 runs left to right, row 2 right to left.</text>
+<text x="36" y="949" font-size="15" text-anchor="start" font-weight="bold">Legend</text>
+<text x="118.0" y="981" font-size="13" text-anchor="start">Step (component, interface)</text>
+<text x="584.6666666666667" y="981" font-size="13" text-anchor="start">Check</text>
+<text x="1051.3333333333335" y="981" font-size="13" text-anchor="start">Successful end</text>
+<text x="118.0" y="1015" font-size="13" text-anchor="start">Error outcome: decided behaviour · handler</text>
+<text x="584.6666666666667" y="1015" font-size="13" text-anchor="start">Happy path</text>
+<text x="1051.3333333333335" y="1015" font-size="13" text-anchor="start">Error path</text>
+<text x="36" y="1047" font-size="13" text-anchor="start">Every error box names one of the four decided behaviours (retry, degrade, fall back, surface error) and the component that handles it.</text>
+</svg>

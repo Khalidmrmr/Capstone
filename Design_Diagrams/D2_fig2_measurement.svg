@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1025" width="1480" height="1025" font-family="Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="1480" height="1025" fill="#fff"/>
+<text x="30" y="44" font-size="26" font-weight="bold">Smart Closet Mirror — Fig D2-2: Body measurement state machine (L2 Perception, algorithm A3)</text>
+<text x="30" y="76" font-size="15">Goal: Turn a Gen 1 Mirror into a closet mirror that measures the user with a Kinect, shows their own clothes and shop items</text>
+<text x="30" y="96" font-size="15">on their body, and tells them what to wear today and whether a new piece is worth buying.</text>
+<rect x="20" y="890" width="1440" height="114" fill="#fff" stroke="#000" stroke-width="1"/>
+<rect x="300" y="180" width="1150" height="480" rx="16" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="12,7"/>
+<text x="314" y="204" font-size="15" font-weight="bold">Measuring session (one user)</text>
+<circle cx="61.0" cy="376.0" r="11.0" fill="#000"/>
+<rect x="100" y="340" width="170" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="185.0" y="380.0" font-size="15" text-anchor="middle" font-weight="bold">Idle</text>
+<rect x="330" y="340" width="190" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="425.0" y="371.0" font-size="15" text-anchor="middle" font-weight="bold">WaitFront</text>
+<text x="425.0" y="389.0" font-size="12.5" text-anchor="middle">&#x27;stand in a T-pose&#x27;</text>
+<rect x="600" y="340" width="190" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="695.0" y="371.0" font-size="15" text-anchor="middle" font-weight="bold">HoldFront</text>
+<text x="695.0" y="389.0" font-size="12.5" text-anchor="middle">collect front frames</text>
+<rect x="870" y="340" width="190" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="965.0" y="371.0" font-size="15" text-anchor="middle" font-weight="bold">WaitSide</text>
+<text x="965.0" y="389.0" font-size="12.5" text-anchor="middle">&#x27;turn to your right&#x27;</text>
+<rect x="1140" y="340" width="190" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1235.0" y="371.0" font-size="15" text-anchor="middle" font-weight="bold">HoldSide</text>
+<text x="1235.0" y="389.0" font-size="12.5" text-anchor="middle">collect side frames</text>
+<rect x="1140" y="545" width="190" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1235.0" y="576.0" font-size="15" text-anchor="middle" font-weight="bold">Computing</text>
+<text x="1235.0" y="594.0" font-size="12.5" text-anchor="middle">A3 steps 4–7</text>
+<rect x="1140" y="730" width="190" height="72" rx="14" fill="#fff" stroke="#000" stroke-width="4.5"/>
+<text x="1235.0" y="761.0" font-size="15" text-anchor="middle" font-weight="bold">Done</text>
+<text x="1235.0" y="779.0" font-size="12.5" text-anchor="middle">publish I8 to L3</text>
+<rect x="330" y="730" width="250" height="72" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="455.0" y="761.0" font-size="15" text-anchor="middle" font-weight="bold">Failed</text>
+<text x="455.0" y="779.0" font-size="12.5" text-anchor="middle">reason sent on I25</text>
+<rect x="40.0" y="930" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="72.0" y="946.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<rect x="506.6666666666667" y="930" width="64" height="24" fill="#fff" stroke="#000" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="538.6666666666667" y="946.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<circle cx="1005.3333333333334" cy="941.0" r="10.0" fill="#000"/>
+<rect x="506.6666666666667" y="964" width="64" height="24" rx="14" fill="#fff" stroke="#000" stroke-width="4.5"/>
+<text x="538.6666666666667" y="980.0" font-size="15" text-anchor="middle" font-weight="bold"></text>
+<polyline points="72,376 100,376" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="72,376 100,376" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="270,365 330,365" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="270,365 330,365" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="520,365 600,365" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="520,365 600,365" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="695,412 695,460 425,460 425,412" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="695,412 695,460 425,460 425,412" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="790,365 870,365" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="790,365 870,365" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1060,365 1140,365" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1060,365 1140,365" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1235,412 1235,460 965,460 965,412" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1235,412 1235,460 965,460 965,412" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="1300,412 1300,545" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1300,412 1300,545" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1235,617 1235,730" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1235,617 1235,730" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1140,590 520,590 520,730" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1140,590 520,590 520,730" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="362,660 362,730" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="362,660 362,730" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<polyline points="300,395 270,395" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="300,395 270,395" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="330,780 200,780 200,412" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="330,780 200,780 200,412" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="1140,790 900,790 900,860 130,860 130,412" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="1140,790 900,790 900,860 130,860 130,412" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="40.0,975 104.0,975" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="40.0,975 104.0,975" fill="none" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+<polyline points="973.3333333333334,975 1037.3333333333335,975" fill="none" stroke="#fff" stroke-width="8"/>
+<polyline points="973.3333333333334,975 1037.3333333333335,975" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="9,6" marker-end="url(#ar)"/>
+<rect x="253.1" y="299" width="93.8" height="36" fill="#fff"/>
+<text x="300" y="312" font-size="12.5" font-style="italic" text-anchor="middle">measure.start</text>
+<text x="300" y="328" font-size="12.5" font-style="italic" text-anchor="middle">(I24)</text>
+<rect x="519.7" y="339" width="80.6" height="20" fill="#fff"/>
+<text x="560" y="352" font-size="12.5" font-style="italic" text-anchor="middle">T-pose seen</text>
+<rect x="483.4" y="469" width="153.2" height="20" fill="#fff"/>
+<text x="560" y="482" font-size="12.5" font-style="italic" text-anchor="middle">pose broken before 2 s</text>
+<rect x="789.7" y="299" width="80.6" height="36" fill="#fff"/>
+<text x="830" y="312" font-size="12.5" font-style="italic" text-anchor="middle">2 s, ≥ 15</text>
+<text x="830" y="328" font-size="12.5" font-style="italic" text-anchor="middle">good frames</text>
+<rect x="1066.3" y="299" width="67.4" height="36" fill="#fff"/>
+<text x="1100" y="312" font-size="12.5" font-style="italic" text-anchor="middle">side pose</text>
+<text x="1100" y="328" font-size="12.5" font-style="italic" text-anchor="middle">seen</text>
+<rect x="1023.4" y="469" width="153.2" height="20" fill="#fff"/>
+<text x="1100" y="482" font-size="12.5" font-style="italic" text-anchor="middle">pose broken before 2 s</text>
+<rect x="1306" y="457" width="80.6" height="36" fill="#fff"/>
+<text x="1310" y="470" font-size="12.5" font-style="italic" text-anchor="start">2 s, ≥ 15</text>
+<text x="1310" y="486" font-size="12.5" font-style="italic" text-anchor="start">good frames</text>
+<rect x="1241" y="677" width="113.6" height="20" fill="#fff"/>
+<text x="1245" y="690" font-size="12.5" font-style="italic" text-anchor="start">confidence ≥ 0.7</text>
+<rect x="674.2" y="565" width="311.59999999999997" height="20" fill="#fff"/>
+<text x="830" y="578" font-size="12.5" font-style="italic" text-anchor="middle">confidence &lt; 0.7 or a value out of human range</text>
+<rect x="249.0" y="667" width="107.0" height="52" fill="#fff"/>
+<text x="352" y="680" font-size="12.5" font-style="italic" text-anchor="end">timeout 20 s</text>
+<text x="352" y="696" font-size="12.5" font-style="italic" text-anchor="end">person lost 3 s</text>
+<text x="352" y="712" font-size="12.5" font-style="italic" text-anchor="end">2+ people</text>
+<rect x="261.2" y="417" width="47.599999999999994" height="20" fill="#fff"/>
+<text x="285" y="430" font-size="12.5" font-style="italic" text-anchor="middle">cancel</text>
+<rect x="206" y="587" width="93.8" height="36" fill="#fff"/>
+<text x="210" y="600" font-size="12.5" font-style="italic" text-anchor="start">Retry →</text>
+<text x="210" y="616" font-size="12.5" font-style="italic" text-anchor="start">measure.start</text>
+<rect x="453.3" y="837" width="133.39999999999998" height="20" fill="#fff"/>
+<text x="520" y="850" font-size="12.5" font-style="italic" text-anchor="middle">ready for next user</text>
+<text x="30" y="142" font-size="14" text-anchor="start">Each state change publishes measure.progress (I25) {state, hint, progress 0–1} so L8 can draw the guide. &#x27;Good frame&#x27; = all 20 joints with conf ≥ 0.6.</text>
+<text x="36" y="914" font-size="15" text-anchor="start" font-weight="bold">Legend</text>
+<text x="118.0" y="946" font-size="13" text-anchor="start">State</text>
+<text x="584.6666666666667" y="946" font-size="13" text-anchor="start">Error state</text>
+<text x="1051.3333333333335" y="946" font-size="13" text-anchor="start">Start (first state on power-up)</text>
+<text x="118.0" y="980" font-size="13" text-anchor="start">Transition: trigger / action</text>
+<text x="584.6666666666667" y="980" font-size="13" text-anchor="start">Final state (success)</text>
+<text x="1051.3333333333335" y="980" font-size="13" text-anchor="start">Error or timeout transition</text>
+</svg>
