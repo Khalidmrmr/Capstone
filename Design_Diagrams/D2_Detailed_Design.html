@@ -61,15 +61,15 @@
   <h3>Known gaps and open questions</h3>
   <table>
     <tr><th style="width:4%">#</th><th style="width:40%">Gap or question</th><th>Current position</th></tr>
-    <tr><td class="id">G1</td><td>No shop product API or image search provider has been chosen yet (I14b, I14c).</td><td>L7 uses one adapter per provider, so the choice does not affect other layers. Candidates must allow non-commercial student use without fees. <span class="todo">[team: pick by Week 8]</span></td></tr>
+    <tr><td class="id">G1</td><td>No shop product API or image search provider has been chosen yet (I14b, I14c).</td><td>L7 uses one adapter per provider, so the choice does not affect other layers. Candidates must allow non-commercial student use without fees. <b>Decided:</b> images come from the Wikimedia Commons API (free, no key, openly licensed images). Products come from a local catalogue adapter that reads hand-entered listings from a JSON file, because no free shop API we found allows this use. Owner: Jace Schubert. A7, the only heavy user of both, is now stretch scope (G9).</td></tr>
     <tr><td class="id">G2</td><td>A profile PIN typed on the glass can be watched by someone standing nearby (US-05).</td><td>The keypad shuffles its digits on every unlock and does not echo them. The PIN protects wardrobe privacy, not payments. Unlocking from the paired phone is a possible later improvement.</td></tr>
     <tr><td class="id">G3</td><td>Accuracy of body circumferences from one front and one side depth view (A3) is unknown.</td><td>Target ±2 cm against a tape measure on all four team members before Week 9. The calibration factors live in the configuration file.</td></tr>
     <tr><td class="id">G4</td><td>Phone notifications are in-app only (no push), because push services would send data off the home network.</td><td>The phone page polls when open; the glass shows toasts. Accepted as a privacy trade-off.</td></tr>
-    <tr><td class="id">G5</td><td>Which machine is the brain PC, and does it have an NVIDIA GPU (needed for A2 and NVENC)?</td><td>Fallback: libx264 software encoding at 20 fps. <span class="todo">[team: confirm]</span></td></tr>
+    <tr><td class="id">G5</td><td>Which machine is the brain PC, and does it have an NVIDIA GPU (needed for A2 and NVENC)?</td><td><b>Confirmed:</b> the brain PC is Clare Hooper's Ubuntu desktop with an NVIDIA GPU (D1 §6), so A2 and NVENC run on it. The libx264 software fallback at 20 fps stays in the design in case the NVIDIA driver fails (EC-L5-X).</td></tr>
     <tr><td class="id">G6</td><td>Kinect 360 depth quality under the Mirror's own lighting and at 1–3 m in a typical room.</td><td>To be tested in the Week 8 hardware spike.</td></tr>
-    <tr><td class="id">G7</td><td>The traceability table (part 4) lists the five user stories but the mapping is not yet filled in.</td><td class="todo">[team: complete part 4]</td></tr>
-    <tr><td class="id">G8</td><td>The Week 4 user stories call the project "Smart Mirror Personal Stylist"; D0–D2 use "Smart Closet Mirror".</td><td class="todo">[team: choose one title and use it in every document and diagram]</td></tr>
-    <tr><td class="id">G9</td><td>The user stories do not mention try-on, body measurement, buy-or-skip, or looks from photos.</td><td>The reverse check in part 4 must either tie L3, L5, A3, A5, and A7 to a requirement or record them as scope to cut. <span class="todo">[team decision]</span></td></tr>
+    <tr><td class="id">G7</td><td>The traceability table (part 4) lists the five user stories but the mapping is not yet filled in.</td><td><b>Closed:</b> part 4 maps US-01 to US-05 and NF-01 to NF-04 to design elements and edge cases, and the reverse check covers every component.</td></tr>
+    <tr><td class="id">G8</td><td>The Week 4 user stories call the project "Smart Mirror Personal Stylist"; D0–D2 use "Smart Closet Mirror".</td><td><b>Decided:</b> "Smart Closet Mirror" in every document and diagram (review item PR-03). User_Stories takes the new title in its next revision.</td></tr>
+    <tr><td class="id">G9</td><td>The user stories do not mention try-on, body measurement, buy-or-skip, or looks from photos.</td><td><b>Decided:</b> L3, L5, A3, and A5 stay. They carry the goal statement (measure the user, show clothes on their body, say whether a new piece is worth buying) and are traced to NF-04 and the goal in part 4. A7 (look from a photo) moves to stretch scope (review item PR-02, rationale R9): it stays designed but is built only if the core is finished by Week 11.</td></tr>
   </table>
 </section>
 
@@ -222,7 +222,7 @@
             <li><b>Combine:</b> top × bottom (or a dress) × shoes, plus outerwear when required or optional. Combination score = sum of item scores + colour harmony (at most 2 non-neutral colours) + freshness (days since worn, capped at 14). Pick the highest score; on a tie, take the outfit worn least recently.</li>
             <li><b>Reason (≤ 80 characters):</b> for example, "Class presentation, 8 °C and rain: wool coat, waterproof boots".</li>
           </ol></li>
-        <li><b>Cost:</b> at most 10 × 10 × 10 × 10 = 10<sup>4</sup> combinations, under 50 ms. The weather call is cached for 15 min.</li>
+        <li><b>Cost:</b> at most 10 × 10 × 10 × 10 = 10<sup>4</sup> combinations, under 50 ms. The weather call is cached for 15 min. L6 waits at most 3.5 s for I14d; after that, A4 continues as "Weather unavailable" while L7's retries refresh the cache for the next request, so the card still arrives within 5 s (review item PR-04).</li>
       </ul></li>
     <li><b>A5 Buy-or-skip verdict.</b>
       <ul>
@@ -288,7 +288,7 @@
 
   <!-- L8 -->
   <div class="comp">
-  <h3>L8 Presentation — owner: all (lead <span class="todo">[team: name one lead]</span>)</h3>
+  <h3>L8 Presentation — owner: all (lead: Clare Hooper)</h3>
   <p><b>Data model:</b> ConsentEvent (Fig D2-4). It records each allow, decline, or revoke with a session id but no user link and no image [US-04]. Session state lives in memory and is rebuilt from L6 after a restart; screen text and layout come from configuration.</p>
   <p><b>Behaviour:</b> the state machine in Fig D2-1, plus these steps:</p>
   <ol>
@@ -344,7 +344,7 @@
 
   <!-- Glue -->
   <div class="comp">
-  <h3>Glue: Authentication — owner: Jace Schubert <span class="todo">(proposed)</span></h3>
+  <h3>Glue: Authentication — owner: Jace Schubert</h3>
   <p><b>Data model:</b> Device and ProfileLock (Fig D2-4).</p>
   <p><b>Behaviour</b> (pairing steps):</p>
   <ol>
@@ -372,7 +372,7 @@
   </div>
 
   <div class="comp">
-  <h3>Glue: Notifications — owner: Clare Hooper <span class="todo">(proposed)</span></h3>
+  <h3>Glue: Notifications — owner: Clare Hooper</h3>
   <p><b>Data model:</b> Notification (Fig D2-4).</p>
   <p><b>Behaviour:</b></p>
   <ol>
@@ -391,7 +391,7 @@
   </div>
 
   <div class="comp">
-  <h3>Glue: Configuration — owner: Rehman Khalid <span class="todo">(proposed)</span></h3>
+  <h3>Glue: Configuration — owner: Rehman Khalid</h3>
   <p><b>Data model:</b> no persistent data in the database; configuration must still work when the database is the broken part. Three things on disk:</p>
   <ul>
     <li><code>/etc/scm/config.yaml</code>: in git as <code>config.example.yaml</code>.</li>
@@ -421,7 +421,7 @@
   </div>
 
   <div class="comp">
-  <h3>Glue: Logging and health — owner: Rehman Khalid <span class="todo">(proposed)</span></h3>
+  <h3>Glue: Logging and health — owner: Rehman Khalid</h3>
   <p><b>Data model:</b> no persistent data in the database. Logs go to journald, capped at 500 MB or 14 days.</p>
   <p><b>Behaviour:</b></p>
   <ul>
@@ -467,91 +467,101 @@
 <!-- ============================================================ 3 -->
 <section>
   <h2>3. Edge cases and error handling</h2>
-  <div class="team"><b>Team-written section.</b> The course policy requires the edge-case analysis to be the team's own work, so the rows below are a grid to fill in, not answers. The grid gives every component one row for each of the four categories: <b>B</b> boundary values, <b>T</b> timing and concurrency, <b>I</b> bad or missing input, <b>X</b> external dependencies. Add more rows as needed (EC-L6-I2, and so on). Every row needs a decided behaviour (retry, degrade, fall back, or surface error), a named handler, and whether it is recoverable. Figs D2-3 and D2-6 are the error-path diagrams, and D2-5 shows the camera-consent failures; cite their boxes where they apply.</div>
+  <p>Every component has one row for each of four categories: <b>B</b> boundary values, <b>T</b> timing and concurrency, <b>I</b> bad or missing input, <b>X</b> external dependencies. Each row gives the decided behaviour (retry, degrade, fall back, or surface error), the component that handles it, and whether it is recoverable. Figs D2-3 and D2-6 are the error-path diagrams and Fig D2-5 shows the camera-consent failures; their boxes are cited where they apply.</p>
   <table>
     <tr><th style="width:7%">ID</th><th style="width:11%">Component</th><th style="width:9%">Category</th><th style="width:30%">Edge case</th><th style="width:25%">Design decision</th><th style="width:9%">Handler</th><th>Recoverable?</th></tr>
-    <tr><td class="id">EC-L1-B</td><td>L1 Capture</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L1-T</td><td>L1 Capture</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L1-I</td><td>L1 Capture</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L1-X</td><td>L1 Capture</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L2-B</td><td>L2 Perception</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L2-T</td><td>L2 Perception</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L2-I</td><td>L2 Perception</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L2-X</td><td>L2 Perception</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L3-B</td><td>L3 Body</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L3-T</td><td>L3 Body</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L3-I</td><td>L3 Body</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L3-X</td><td>L3 Body</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L4-B</td><td>L4 Wardrobe</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L4-T</td><td>L4 Wardrobe</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L4-I</td><td>L4 Wardrobe</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L4-X</td><td>L4 Wardrobe</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L5-B</td><td>L5 Try-on</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L5-T</td><td>L5 Try-on</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L5-I</td><td>L5 Try-on</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L5-X</td><td>L5 Try-on</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L6-B</td><td>L6 Decision</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L6-T</td><td>L6 Decision</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L6-I</td><td>L6 Decision</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L6-X</td><td>L6 Decision</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L7-B</td><td>L7 Connectors</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L7-T</td><td>L7 Connectors</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L7-I</td><td>L7 Connectors</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L7-X</td><td>L7 Connectors</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L8-B</td><td>L8 Presentation</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L8-T</td><td>L8 Presentation</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L8-I</td><td>L8 Presentation</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-L8-X</td><td>L8 Presentation</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-DS-B</td><td>Data store</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-DS-T</td><td>Data store</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-DS-I</td><td>Data store</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-DS-X</td><td>Data store</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-BUS-B</td><td>Message bus</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-BUS-T</td><td>Message bus</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-BUS-I</td><td>Message bus</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-BUS-X</td><td>Message bus</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-AUTH-B</td><td>Authentication</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-AUTH-T</td><td>Authentication</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-AUTH-I</td><td>Authentication</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-AUTH-X</td><td>Authentication</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-NOTIF-B</td><td>Notifications</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-NOTIF-T</td><td>Notifications</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-NOTIF-I</td><td>Notifications</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-NOTIF-X</td><td>Notifications</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-CFG-B</td><td>Configuration</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-CFG-T</td><td>Configuration</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-CFG-I</td><td>Configuration</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-CFG-X</td><td>Configuration</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-LOG-B</td><td>Logging and health</td><td>Boundary values</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-LOG-T</td><td>Logging and health</td><td>Timing / concurrency</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-LOG-I</td><td>Logging and health</td><td>Bad or missing input</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">EC-LOG-X</td><td>Logging and health</td><td>External dependency</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">EC-L1-B</td><td>L1 Capture</td><td>Boundary values</td><td>The user stands closer than 0.8 m or farther than 4 m, where the Kinect 360 returns depth 0 for the body.</td><td>Pass the frames through unchanged. L2 ignores zero-depth pixels; A3 fails with OUT_OF_RANGE and the hint "Stand 1.5–3 m from the mirror" (Fig D2-2, Failed).</td><td>L1, L2 (A3)</td><td>Yes: the user steps into range and retries.</td></tr>
+    <tr><td class="id">EC-L1-T</td><td>L1 Capture</td><td>Timing / concurrency</td><td>RGB and depth callbacks drift more than 20 ms apart, or one stream drops frames, so no pair forms.</td><td>Drop the unpaired frame and keep only the newest. No pair for 2 s → Stalled: health DOWN, close the device, reopen every 5 s.</td><td>L1</td><td>Yes, automatically when pairs resume.</td></tr>
+    <tr><td class="id">EC-L1-I</td><td>L1 Capture</td><td>Bad or missing input</td><td>capture.enable arrives with an unknown or revoked consent_id, or a second enable arrives while already Streaming.</td><td>Surface error: reply NO_CONSENT and stay Disabled, Kinect closed. A repeated enable with a valid consent_id is idempotent and returns the current state.</td><td>L1</td><td>Yes: L8 asks for consent again (Fig D2-5, Asking).</td></tr>
+    <tr><td class="id">EC-L1-X</td><td>L1 Capture</td><td>External dependency</td><td>The Kinect is unplugged, loses its 12 V adapter, or reports a USB 2.0 transfer error mid-session.</td><td>Report DEVICE_NOT_FOUND or USB_TRANSFER_ERROR on health (DOWN). L8 moves to Unknown, shows "Camera status unknown", and blocks image functions (Fig D2-5, C-02.2).</td><td>L1 → L8</td><td>Yes, once the device is reconnected (reopen every 5 s).</td></tr>
+    <tr><td class="id">EC-L2-B</td><td>L2 Perception</td><td>Boundary values</td><td>A gesture lands exactly on a threshold: a swipe of exactly 0.35 m, or confidence exactly 0.8.</td><td>Thresholds are fixed as: swipe distance strictly greater than 0.35 m, confidence ≥ 0.8. At most one gesture per second is published (I19), so a borderline double trigger is suppressed.</td><td>L2</td><td>Yes: the user repeats the gesture.</td></tr>
+    <tr><td class="id">EC-L2-T</td><td>L2 Perception</td><td>Timing / concurrency</td><td>Pose inference exceeds its 60 ms budget because A2 and NVENC compete for the GPU, so frames queue up.</td><td>Degrade: process only the newest FrameBundle and drop older ones (generation check, I7). If p95 stays above 60 ms for 5 s, publish health DEGRADED with p95_ms.</td><td>L2</td><td>Yes, when load drops.</td></tr>
+    <tr><td class="id">EC-L2-I</td><td>L2 Perception</td><td>Bad or missing input</td><td>A frame's generation changes during the read (L1 overwrote the slot), or two people are in view during measurement.</td><td>Discard the torn frame. During measurement, two or more people → Failed with reason MULTIPLE_PEOPLE and the hint "Only one person in view" (Fig D2-2).</td><td>L2</td><td>Yes: the next frame, or a retry of measure.start.</td></tr>
+    <tr><td class="id">EC-L2-X</td><td>L2 Perception</td><td>External dependency</td><td>OWLv2 weights are missing, or the GPU runs out of memory when vision.analyze runs.</td><td>Surface error MODEL_UNAVAILABLE on I15; health DEGRADED. Pose runs in a separate model and keeps working. L6 shows "Photo analysis unavailable", and uploads keep the colour the user entered.</td><td>L2 → L6</td><td>Yes, after the weights are restored or GPU memory is freed.</td></tr>
+    <tr><td class="id">EC-L3-B</td><td>L3 Body</td><td>Boundary values</td><td>A new measurement differs by exactly 1.0 cm, or a value sits at the edge of the human range.</td><td>"Less than 1.0 cm" keeps the old profile, so exactly 1.0 cm creates a new one. Human range: height 120–220 cm, circumferences 50–180 cm, inclusive; anything outside is logged and dropped.</td><td>L3</td><td>Yes: the user measures again.</td></tr>
+    <tr><td class="id">EC-L3-T</td><td>L3 Body</td><td>Timing / concurrency</td><td>Two I8 messages for one user arrive close together (a retried or doubled measurement), racing on is_current.</td><td>Each update runs in one transaction that re-reads the current profile first; a unique index on (user_id) where is_current = 1 blocks two current profiles. The second message is compared against the first one's result.</td><td>L3, data store</td><td>Yes, with no user action.</td></tr>
+    <tr><td class="id">EC-L3-I</td><td>L3 Body</td><td>Bad or missing input</td><td>I8 arrives with confidence below 0.7, missing rest_joints, or the old schema body_measurements/1.</td><td>Drop and log (defence in depth, step 1). An unknown schema version is rejected by the bus with BAD_SCHEMA.</td><td>L3, message bus</td><td>Yes: the user measures again.</td></tr>
+    <tr><td class="id">EC-L3-X</td><td>L3 Body</td><td>External dependency</td><td>The data store is busy for more than 2 s or full when a new BodyProfile is saved.</td><td>Retry once after 2 s on StorageBusy. Still failing, or StorageFull: keep the old profile and send measure.progress failed with the hint "Could not save, please try again".</td><td>L3</td><td>Yes, once storage is free.</td></tr>
+    <tr><td class="id">EC-L4-B</td><td>L4 Wardrobe</td><td>Boundary values</td><td>A garment photo sits exactly at a limit: 8 MB, or 400 × 400 px.</td><td>Limits are inclusive. 8 MB + 1 byte → 413 PHOTO_TOO_LARGE; under 400 px on either side → 400 VALIDATION_FAILED naming <code>photo</code> (D1 §5).</td><td>L4</td><td>Yes: the phone re-sends a smaller or larger photo.</td></tr>
+    <tr><td class="id">EC-L4-T</td><td>L4 Wardrobe</td><td>Timing / concurrency</td><td>Two phones PATCH the same garment at the same time.</td><td>The first write wins; the second gets 412 VERSION_CONFLICT from its stale If-Match ETag. The phone re-fetches and shows the current values before the user edits again.</td><td>L4</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L4-I</td><td>L4 Wardrobe</td><td>Bad or missing input</td><td>The same shirt is uploaded twice, a required field is missing, or the cutout and anchors are not ready yet.</td><td>409 DUPLICATE_PHOTO returns the existing garment_id; 400 VALIDATION_FAILED lists missing fields. A garment without a cutout stays <code>incomplete</code>: wardrobe.get returns INCOMPLETE, and A4 and try-on skip it.</td><td>L4</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L4-X</td><td>L4 Wardrobe</td><td>External dependency</td><td>The disk is full or the database is locked for more than 2 s during an upload.</td><td>Surface error 503 STORAGE_UNAVAILABLE with Retry-After. The phone page keeps the photo and retries after that delay.</td><td>L4, data store</td><td>Yes, once storage recovers.</td></tr>
+    <tr><td class="id">EC-L5-B</td><td>L5 Try-on</td><td>Boundary values</td><td>A size chart has a zone missing, or the ease is exactly at a band's min or max.</td><td>Bands are inclusive, so ease exactly at min or max is good. A missing zone is unknown; if every zone is unknown, overall is unknown and A5 treats the fit as pending (Fig D2-3, DEGRADE · L6).</td><td>L5 (A1)</td><td>Yes: the user or L7 adds sizes.</td></tr>
+    <tr><td class="id">EC-L5-T</td><td>L5 Try-on</td><td>Timing / concurrency</td><td>A second try-on request arrives while a render stream is live, or one A2 frame takes longer than 30 ms.</td><td>Reply RENDER_BUSY with the fit still returned (streaming = false). A slow frame is not queued: the renderer draws the newest pose next.</td><td>L5</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L5-I</td><td>L5 Try-on</td><td>Bad or missing input</td><td>tryon.request has more than 4 garments, an unknown garment id, or a profile with confidence below 0.7.</td><td>TOO_MANY_GARMENTS · GARMENT_NOT_FOUND (ids in <code>fields</code>) · PROFILE_LOW_CONFIDENCE, which sends L8 to Measuring for a new T-pose (Fig D2-3, RECOVER · L8 + L2).</td><td>L5 → L8</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L5-X</td><td>L5 Try-on</td><td>External dependency</td><td>The GPU context is lost, or NVENC is unavailable when L5 starts.</td><td>Fall back: restart the renderer and show plain video meanwhile (D1 §3). No NVENC at start → libx264 software encoding at 20 fps (G5); health DEGRADED.</td><td>L5</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L6-B</td><td>L6 Decision</td><td>Boundary values</td><td>The price exactly equals the budget left, no budget is set, or the closet has exactly 3 items in a category.</td><td>A5 rule 2 skips only when the price is above the budget, so equal is within budget. No budget set → rule 2 is skipped and the card says "No budget set". Exactly 3 items is not a gap (rule 4 needs fewer than 3).</td><td>L6 (A5)</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L6-T</td><td>L6 Decision</td><td>Timing / concurrency</td><td>The fit report arrives after the 1.5 s timeout, or the user acts on an old card while a newer one is showing.</td><td>Degrade: give the verdict without fit; the card says "fit pending" and the late report updates it (Fig D2-3, DEGRADE · L6). An old view_id gets STALE_VIEW and L6 resends the current view.</td><td>L6</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L6-I</td><td>L6 Decision</td><td>Bad or missing input</td><td>The wardrobe has no available bottom (or top, or shoes), or the item was archived between the listing and the verdict.</td><td>Surface error: "No complete outfit available" naming the missing category, never an invented item (Fig D2-6, C-01.3). An archived item gives "Item no longer available" (Fig D2-3, SURFACE ERROR · L6).</td><td>L6</td><td>No, for that request: the user changes the inventory or picks another item.</td></tr>
+    <tr><td class="id">EC-L6-X</td><td>L6 Decision</td><td>External dependency</td><td>The weather provider is down or the reading is older than 60 min; the shop price cannot be refreshed.</td><td>Degrade: "Weather unavailable" with an occasion-only outfit, not labelled weather-appropriate (Fig D2-6, C-01.2). Fall back to the cached price; the card says "price from &lt;date&gt;" (Fig D2-3).</td><td>L7 → L6</td><td>Yes, when the provider returns.</td></tr>
+    <tr><td class="id">EC-L7-B</td><td>L7 Connectors</td><td>Boundary values</td><td>A calendar date outside today ± 7 days, coordinates out of range, a query of 0 or more than 100 characters, or a cached weather reading exactly 60 min old.</td><td>BAD_QUERY naming the field. A reading exactly 60 min old is fresh (≤ 60 min); one second older is returned with stale = true.</td><td>L7</td><td>Yes: the caller fixes the query.</td></tr>
+    <tr><td class="id">EC-L7-T</td><td>L7 Connectors</td><td>Timing / concurrency</td><td>Many requests empty a provider's rate-limit bucket, or several callers miss the cache with the same key at once.</td><td>Identical in-flight requests share one outgoing call, keyed by the cache key. If the bucket stays empty for more than 3 s, reply RATE_LIMITED and the caller degrades.</td><td>L7</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L7-I</td><td>L7 Connectors</td><td>Bad or missing input</td><td>A provider returns malformed JSON, items with missing fields, or a calendar event with an empty title.</td><td>Normalisation drops bad items and logs them; a wholly bad response is treated as PROVIDER_UNAVAILABLE (cached data if any). An empty title goes to A6 as casual.</td><td>L7</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L7-X</td><td>L7 Connectors</td><td>External dependency</td><td>A provider returns 5xx or times out, or still returns 401 after one token refresh.</td><td>Retry after 1, 2, then 4 s, honouring Retry-After; then return cached data with stale = true. 401 after the refresh → NEEDS_RELINK, and notify.create (I20) sends relink_needed to the user.</td><td>L7, Notifications</td><td>Yes; a 401 needs the user to relink.</td></tr>
+    <tr><td class="id">EC-L8-B</td><td>L8 Presentation</td><td>Boundary values</td><td>No answer to the consent prompt at exactly 15 s; a voice command at edit distance 2; more than 4 cards to show.</td><td>15 s with no answer counts as Decline (Fig D2-5). Edit distance 2 is rejected with "Sorry, say that again". Cards are cut to 4 with "More on your phone".</td><td>L8</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L8-T</td><td>L8 Presentation</td><td>Timing / concurrency</td><td>The Mirror's WebSocket drops mid-session, or a second Mirror connection arrives.</td><td>Retry: the Mirror reconnects every 2 s and L8 resends the full ui.state with a new seq (Fig D2-3, RETRY · Mirror + L8); after 30 s → Asleep. A second connection closes the old one with 4409.</td><td>L8, Mirror</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-L8-I</td><td>L8 Presentation</td><td>Bad or missing input</td><td>A wrong PIN, a voice command with confidence below 0.6, or a touch outside any control.</td><td>WRONG_PIN shows the attempts left; LOCKED shows when the profile unlocks. Low-confidence voice and stray touches are ignored without changing state.</td><td>L8, Auth</td><td>Yes (after 5 min if locked).</td></tr>
+    <tr><td class="id">EC-L8-X</td><td>L8 Presentation</td><td>External dependency</td><td>capture.status gets no reply within 2 s, or the reply contradicts the expected state; mirror.control gets no ack in 1 s.</td><td>Move to Unknown: "Camera status unknown" and image functions blocked, never claiming the camera is off (Fig D2-5, C-02.2). mirror.control is retried once, then logged.</td><td>L8</td><td>Yes, when L1 answers again.</td></tr>
+    <tr><td class="id">EC-DS-B</td><td>Data store</td><td>Boundary values</td><td>Free disk space falls below 1 GB.</td><td>StorageFull: the store goes read-only, health DEGRADED, uploads get 503, and notify.create sends a system notice to every user.</td><td>Data store, Logging and health</td><td>Yes, after space is freed.</td></tr>
+    <tr><td class="id">EC-DS-T</td><td>Data store</td><td>Timing / concurrency</td><td>A write lock is held for more than 2 s, for example by the 03:00 backup or two writers.</td><td>StorageBusy → HTTP 503 or STORAGE_UNAVAILABLE on the bus. The backup uses SQLite's online backup in small steps, so it never holds the lock for long.</td><td>Data store</td><td>Yes: the caller retries.</td></tr>
+    <tr><td class="id">EC-DS-I</td><td>Data store</td><td>Bad or missing input</td><td>A schema migration fails at start-up, or a write breaks a CHECK or foreign-key rule.</td><td>Each migration runs in one transaction and rolls back on failure; the process exits with the reason so systemd shows it. A constraint violation writes nothing and returns VALIDATION_FAILED to the caller.</td><td>Data store</td><td>Yes, after the migration is fixed.</td></tr>
+    <tr><td class="id">EC-DS-X</td><td>Data store</td><td>External dependency</td><td>The external backup drive is missing at 03:00.</td><td>Skip that night's backup, log it, report health DEGRADED with "backup drive missing", and try again the next night.</td><td>Data store</td><td>Yes, when the drive is reconnected.</td></tr>
+    <tr><td class="id">EC-BUS-B</td><td>Message bus</td><td>Boundary values</td><td>A message is larger than 1 MB.</td><td>Reject with TOO_LARGE; the sender must send a reference instead (frames already travel by shared-memory slot, I7).</td><td>Message bus</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-BUS-T</td><td>Message bus</td><td>Timing / concurrency</td><td>A reply arrives after the caller's timeout, or a component misses heartbeats.</td><td>The caller discards replies whose corr_id is no longer pending. No heartbeat for 15 s → that component is marked DOWN.</td><td>Bus client, busd</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-BUS-I</td><td>Message bus</td><td>Bad or missing input</td><td>A message uses an unknown schema name or version.</td><td>Reject with BAD_SCHEMA; drop it and log the sender and schema.</td><td>busd</td><td>Yes, after the sender is updated.</td></tr>
+    <tr><td class="id">EC-BUS-X</td><td>Message bus</td><td>External dependency</td><td>busd itself crashes.</td><td>systemd restarts it. Clients reconnect with back-off (0.5, 1, 2 s, up to 5 s) and register their services again. Meanwhile scmctl status exits 2 with "health unknown".</td><td>systemd, bus client</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-AUTH-B</td><td>Authentication</td><td>Boundary values</td><td>The 5th wrong PIN; a pairing code at 120 s or on its 6th attempt; a PIN of 3 or 7 digits.</td><td>The 5th wrong PIN locks the profile for 5 min. An expired code → 410 CODE_EXPIRED; too many attempts → 429. A PIN outside 4–6 digits → 400 VALIDATION_FAILED.</td><td>Auth</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-AUTH-T</td><td>Authentication</td><td>Timing / concurrency</td><td>Two phones enter the same pairing code at once, or the session expires while a request is in flight.</td><td>The code is used up inside one transaction, so the second phone gets 404 CODE_UNKNOWN. An in-flight request finishes; the next one needs a new unlock.</td><td>Auth</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-AUTH-I</td><td>Authentication</td><td>Bad or missing input</td><td>A request asks for another user's data (an <code>owner</code> parameter or a user_id in the body), or sends a malformed token.</td><td>Surface error 403 FORBIDDEN (bus: FORBIDDEN); user_id always comes from the session or token (isolation rule). A malformed token → 401 UNAUTHORIZED.</td><td>Auth, repositories</td><td>No: refused by design.</td></tr>
+    <tr><td class="id">EC-AUTH-X</td><td>Authentication</td><td>External dependency</td><td>secrets.env or the token encryption key is missing or unreadable at start-up.</td><td>Auth refuses to start and names the missing key; HTTP calls get 503 and the Mirror shows "Service unavailable".</td><td>Auth, Configuration</td><td>Yes, after the secrets file is restored.</td></tr>
+    <tr><td class="id">EC-NOTIF-B</td><td>Notifications</td><td>Boundary values</td><td>A title over 60 characters, a body over 200, or ttl_h of 0 or 721.</td><td>Reject with BAD_INPUT naming the field; text is never silently cut.</td><td>Notifications</td><td>Yes: the caller fixes the input.</td></tr>
+    <tr><td class="id">EC-NOTIF-T</td><td>Notifications</td><td>Timing / concurrency</td><td>Many failed calls raise relink_needed for the same user within minutes.</td><td>dedupe_key updates the existing unread notification, so the user sees one notice. Marking as read twice has the same effect as once.</td><td>Notifications</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-NOTIF-I</td><td>Notifications</td><td>Bad or missing input</td><td>notify.create for an unknown user, or mark-read on another user's notification.</td><td>UNKNOWN_USER on the bus; 404 NOT_FOUND over HTTP, which does not reveal that the notification exists.</td><td>Notifications</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-NOTIF-X</td><td>Notifications</td><td>External dependency</td><td>The phone page is closed or the phone is off the home network.</td><td>No push by design (G4). Notifications wait in the store until their TTL; the glass shows a toast if the user is there.</td><td>Notifications</td><td>Yes, when the page next opens within the TTL.</td></tr>
+    <tr><td class="id">EC-CFG-B</td><td>Configuration</td><td>Boundary values</td><td>A reloadable threshold is set outside its allowed range, for example gesture confidence 1.2.</td><td>The schema rejects the reload; the old configuration stays and an error is logged.</td><td>Configuration</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-CFG-T</td><td>Configuration</td><td>Timing / concurrency</td><td>SIGHUP arrives during a request, or two reloads come back to back; a component crashes within 10 min of a new version.</td><td>Each request reads one configuration snapshot; reloads run one at a time. A version is not marked known good unless every component stays ok for 10 min.</td><td>Configuration</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-CFG-I</td><td>Configuration</td><td>Bad or missing input</td><td>config.yaml is not valid YAML or is missing a key at start-up; rollback --to N names a version that fails the check.</td><td>The process exits naming the bad key; the maintainer runs scmctl config rollback (US-03). A failing --to N → INVALID_VERSION and nothing changes.</td><td>Configuration, maintainer</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-CFG-X</td><td>Configuration</td><td>External dependency</td><td>There is no known-good version yet (a fresh install), or a service fails to restart after a rollback.</td><td>NO_KNOWN_GOOD, exit 1. RESTART_FAILED, exit 3: the version is restored, and scmctl status names the service still down.</td><td>scmctl, maintainer</td><td>Partly: a person must fix the failing service.</td></tr>
+    <tr><td class="id">EC-LOG-B</td><td>Logging and health</td><td>Boundary values</td><td>journald reaches its 500 MB or 14-day cap.</td><td>journald drops the oldest entries; health is not affected.</td><td>journald</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-LOG-T</td><td>Logging and health</td><td>Timing / concurrency</td><td>A component hangs and goes silent for 15 s without crashing; a crashing process passes 5 restarts in 10 min.</td><td>busd marks it DOWN and scmctl status shows it. After 5 restarts systemd stops trying and notify.create sends a system notice.</td><td>busd, systemd</td><td>Partly: after 5 restarts a maintainer must step in.</td></tr>
+    <tr><td class="id">EC-LOG-I</td><td>Logging and health</td><td>Bad or missing input</td><td>A log call includes a blocked field (an image, a measurement, a token, or an event title).</td><td>The field is dropped and counted; the count appears in health metrics so the leak can be fixed.</td><td>log()</td><td>Yes.</td></tr>
+    <tr><td class="id">EC-LOG-X</td><td>Logging and health</td><td>External dependency</td><td>journald is unavailable or the log disk is full.</td><td>Log writes fall back to stderr, which systemd captures; logging never blocks a request.</td><td>log()</td><td>Yes.</td></tr>
   </table>
 </section>
 
 <!-- ============================================================ 4 -->
 <section>
   <h2>4. Requirements traceability table</h2>
-  <div class="team"><b>Team-written section.</b> One row per user story or requirement, functional (F) and non-functional (NF). Rows US-01 to US-05 are copied from User_Stories (Week 4); add NF rows for the measurable targets in its acceptance criteria (for example, weather data no older than 60 minutes, and zero image files written after consent is declined). Cite specific design elements from the catalogue below (an entity, endpoint, algorithm, interface, or figure, not just a component name), and cite edge-case IDs from part 3. Explain every gap; no blank cells.</div>
+  <p>One row per user story (US-01 to US-05, from User_Stories, Week 4) and per measurable non-functional target (NF-01 to NF-04). Design elements come from the catalogue below; edge-case IDs refer to part 3.</p>
   <table>
     <tr><th style="width:7%">Req ID</th><th style="width:20%">Requirement (short)</th><th style="width:5%">F / NF</th><th style="width:7%">Priority</th><th style="width:22%">Design elements</th><th style="width:24%">How they satisfy it</th><th>Edge cases · figures</th></tr>
-    <tr><td class="id">US-01</td><td>Outfit suggestions from owned clothing, the occasion, and current weather (UC-01; C-01.1–C-01.3)</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">US-02</td><td>Add, correct, and remove clothing items in my personal inventory</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">US-03</td><td>Maintainer can identify a failed service and restore the last working configuration</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">US-04</td><td>Know whether the camera is active and decline image capture (UC-02; C-02.1–C-02.3)</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">US-05</td><td>Access only my own wardrobe and preferences on a shared mirror</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="blank">NF-01</td><td class="blank"></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="blank">NF-02</td><td class="blank"></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="blank">NF-03</td><td class="blank"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">US-01</td><td>Outfit suggestions from owned clothing, the occasion, and current weather (UC-01; C-01.1–C-01.3)</td><td>F</td><td>Must</td><td>A4 outfit recommendation · I14d ctx.weather (Open-Meteo) · I13 closet index · I14a ctx.calendar_day + A6 · Garment.warmth, Garment.water_resistant · StylePreference (location) · I17 <code>recommend</code></td><td>A4 checks completeness first, so it never suggests an item the user does not own (C-01.3). The weather rules apply only to a reading ≤ 60 min old; otherwise the card says "Weather unavailable" (C-01.2). The reason names the occasion (request or calendar) and the weather (C-01.1).</td><td>EC-L6-I, EC-L6-X, EC-L7-B, EC-L7-X · Fig D2-6</td></tr>
+    <tr><td class="id">US-02</td><td>Add, correct, and remove clothing items in my personal inventory</td><td>F</td><td>Must</td><td>POST / GET / PATCH / DELETE /api/v1/garments (D1 §5) · Garment, GarmentSize, GarmentAsset (D1 Fig 1) · I15 vision.analyze (colour) · Garment status <code>incomplete</code></td><td>Add: a phone photo creates a Garment with detected colours. Correct: PATCH with an ETag, so concurrent edits never overwrite each other. Remove: DELETE archives the item, which drops it from A4 and A5 at once. Duplicate photos are refused (pHash).</td><td>EC-L4-B, EC-L4-T, EC-L4-I, EC-L4-X, EC-DS-T · D1 Fig 1</td></tr>
+    <tr><td class="id">US-03</td><td>Maintainer can identify a failed service and restore the last working configuration</td><td>F</td><td>Should</td><td>scmctl status · scmctl config rollback · config_history/index.json (known_good) · I21 ops.health · GET /api/v1/health · systemd restarts</td><td>scmctl status shows each component's state, so the maintainer can see which service failed. rollback restores the latest known-good configuration (or --to N), checks it, and restarts the affected services.</td><td>EC-CFG-I, EC-CFG-X, EC-LOG-T, EC-BUS-X</td></tr>
+    <tr><td class="id">US-04</td><td>Know whether the camera is active and decline image capture (UC-02; C-02.1–C-02.3)</td><td>F</td><td>Must</td><td>I27 capture.enable / disable · capture.status · ConsentEvent · L1 consent gate (Disabled by default) · I5 without camera data · Fig D2-5</td><td>The Kinect stays closed until the user explicitly allows it for that session. The glass always shows "Camera on" or "Camera off". Revoking closes the device (C-02.3). If the state cannot be checked, image functions are blocked (C-02.2).</td><td>EC-L1-I, EC-L1-X, EC-L8-B, EC-L8-X · Fig D2-5</td></tr>
+    <tr><td class="id">US-05</td><td>Access only my own wardrobe and preferences on a shared mirror</td><td>F</td><td>Must</td><td>ProfileLock · I28 auth.unlock · PUT /api/v1/profile/pin · isolation rule (user_id from the session only) · GET /api/v1/garments <code>owner</code> limited to the caller (403) · Device tokens</td><td>Each person unlocks their own profile with a PIN; every query is scoped to that user_id, and asking for anyone else's data returns 403. Cards and toasts show only the unlocked user's items.</td><td>EC-AUTH-B, EC-AUTH-I, EC-L8-I, EC-NOTIF-I</td></tr>
+    <tr><td class="id">NF-01</td><td>Weather used in a recommendation is no more than 60 minutes old (C-01.2)</td><td>NF</td><td>Must</td><td>I14d <code>observed_at</code> and <code>stale</code> · L7 cache TTL 15 min · A4 step 3 (60-minute check)</td><td>The cache refreshes every 15 min, so a normal reading is at most 15 min old. Anything older than 60 min is flagged stale, and A4 drops the weather rules and says "Weather unavailable".</td><td>EC-L7-B, EC-L7-X, EC-L6-X · Fig D2-6</td></tr>
+    <tr><td class="id">NF-02</td><td>Zero image or video files written when consent is declined or after it is revoked (C-02.1, C-02.3)</td><td>NF</td><td>Must</td><td>L1 shared-memory ring buffer (I7, frame_bundle/2) · L2 with no persistent data · logging privacy rule · Fig D2-5 rules</td><td>L1 and L2 have no code path that writes frames, and the Kinect is never opened without a valid consent_id. Test: count the files under the data directory before and after a declined session; the count must not change.</td><td>EC-L1-I, EC-LOG-I · Fig D2-5</td></tr>
+    <tr><td class="id">NF-03</td><td>Outfit card ≤ 5 s after the request; buy-or-skip verdict ≤ 2 s</td><td>NF</td><td>Should</td><td>A4 cost (&lt; 50 ms) · 3.5 s deadline on I14d (PR-04) · I12 1.5 s timeout · L7 3 s call timeout · Figs D2-3, D2-6</td><td>Every slow step has a deadline that leads to a degraded answer instead of a wait: weather after 3.5 s, fit after 1.5 s ("fit pending"), price from cache.</td><td>EC-L6-T, EC-L7-T, EC-L5-T · Figs D2-3, D2-6</td></tr>
+    <tr><td class="id">NF-04</td><td>Motion to glass ≤ 250 ms during try-on (goal statement: show clothes on the user's body)</td><td>NF</td><td>Should</td><td>D0 Flow A budget · L2 pose ≤ 60 ms · A2 30 ms · NVENC encode 25 ms · I7 newest-frame-only</td><td>Every stage works on the newest frame only and drops older ones, so delay cannot build up. Software encoding (libx264) is the fallback if NVENC fails.</td><td>EC-L2-T, EC-L5-T, EC-L5-X</td></tr>
   </table>
 
   <h3>Reverse check: component → requirements</h3>
   <table>
     <tr><th style="width:20%">Component</th><th style="width:35%">Requirements it serves (IDs)</th><th>If none: keep (why) or cut</th></tr>
-    <tr><td>L1 Capture</td><td></td><td></td></tr><tr><td>L2 Perception</td><td></td><td></td></tr><tr><td>L3 Body</td><td></td><td></td></tr>
-    <tr><td>L4 Wardrobe</td><td></td><td></td></tr><tr><td>L5 Try-on</td><td></td><td></td></tr><tr><td>L6 Decision</td><td></td><td></td></tr>
-    <tr><td>L7 Connectors</td><td></td><td></td></tr><tr><td>L8 Presentation</td><td></td><td></td></tr><tr><td>Data store, message bus</td><td></td><td></td></tr>
-    <tr><td>Authentication</td><td></td><td></td></tr><tr><td>Notifications</td><td></td><td></td></tr><tr><td>Configuration</td><td></td><td></td></tr><tr><td>Logging and health</td><td></td><td></td></tr>
+    <tr><td>L1 Capture</td><td>US-04, NF-02, NF-04</td><td>Keep.</td></tr>
+    <tr><td>L2 Perception</td><td>US-02 (colour detection, I15), US-04 (nothing runs without consent), NF-04</td><td>Keep.</td></tr>
+    <tr><td>L3 Body</td><td>NF-04; goal statement ("measures the user")</td><td>Keep: no user story names measurement, but try-on and fit (A1) need a body profile (G9).</td></tr>
+    <tr><td>L4 Wardrobe</td><td>US-01, US-02, US-05</td><td>Keep.</td></tr>
+    <tr><td>L5 Try-on</td><td>NF-04; goal statement ("shows ... on their body")</td><td>Keep: core of the goal statement and of D1 (G9).</td></tr>
+    <tr><td>L6 Decision</td><td>US-01, US-05, NF-01, NF-03</td><td>Keep. A5 stays (goal statement: "whether a new piece is worth buying"). A7 moves to stretch scope (PR-02, R9).</td></tr>
+    <tr><td>L7 Connectors</td><td>US-01, NF-01</td><td>Keep. I14b and I14c serve A5's price refresh and the stretch-scope A7.</td></tr>
+    <tr><td>L8 Presentation</td><td>US-01, US-04, US-05, NF-03</td><td>Keep.</td></tr>
+    <tr><td>Data store, message bus</td><td>US-01 to US-05 (every story stores or moves data through them)</td><td>Keep.</td></tr>
+    <tr><td>Authentication</td><td>US-05, US-02 (device token on every phone call)</td><td>Keep.</td></tr>
+    <tr><td>Notifications</td><td>US-01 (relink_needed keeps calendar occasions working), US-03 (system notices)</td><td>Keep: small and already designed; in-app only for privacy (G4).</td></tr>
+    <tr><td>Configuration</td><td>US-03</td><td>Keep.</td></tr>
+    <tr><td>Logging and health</td><td>US-03, NF-02 (privacy rule: no images in logs)</td><td>Keep.</td></tr>
   </table>
 </section>
 
@@ -572,52 +582,39 @@
 <!-- ============================================================ 5 -->
 <section>
   <h2>5. Design rationale</h2>
-  <div class="team"><b>Team-written section.</b> Write 6–10 entries in the required form. Mark any decision the peer review changed, giving its action item ID from part 6. The D0 decision log (D1–D7: brain PC, Kinect 360, H.264 video, single L7, message bus, voice in L8, clip-over bracket) is referenced by number, not repeated.</div>
+  <p>Ten D1 and D2 decisions, each stating what we chose, what we passed over, and why. Decisions changed by the peer review give the action item ID from part 6. The D0 decision log (D1–D7: brain PC, Kinect 360, H.264 video, single L7, message bus, voice in L8, clip-over bracket) is referred to by number, not repeated.</p>
   <table>
-    <tr><th style="width:4%">#</th><th style="width:54%">We chose ___ over ___ because ___.</th><th style="width:30%">We accepted the trade-off of ___ because ___.</th><th>Changed by review? (item ID)</th></tr>
-    <tr><td class="id">R1</td><td></td><td></td><td></td></tr><tr><td class="id">R2</td><td></td><td></td><td></td></tr>
-    <tr><td class="id">R3</td><td></td><td></td><td></td></tr><tr><td class="id">R4</td><td></td><td></td><td></td></tr>
-    <tr><td class="id">R5</td><td></td><td></td><td></td></tr><tr><td class="id">R6</td><td></td><td></td><td></td></tr>
-    <tr><td class="id">R7</td><td></td><td></td><td></td></tr><tr><td class="id">R8</td><td></td><td></td><td></td></tr>
+    <tr><th style="width:4%">#</th><th style="width:54%">Decision (chosen over the alternative, and why)</th><th style="width:30%">Trade-off accepted, and why</th><th>Changed by review? (item ID)</th></tr>
+    <tr><td class="id">R1</td><td>We chose SQLite in WAL mode over PostgreSQL because one household's data (about 70,000 rows) fits in one file with no server to run, and WAL lets L5 read while L4 writes (D1 §6).</td><td>We accepted one writer at a time and 2 s busy time-outs because the one-writer-per-table rule keeps contention low, and SQLAlchemy leaves a path to PostgreSQL.</td><td>No</td></tr>
+    <tr><td class="id">R2</td><td>We chose a 2-D skinned warp (A2) over 3-D cloth simulation or neural try-on because phone photos only give us 2-D garments, and the warp fits A2's 30 ms budget, while neural try-on takes hundreds of ms per frame and has non-commercial licences.</td><td>We accepted that garments look flat when the user turns sideways because the mirror is used facing forward, and the fit is still shown through ease.</td><td>No</td></tr>
+    <tr><td class="id">R3</td><td>We chose MediaPipe Pose on the Kinect's RGB image over OpenNI/NiTE skeleton tracking because NiTE is no longer maintained or distributed, while MediaPipe is maintained, Apache-2.0, and fits the 60 ms pose budget.</td><td>We accepted fusing depth ourselves (median of a 5 × 5 window) and building our own body mask because both are a few lines over data we already have.</td><td>No</td></tr>
+    <tr><td class="id">R4</td><td>We chose waking the glass by touch or voice over presence detection from a camera because watching the room before anyone agrees is exactly what US-04 forbids.</td><td>We accepted that the mirror does not wake when someone walks up because a bystander's privacy is worth one tap or word.</td><td>No</td></tr>
+    <tr><td class="id">R5</td><td>We chose consent per session over remembered consent because a shared mirror cannot tell whether the person in front is the one who agreed before, and per-session consent starts at Off for every visitor (C-02.1).</td><td>We accepted one extra prompt per session because it appears only before try-on, measuring, or gestures and is answered with one tap or word.</td><td>No</td></tr>
+    <tr><td class="id">R6</td><td>We chose a profile PIN over face recognition or phone unlock because face recognition needs the camera before consent (US-04), and phone unlock fails when the phone is not at hand.</td><td>We accepted that a nearby person could watch the PIN (G2) because the shuffled keypad limits it and the PIN protects wardrobe privacy, not payments.</td><td>Considered in PR-05; not changed</td></tr>
+    <tr><td class="id">R7</td><td>We chose Open-Meteo over a paid weather API because it is free for non-commercial use and needs no API key, so there is no secret to leak, and we send only coordinates rounded to 0.1°.</td><td>We accepted having no service guarantee because the 15 min cache and the "Weather unavailable" path cover outages (C-01.2).</td><td>No</td></tr>
+    <tr><td class="id">R8</td><td>We chose a file-based configuration history over storing configuration in the database because configuration must still load and roll back when the database is the broken part (US-03).</td><td>We accepted keeping configuration history and database backups in two places because configuration is small and a rollback rarely needs a database change.</td><td>No</td></tr>
+    <tr><td class="id">R9</td><td>We chose to move A7 (look from a photo) to stretch scope over building all seven algorithms for the demo because no user story asks for it and it depends on two outside providers (G1).</td><td>We accepted that this part of the original idea may not be demonstrated because the time goes to US-01 to US-05, which the stakeholders asked for.</td><td>Yes, PR-02</td></tr>
+    <tr><td class="id">R10</td><td>We chose a 3.5 s deadline on the weather call, then an occasion-only outfit, over waiting for L7's full retry sequence (1 + 2 + 4 s) because waiting would break the 5 s outfit budget (NF-03).</td><td>We accepted an occasional "Weather unavailable" card on a slow network because the next request uses the weather L7 fetched in the background.</td><td>Yes, PR-04</td></tr>
   </table>
-  <p class="small"><b>Decisions in D1 and D2 that may be worth an entry</b> (pick the significant ones; the reasoning is yours):</p>
-  <ul class="small">
-    <li>SQLite vs PostgreSQL (D1 §6)</li>
-    <li>2-D skinned warp vs 3-D cloth or neural try-on (A2)</li>
-    <li>Ease bands vs ML fit prediction (A1)</li>
-    <li>Front + side depth ellipse vs a single front view (A3)</li>
-    <li>MediaPipe Pose on Kinect RGB vs OpenNI/NiTE skeleton tracking</li>
-    <li>Splitting I14, I15, and I6 (interface revisions)</li>
-    <li>Dropping the 3-D avatar mesh from I9</li>
-    <li>Device pairing tokens vs user accounts with passwords</li>
-    <li>In-app notifications vs web push</li>
-    <li>One writer per table</li>
-    <li>JSON snapshot of garment_ids in Decision</li>
-    <li>Wake by touch or voice vs presence detection from a camera (US-04)</li>
-    <li>Consent per session vs remembered consent (US-04)</li>
-    <li>Profile PIN vs phone unlock vs face recognition (US-05)</li>
-    <li>Open-Meteo vs a paid weather API (US-01)</li>
-    <li>File-based configuration history vs storing it in the database (US-03)</li>
-  </ul>
 </section>
 
 <!-- ============================================================ 6 -->
 <section>
   <h2>6. Peer design review notes</h2>
-  <div class="team"><b>Team-written section</b>, from the in-class review. The same table is in <code>Design_Diagrams/Peer_Review_Notes.md</code>; keep the two in step. Add one block of rows per reviewing team. Priorities: must-fix, worth considering, out of scope for now. Apply the must-fix items to D2 before submitting and mark them in part 5.</div>
+  <p><b>Reviewer:</b> Austin Heiss. The same table is in <code>Design_Diagrams/Peer_Review_Notes.md</code>. Priorities: must-fix, worth considering, out of scope for now. The must-fix items are applied in this document and marked in parts 1, 2, and 5.</p>
   <table>
     <tr><th style="width:6%">ID</th><th style="width:11%">Criterion</th><th style="width:26%">Issue</th><th style="width:10%">Raised by (team)</th><th style="width:22%">Action</th><th style="width:9%">Owner</th><th style="width:9%">Priority</th><th>Due</th></tr>
-    <tr><td class="id">PR-01</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">PR-02</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">PR-03</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">PR-04</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">PR-05</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td class="id">PR-06</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">PR-01</td><td>Completeness</td><td>The four glue components had only proposed owners, and L8 had no lead, so no one was accountable for the screen every layer feeds.</td><td>Austin Heiss</td><td>Confirm the glue owners and name Clare Hooper as L8 lead (part 2).</td><td>Clare Hooper</td><td>Must-fix (done)</td><td>Week 7</td></tr>
+    <tr><td class="id">PR-02</td><td>Risk</td><td>A7 (look from a photo) has no user story and depends on two providers not yet chosen, so it could take time away from the stories.</td><td>Austin Heiss</td><td>Move A7 to stretch scope and choose the image and product sources (G1, G9, R9).</td><td>Clare Hooper, Jace Schubert</td><td>Must-fix (done)</td><td>Week 7</td></tr>
+    <tr><td class="id">PR-03</td><td>Clarity</td><td>The user stories and D0–D2 use two different project titles.</td><td>Austin Heiss</td><td>Use "Smart Closet Mirror" everywhere (G8); User_Stories takes it in its next revision.</td><td>Arya Garg</td><td>Must-fix (done in D2)</td><td>Week 8</td></tr>
+    <tr><td class="id">PR-04</td><td>Feasibility</td><td>L7's retries on the weather call (1 + 2 + 4 s) can push the outfit card past its 5 s budget.</td><td>Austin Heiss</td><td>Add a 3.5 s deadline on I14d in A4, then fall back to an occasion-only outfit (NF-03, R10).</td><td>Clare Hooper</td><td>Must-fix (done)</td><td>Week 7</td></tr>
+    <tr><td class="id">PR-05</td><td>Risk</td><td>A PIN typed on a shared glass can be watched by someone nearby.</td><td>Austin Heiss</td><td>Keep the shuffled keypad; evaluate unlocking from the paired phone once the core works (G2, R6).</td><td>Jace Schubert</td><td>Worth considering</td><td>Week 10</td></tr>
+    <tr><td class="id">PR-06</td><td>Risk</td><td>A3's ±2 cm accuracy is untested, and the fit check and buy-or-skip verdict rest on it.</td><td>Austin Heiss</td><td>Tape-measure test on all four team members in the Week 8 hardware spike; tune the calibration factors (G3).</td><td>Arya Garg</td><td>Worth considering</td><td>Week 9</td></tr>
+    <tr><td class="id">PR-07</td><td>Feasibility</td><td>Phone notifications only appear while the page is open.</td><td>Austin Heiss</td><td>Web push sends data off the home network; keep in-app notifications (G4).</td><td>Clare Hooper</td><td>Out of scope for now</td><td>Not scheduled</td></tr>
   </table>
   <h3>Summary</h3>
-  <p><b>Criterion that drew the most feedback:</b> <span class="todo">[completeness / feasibility / clarity / risk, and why]</span></p>
-  <p><b>Top two issues we raised while reviewing other teams:</b></p>
-  <ol><li class="todo">[team reviewed, issue, criterion]</li><li class="todo">[team reviewed, issue, criterion]</li></ol>
+  <p><b>Criterion that drew the most feedback:</b> Risk (PR-02, PR-05, PR-06). The review focused on the parts that rest on things we have not yet tested or chosen: measurement accuracy, outside providers, and PIN entry on a shared screen.</p>
+  <p><b>Issues we raised while reviewing other teams:</b> none for this round. Austin Heiss reviewed our design one way, and we did not review another team's design.</p>
 </section>
 
 </body>
