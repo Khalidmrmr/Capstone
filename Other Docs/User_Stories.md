@@ -4,7 +4,7 @@
 **Course:** Senior Design  
 **Team members:** Rehman Khalid, Jace Schubert, Clare Hooper, Arya Garg  
 **Faculty advisor:** Hrishikesh Bhide  
-**Repository location:** `/User_Stories.md`  
+**Repository location:** `/Other Docs/User_Stories.md`  
 **Week:** 04
 
 ## 1. Stakeholder Map
