@@ -3,7 +3,7 @@
 **Project:** Smart Closet Mirror
 **Team:** Bull Riders — Arya Garg, Clare Hooper, Rehman Khalid, Jace Schubert
 **Faculty advisor:** Hrishikesh Bhide
-**Deck:** `Senior design presentation.pptx`
+**Deck:** `Bullriders_presentation_final.pdf` (source: `Senior design presentation.pptx`)
 **Time limit:** 10 minutes presenting + 5 minutes of questions · **Target:** 6:00
 **Timekeeper:** Clare
 
