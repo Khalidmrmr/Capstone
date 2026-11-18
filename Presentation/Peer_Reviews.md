@@ -17,22 +17,17 @@ Each review is a constructive suggestion or a clarifying question, from one sent
 
 | # | Team reviewed | Project name | Review (suggestion or question) | Entered in spreadsheet |
 | --- | --- | --- | --- | --- |
-| 1 | | | | ☐ |
-| 2 | | | | ☐ |
-| 3 | | | | ☐ |
+| 1 | | | | Yes |
+
 
 ## Rehman Khalid
 
 | # | Team reviewed | Project name | Review (suggestion or question) | Entered in spreadsheet |
 | --- | --- | --- | --- | --- |
-| 1 | | | | ☐ |
-| 2 | | | | ☐ |
-| 3 | | | | ☐ |
+| 1 | | | | Yes|
 
 ## Jace Schubert
 
 | # | Team reviewed | Project name | Review (suggestion or question) | Entered in spreadsheet |
 | --- | --- | --- | --- | --- |
-| 1 | | | | ☐ |
-| 2 | | | | ☐ |
-| 3 | | | | ☐ |
+| 1 | | | | Yes |
