@@ -1,2 +1,0 @@
-Peer Review #1:
-The concept behind Nibl is engaging and clearly addresses a real need, and the core features are easy to understand at a glance. That said, the app overlaps a lot with Beli, which already lets users rank restaurants, build lists, and see where their friends eat, so it’s not yet clear what would make someone switch. Identifying one or two standout features that Beli doesn’t offer, and building the pitch around them, would make Nibl’s value much more convincing.

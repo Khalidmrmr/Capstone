@@ -4,7 +4,7 @@
 **Course:** Senior Design (CS 5001), University of Cincinnati  
 **Faculty advisor:** Dr. Hrishikesh Bhide  
 **Document:** `/Test_Plan.md` · **Version:** 0.1 (skeleton) · **Test lead:** _[name]_  
-**Traces to:** [`Requirements_Document.md`](Requirements_Document.md) and the traceability matrix in [`Technical_Specification.md`](Technical_Specification.md) §6. Every REQ, NFR, CON and TC ID below refers to those documents.
+**Traces to:** [`Requirements_Document.md`](Requirements_Document.md) and the traceability matrix in [`Technical_Specification.md`](Technical_Specification.md) §5. Every REQ, NFR, CON and TC ID below refers to those documents.
 
 ---
 
