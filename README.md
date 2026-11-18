@@ -23,7 +23,7 @@ The Smart Closet Mirror turns a secondhand Gen 1 Mirror into a closet assistant.
 | [Requirements_Document.md](Requirements_Document.md) ([PDF](Requirements_Document.pdf)) | 9 | What the system must do: REQ, NFR and CON IDs, MoSCoW |
 | [Technical_Specification.md](Technical_Specification.md) ([PDF](Technical_Specification.pdf)) | 9 | How it is built: architecture, interfaces, stack, traceability matrix |
 | [Test_Plan.md](Test_Plan.md) | 10 | Scope, V&V strategy, success criteria, test cases, environment, pass/fail, schedule, definition of done |
-| [Presentation/](Presentation/) | 10–13 | Fall design presentation ([PPTX](Presentation/Senior%20design%20presentation.pptx), [PDF](Presentation/Senior%20design%20presentation%20draft.pdf)) and [advisor feedback](Presentation/Advisor_Feedback.md) |
+| [Presentation/](Presentation/) | 10–13 | Fall design presentation ([PPTX](Presentation/Senior%20design%20presentation.pptx), [PDF](Presentation/Senior%20design%20presentation%20draft.pdf)); [advisor feedback](Presentation/Advisor_Feedback.md), [run sheet and rehearsal log](Presentation/Run_Sheet.md), [peer reviews](Presentation/Peer_Reviews.md) |
 
 ## 4. Team biographies
 
