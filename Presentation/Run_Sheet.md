@@ -5,7 +5,7 @@
 **Faculty advisor:** Hrishikesh Bhide
 **Deck:** `Senior design presentation.pptx`
 **Time limit:** 10 minutes presenting + 5 minutes of questions · **Target:** 6:00
-**Timekeeper:** [name]
+**Timekeeper:** Clare
 
 ## 1. Speaking roles
 
@@ -61,5 +61,5 @@ At least one full-group timed rehearsal is required. Record per-section time for
 
 | # | Date | Attendees | Clare (1–4) | Arya (5–6) | Jace (7–8) | Rehman (9–11) | Total | Notes / changes made |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| R1 | [YYYY-MM-DD] | [names] | [m:ss] | [m:ss] | [m:ss] | [m:ss] | [m:ss] | |
-| R2 | | | | | | | | |
+| R1 | [2026-11-16] | [Clare, Arya, Jace, Rehman] | [1:29] | [2:00] | [1:25] | [1:30] | [2:00] | |
+| R2 | [2026-11-17] | [Clare, Arya, Jace, Rehman] | [2:09] | [1:31] | [1:32] | [1:35] | [1:42] | |
